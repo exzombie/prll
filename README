@@ -15,7 +15,7 @@ mapp is designed to be used not just in shell scripts, but also in
 interactive shells. To make the latter convenient, it is implemented
 as a shell function. Shells are not much good at automatic job
 management; see the included document for further
-discussion. Therefore, mapp uses a jobserver, written in ANSI C. To
+discussion. Therefore, mapp uses a jobserver, written in C. To
 prevent race conditions, System V Message Queues are used to signal
 job completion.
 
