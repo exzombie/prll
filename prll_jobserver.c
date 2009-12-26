@@ -29,19 +29,19 @@ int main(int argc, char ** argv) {
   }
   if (argc < 4) {
     fprintf(stderr,
-	    "%s: jobserver for the mapp() shell function.\n"
-	    "Consult the mapp source and documentation for usage.\n"
+	    "%s: jobserver for the prll() shell function.\n"
+	    "Consult the prll source and documentation for usage.\n"
 	    "Not meant to be used standalone.\n"
 	    , argv[0]);
     return 1;
   }
 
   // Choosing operating mode
-  enum {MAPP_CLIENT_MODE, MAPP_SERVER_MODE} mode;
+  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE} mode;
   if (argv[1][0] == 's' && argv[1][1] == '\0')
-    mode = MAPP_SERVER_MODE;
+    mode = PRLL_SERVER_MODE;
   else if (argv[1][0] == 'c' && argv[1][1] == '\0')
-    mode = MAPP_CLIENT_MODE;
+    mode = PRLL_CLIENT_MODE;
   else {
     fprintf(stderr, "%s: incorrect mode specification: %s\n", argv[0], argv[1]);
     return 1;
@@ -61,7 +61,7 @@ int main(int argc, char ** argv) {
 
   // Do the work
   // CLIENT MODE
-  if (mode == MAPP_CLIENT_MODE) {
+  if (mode == PRLL_CLIENT_MODE) {
     msg.msgtype = msgtype;
     msg.jarg = strtol(argv[3], 0, 0);
     if (errno) {
@@ -73,7 +73,7 @@ int main(int argc, char ** argv) {
       return 1;
     }
   // SERVER MODE
-  } else if (mode == MAPP_SERVER_MODE) {
+  } else if (mode == PRLL_SERVER_MODE) {
     if (argc < 5) {
       fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
       return 1;

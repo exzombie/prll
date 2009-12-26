@@ -1,8 +1,8 @@
-mapp
+prll
 version 0.1
 ================
 
-mapp is a utility for use with bash or zsh. It provides a convenient
+prll is a utility for use with bash or zsh. It provides a convenient
 interface for parallelizing the execution of a single task over
 multiple data files, or actually any kind of data that you can pass as
 a function argument. It is meant to make it simple to fully utilize a
@@ -12,11 +12,11 @@ multicore/multiprocessor machine.
 DESCRIPTION
 -----------
 
-mapp is designed to be used not just in shell scripts, but also in
+prll is designed to be used not just in shell scripts, but also in
 interactive shells. To make the latter convenient, it is implemented
 as a shell function. Shells are not much good at automatic job
 management; see the included document for further
-discussion. Therefore, mapp uses a jobserver, written in C. To prevent
+discussion. Therefore, prll uses a jobserver, written in C. To prevent
 race conditions, System V Message Queues are used to signal job
 completion.
 
@@ -31,20 +31,20 @@ REQUIREMENTS
   - an OS supporting System V Message Queues; GNU/Linux will do fine
   - programs awk, sed, egrep, ipcs, ipcrm and ipcmk
 
-For now, mapp has only been tested on GNU/Linux. It might need minor,
+For now, prll has only been tested on GNU/Linux. It might need minor,
 simple modifications on other systems, like replacing egrep with a
 different grep implementation.
 
-mapp also looks for the /proc/cpuinfo file. It uses it to
+prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
 may lack this file or have a different syntax. Setting the
-MAPP_NR_CPUS environment variable renders the cpuinfo file unnecessary
+PRLL_NR_CPUS environment variable renders the cpuinfo file unnecessary
 (see usage instructions below).
 
 INSTALLATION
 -----------
 
-Compile mapp_jobserver.c. You can use the included Makefile. If you
+Compile prll_jobserver.c. You can use the included Makefile. If you
 have gcc, you can simply run
 
   make
@@ -54,25 +54,25 @@ compiler options, like so
 
   make CFLAGS=whatever
 
-When this is done, copy the mapp_jobserver executable to a directory
+When this is done, copy the prll_jobserver executable to a directory
 you have in your PATH. For example, to do a system-wide installation,
 run as root
 
-  chown root:root mapp_jobserver
-  cp mapp_jobserver /usr/local/bin/
+  chown root:root prll_jobserver
+  cp prll_jobserver /usr/local/bin/
 
-File mapp.sh contains the shell function. The shell that will use it
+File prll.sh contains the shell function. The shell that will use it
 needs to source it. That means two things: 
-  - If you wish to use mapp in a shell script, simply copy it in there.
-  - If you wish to use mapp in an interactive shell, source it.
+  - If you wish to use prll in a shell script, simply copy it in there.
+  - If you wish to use prll in an interactive shell, source it.
 The latter means that you need to put the function somewhere where
 your shell will find it. If you are installing it for yourself, put
 it in your .bashrc or .zshrc. If you are installing it system-wide, put
 it in /etc/profile. However, if your system has the /etc/profile.d
 directory, use that. For example
 
-  chown root:root mapp.sh
-  cp mapp.sh /etc/profile.d/
+  chown root:root prll.sh
+  cp prll.sh /etc/profile.d/
 
 The function should now be automatically sourced by login shells.
 
@@ -80,14 +80,14 @@ The function should now be automatically sourced by login shells.
 USAGE
 -----
 
-Synopsis: mapp function_name arguments ...
+Synopsis: prll function_name arguments ...
 
 To execute a task, create a shell function that does something to its
-first argument. Pass that function to mapp along with the arguments
+first argument. Pass that function to prll along with the arguments
 you wish to execute it on.
 
 The number of tasks to be run in parallel is provided via the
-MAPP_NR_CPUS environment variable. If it is not provided, mapp will
+PRLL_NR_CPUS environment variable. If it is not provided, prll will
 look into the /proc/cpuinfo file and extract the number of CPUs in
 your computer.
 
@@ -97,33 +97,33 @@ Suppose you have a set of photos that you wish to process using the
 'mogrify' utility. Simply do
 
   function myfn() { mogrify -flip $1 ; }
-  mapp myfun *.jpg
+  prll myfun *.jpg
 
 This will run mogrify on each jpg file in the current directory. If
 your computer has 4 processors, but you wish to run only 3 tasks at
 once, you should use
 
-  MAPP_NR_CPUS=3 mapp myfn *.jpg
+  PRLL_NR_CPUS=3 prll myfn *.jpg
 
 
 If you have a more complicated function that has to take more than one
 argument, you should use a trick: combine multiple arguments into one
-when passing them to mapp, then split them again inside your
+when passing them to prll, then split them again inside your
 function. Here is a stub for a function that takes three arguments:
 
   function myfn() { echo $1 | read a b c; process a; compute b; kill c; }
-  mapp myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
+  prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 
 LICENSING INFORMATION
 ---------------------
 
-The user needs to be able to include the mapp shell function
+The user needs to be able to include the prll shell function
 in his own work, which might be anything. Therefore, the contents of
-mapp.sh are provided under the terms of the WTFPL. See COPYING.WTFPL-2
+prll.sh are provided under the terms of the WTFPL. See COPYING.WTFPL-2
 for more information.
 
-The rest of the mapp package is provided under the GNU General Public
+The rest of the prll package is provided under the GNU General Public
 License, version 3 or later. See COPYING.GPL-3 for more information.
 
 Copyright 2009 Jure Varlec

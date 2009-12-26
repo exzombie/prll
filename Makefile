@@ -2,10 +2,10 @@ CFLAGS += --std=c99 -Wformat -pedantic -g -O2 -fomit-frame-pointer
 
 .PHONY: clean compile
 
-compile: mapp_jobserver
+compile: prll_jobserver
 
 clean:
-	rm -f mapp_jobserver
+	rm -f prll_jobserver
 
 .PHONY: check-syntax
 check-syntax:
