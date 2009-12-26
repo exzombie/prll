@@ -41,7 +41,7 @@ may lack this file or have a different syntax. Setting the
 MAPP_NR_CPUS environment variable renders the cpuinfo file unnecessary
 (see usage instructions below).
 
-INSTALATION
+INSTALLATION
 -----------
 
 Compile mapp_jobserver.c. You can use the included Makefile. If you
