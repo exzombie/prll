@@ -5,7 +5,8 @@ version 0.1
 mapp is a utility for use with bash or zsh. It provides a convenient
 interface for parallelizing the execution of a single task over
 multiple data files, or actually any kind of data that you can pass as
-a function argument.
+a function argument. It is meant to make it simple to fully utilize a
+multicore/multiprocessor machine.
 
 
 DESCRIPTION
@@ -15,9 +16,9 @@ mapp is designed to be used not just in shell scripts, but also in
 interactive shells. To make the latter convenient, it is implemented
 as a shell function. Shells are not much good at automatic job
 management; see the included document for further
-discussion. Therefore, mapp uses a jobserver, written in C. To
-prevent race conditions, System V Message Queues are used to signal
-job completion.
+discussion. Therefore, mapp uses a jobserver, written in C. To prevent
+race conditions, System V Message Queues are used to signal job
+completion.
 
 FIXME: do actually include the document :)
 
@@ -27,10 +28,18 @@ REQUIREMENTS
 
   - bash or zsh
   - C compiler, such as gcc
-  - an OS supporting System V Message Queues; GNU/Linux will do
+  - an OS supporting System V Message Queues; GNU/Linux will do fine
   - programs awk, sed, egrep, ipcs, ipcrm and ipcmk
 
-FIXME: dependency on /proc/cpuinfo ?
+For now, mapp has only been tested on GNU/Linux. It might need minor,
+simple modifications on other systems, like replacing egrep with a
+different grep implementation.
+
+mapp also looks for the /proc/cpuinfo file. It uses it to
+automatically determine the number of processors. Non-Linux systems
+may lack this file or have a different syntax. Setting the
+MAPP_NR_CPUS environment variable renders the cpuinfo file unnecessary
+(see usage instructions below).
 
 INSTALATION
 -----------
@@ -58,9 +67,9 @@ needs to source it. That means two things:
   - If you wish to use mapp in an interactive shell, source it.
 The latter means that you need to put the function somewhere where
 your shell will find it. If you are installing it for yourself, put
-it in your .bashrc or .zshrc. If you are installing it systemwide, put
+it in your .bashrc or .zshrc. If you are installing it system-wide, put
 it in /etc/profile. However, if your system has the /etc/profile.d
-directory, use that, for example
+directory, use that. For example
 
   chown root:root mapp.sh
   cp mapp.sh /etc/profile.d/
@@ -71,7 +80,7 @@ The function should now be automatically sourced by login shells.
 USAGE
 -----
 
-Synopsis: mapp fun_name arguments ...
+Synopsis: mapp function_name arguments ...
 
 To execute a task, create a shell function that does something to its
 first argument. Pass that function to mapp along with the arguments
@@ -104,18 +113,17 @@ function. Here is a stub for a function that takes three arguments:
 
   function myfn() { echo $1 | read a b c; process a; compute b; kill c; }
   mapp myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
-FIXME: actually test this :)
 
 
-LICENSE
--------
+LICENSING INFORMATION
+---------------------
 
 The user needs to be able to include the mapp shell function
 in his own work, which might be anything. Therefore, the contents of
-mapp.sh are provided under the terms of the WTFPL. See COPYING.WTFPL
+mapp.sh are provided under the terms of the WTFPL. See COPYING.WTFPL-2
 for more information.
 
 The rest of the mapp package is provided under the GNU General Public
-License, version 3 or later. See COPYING.GPL-3 for more information
+License, version 3 or later. See COPYING.GPL-3 for more information.
 
 Copyright 2009 Jure Varlec
