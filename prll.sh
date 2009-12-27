@@ -6,6 +6,17 @@
 # COPYING.WTFPL-2 or http://sam.zoy.org/wtfpl/COPYING for more details.
 
 function prll() {
+    if [[ -z $1 ]] ; then
+	cat <<-EOF
+	USAGE: prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
+	
+	Shell function 'fun_name' will be run for each 'fun_arg'.
+	The number of processes to be run in parallel can be set with
+	the PRLL_NR_CPUS environment variable. If it is unset, prll will
+	attempt to read the number of CPUS from /proc/cpuinfo.
+	EOF
+	return 1
+    fi
     which awk sed egrep ipcs ipcrm ipcmk prll_jobserver > /dev/null
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Missing some utilities. Search results:" 2>&1
