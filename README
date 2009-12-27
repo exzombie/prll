@@ -8,6 +8,8 @@ multiple data files, or actually any kind of data that you can pass as
 a function argument. It is meant to make it simple to fully utilize a
 multicore/multiprocessor machine.
 
+Homepage: http://prll.sourceforge.net/
+
 
 DESCRIPTION
 -----------
@@ -15,12 +17,11 @@ DESCRIPTION
 prll is designed to be used not just in shell scripts, but also in
 interactive shells. To make the latter convenient, it is implemented
 as a shell function. Shells are not much good at automatic job
-management; see the included document for further
-discussion. Therefore, prll uses a jobserver, written in C. To prevent
-race conditions, System V Message Queues are used to signal job
-completion.
+management; see [1] for further discussion. Therefore, prll uses a
+jobserver, written in C. To prevent race conditions, System V Message
+Queues are used to signal job completion.
 
-FIXME: do actually include the document :)
+[1] http://prll.sourceforge.net/shell_parallel.html
 
 
 REQUIREMENTS
