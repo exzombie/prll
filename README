@@ -92,6 +92,12 @@ PRLL_NR_CPUS environment variable. If it is not provided, prll will
 look into the /proc/cpuinfo file and extract the number of CPUs in
 your computer.
 
+If you need to abort the execution, the message queue created for
+communication will probably be left to linger. You can list the queues
+with the 'ipcs' command and remove them with the 'ipcrm'
+command. Refer to your system's documentation for details.
+
+
 Examples:
 
 Suppose you have a set of photos that you wish to process using the
