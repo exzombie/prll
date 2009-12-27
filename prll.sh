@@ -24,10 +24,12 @@ function prll() {
 	return 1
     fi
     if [[ -n $ZSH_VERSION ]] ; then
-	echo "PRLL: ZSH detected. Using KSH-style arrays" \
-	    "and disabling job monitoring."
-	setopt ksharrays
-	setopt nomonitor
+	setopt | grep -x ksharrays > /dev/null
+	if [[ $? -ne 0 ]] ; then
+	    echo "PRLL: zsh does not have the 'ksharrays' option set." 2>&1
+	    echo "PRLL: refusing to start." 2>&1
+	    return 1
+	fi
     fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
 	local PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
