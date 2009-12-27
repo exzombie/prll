@@ -63,13 +63,12 @@ function prll() {
 		"Progress: $((prll_progress*100/prll_nr_args))%" 2>&1
 	    (
 		$prll_funname "${prll_params[$prll_jarg]}"
-		prll_jobserver c $prll_Qkey $prll_jarg
 		echo "PRLL: Job number $prll_jarg finished." 2>&1
+		prll_jobserver c $prll_Qkey $prll_jarg
 	    ) &
 	    let prll_progress+=1
 	done
 	echo "PRLL: Jobserver finished, cleaning up."
-	wait # TODO: bash doesn't handle this well
 	ipcrm -q $prll_Q
     )
 }

@@ -93,7 +93,9 @@ int main(int argc, char ** argv) {
     if (jobs < nr_cpus)
       nr_cpus = jobs;
 
-    unsigned long i;
+    // We need to count both launched and completed jobs. The program
+    // must wait for all jobs to be completed, because bash's 'wait' sucks.
+    unsigned long i, k = jobs;
     // Start the given number of threads
     for (i = 0; i < nr_cpus; i++) {
       printf("%lu\n", i);
@@ -101,18 +103,21 @@ int main(int argc, char ** argv) {
     fflush(stdout);
 
     // Listening loop
-    for (; i < jobs; i++) {
+    while (i < jobs || k > 0) {
       if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
 	perror(argv[0]);
 	// Let's do the same job again. This makes sure that only jobs at 
 	// the end of the queue will remain unfinished in case of
 	// unexpected errors.
 	// Such an error might be caused by reading a message not meant for us.
-	i--;
 	continue;
       }
-      printf("%lu\n", i);
-      fflush(stdout);
+      if (i < jobs) {
+	printf("%lu\n", i);
+	fflush(stdout);
+	i++;
+      }
+      k--;
     }
   } else {
     // Shouldn't ever get here
