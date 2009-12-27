@@ -44,19 +44,21 @@ function prll() {
     fi
 
     echo "PRLL: Starting jobserver." 2>&1
-    local prll_jarg
-    prll_jobserver s $prll_Qkey $PRLL_NR_CPUS $prll_nr_args | \
-    while read prll_jarg; do
-	echo "PRLL: Starting job ${prll_jarg}." \
-	    "Progress: $((prll_progress*100/prll_nr_args))%" 2>&1
-	(
-	    $prll_funname "${prll_params[$prll_jarg]}"
-	    prll_jobserver c $prll_Qkey $prll_jarg
-	    echo "PRLL: Job number $prll_jarg finished." 2>&1
-	) &
-	let prll_progress+=1
-    done
-    echo "PRLL: Jobserver finished, cleaning up."
-    wait
-    ipcrm -q $prll_Q
+    ( # run in a subshell so this code can be suspended as a unit
+	local prll_jarg
+	prll_jobserver s $prll_Qkey $PRLL_NR_CPUS $prll_nr_args | \
+	    while read prll_jarg; do
+	    echo "PRLL: Starting job ${prll_jarg}." \
+		"Progress: $((prll_progress*100/prll_nr_args))%" 2>&1
+	    (
+		$prll_funname "${prll_params[$prll_jarg]}"
+		prll_jobserver c $prll_Qkey $prll_jarg
+		echo "PRLL: Job number $prll_jarg finished." 2>&1
+	    ) &
+	    let prll_progress+=1
+	done
+	echo "PRLL: Jobserver finished, cleaning up."
+	wait # TODO: bash doesn't handle this well
+	ipcrm -q $prll_Q
+    )
 }
