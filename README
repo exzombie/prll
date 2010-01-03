@@ -29,7 +29,7 @@ REQUIREMENTS
 
   - bash or zsh
   - C compiler, such as gcc
-  - an OS supporting System V Message Queues; GNU/Linux will do fine
+  - OS support for System V Message Queues; GNU/Linux will do fine
   - programs awk, sed, egrep, ipcs, ipcrm and ipcmk
 
 For now, prll has only been tested on GNU/Linux. It might need minor,
@@ -43,7 +43,7 @@ PRLL_NR_CPUS environment variable renders the cpuinfo file unnecessary
 (see usage instructions below).
 
 INSTALLATION
------------
+------------
 
 Compile prll_jobserver.c. You can use the included Makefile. If you
 have gcc, you can simply run
@@ -63,7 +63,7 @@ run as root
   cp prll_jobserver /usr/local/bin/
 
 File prll.sh contains the shell function. The shell that will use it
-needs to source it. That means two things: 
+needs to source it. That means that: 
   - If you wish to use prll in a shell script, simply copy it in there.
   - If you wish to use prll in an interactive shell, source it.
 The latter means that you need to put the function somewhere where
@@ -75,7 +75,12 @@ directory, use that. For example
   chown root:root prll.sh
   cp prll.sh /etc/profile.d/
 
-The function should now be automatically sourced by login shells.
+The function should now be automatically sourced by login shells. To
+have every instance of bash source it, insert
+
+  source /etc/profile
+
+into your .bashrc.
 
 
 USAGE
@@ -112,23 +117,27 @@ once, you should use
 
   PRLL_NR_CPUS=3 prll myfn *.jpg
 
+Or, to make it permanent in the current shell, do
+
+  export PRLL_NR_CPUS=3
+
 
 If you have a more complicated function that has to take more than one
 argument, you should use a trick: combine multiple arguments into one
 when passing them to prll, then split them again inside your
 function. Here is a stub for a function that takes three arguments:
 
-  function myfn() { echo $1 | read a b c; process a; compute b; kill c; }
+  function myfn() { echo $1 | read a b c; process $a; compute $b; kill $c; }
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 
 LICENSING INFORMATION
 ---------------------
 
-The user needs to be able to include the prll shell function
-in his own work, which might be anything. Therefore, the contents of
-prll.sh are provided under the terms of the WTFPL. See COPYING.WTFPL-2
-for more information.
+The user needs to be able to include the prll shell function in his
+own work, which might be anything. Therefore, the contents of prll.sh
+are provided under the terms of the WTFPL, version 2. 
+See COPYING.WTFPL-2 for more information.
 
 The rest of the prll package is provided under the GNU General Public
 License, version 3 or later. See COPYING.GPL-3 for more information.
