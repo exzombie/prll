@@ -50,7 +50,11 @@ have gcc, you can simply run
 
   make
 
-If you have a different compiler, you may want to change the default
+If you have gcc and want different compiler options, do
+
+  CFLAGS=whatever make
+
+If you have a different compiler, you may want to completely override
 compiler options, like so
 
   make CFLAGS=whatever

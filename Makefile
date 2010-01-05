@@ -1,4 +1,5 @@
-CFLAGS += --std=c99 -Wformat -pedantic -g -O2 -fomit-frame-pointer
+CFLAGS ?= -g -O2 -fomit-frame-pointer -Wformat -pedantic
+CFLAGS += --std=c99
 
 .PHONY: clean compile
 
