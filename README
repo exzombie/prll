@@ -113,7 +113,7 @@ Suppose you have a set of photos that you wish to process using the
 'mogrify' utility. Simply do
 
   function myfn() { mogrify -flip $1 ; }
-  prll myfun *.jpg
+  prll myfn *.jpg
 
 This will run mogrify on each jpg file in the current directory. If
 your computer has 4 processors, but you wish to run only 3 tasks at
@@ -124,6 +124,16 @@ once, you should use
 Or, to make it permanent in the current shell, do
 
   export PRLL_NR_CPUS=3
+
+
+To make things shorter, you can leave out the 'function' keyword when
+defining a function. To redefine the same example:
+
+  myfn() { mogrify -flip $1 ; }
+
+However, you now need to be careful not to forget the parentheses. When
+using the 'function' keyword, they are optional. If you leave it out,
+they are not.
 
 
 If you have a more complicated function that has to take more than one
