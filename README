@@ -145,6 +145,35 @@ function. Here is a stub for a function that takes three arguments:
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 
+KNOWN ISSUES
+------------
+
+- Forcing of the ksharrays option.
+  The ksharrays option for zsh should not be forced on. Turning it on
+  only for the duration of the function causes trouble if the function
+  is aborted. This should be handled by modifying array indexing.
+
+- Missing 'make test' target.
+  Tests should be added to make it easy to check whether the package
+  works at all.
+
+- Have an option to pass parameters on stdin.
+  Passing a very long list of arguments would be simpler, especially
+  when the function takes more than one argument.
+
+- Have an option to pass code in a string instead of a function.
+  If code to be executed is short, passing it as a string would make
+  interactive use quicker.
+
+- Make prll a standalone program.
+  Having prll as a standalone program would allow for a cleaner
+  implementation without a jobserver. However, it would complicate
+  interactive use, because code could only be passed in separate shell
+  scripts or as strings, which is not as flexible.
+  This issue can only be solved by finding a way to make interactive
+  usage of a standalone program simple.
+
+
 LICENSING INFORMATION
 ---------------------
 
