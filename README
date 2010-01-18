@@ -172,6 +172,10 @@ KNOWN ISSUES
   If code to be executed is short, passing it as a string would make
   interactive use quicker.
 
+- Checking for the size of key_t in the jobserver is ugly.
+  Put that check into a separate file and have 'make' check it at
+  build time. Also do build time checks for all necessary utilities.
+
 - Make prll a standalone program.
   Having prll as a standalone program would allow for a cleaner
   implementation without a jobserver. However, it would complicate
