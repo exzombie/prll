@@ -13,7 +13,7 @@ function prll() {
 	Shell function 'fun_name' will be run for each 'fun_arg'.
 	The number of processes to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable. If it is unset, prll will
-	attempt to read the number of CPUS from /proc/cpuinfo.
+	attempt to read the number of CPUs from /proc/cpuinfo.
 	EOF
 	return 1
     fi
@@ -26,9 +26,8 @@ function prll() {
     if [[ -n $ZSH_VERSION ]] ; then
 	setopt | grep -x ksharrays > /dev/null
 	if [[ $? -ne 0 ]] ; then
-	    echo "PRLL: zsh does not have the 'ksharrays' option set." 2>&1
-	    echo "PRLL: refusing to start." 2>&1
-	    return 1
+	    local prll_ksharrays_set=1
+	    setopt ksharrays
 	fi
     fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
@@ -56,6 +55,16 @@ function prll() {
 	    2>&1
     fi
 
+    function prll_cleanup() {
+	trap - SIGINT
+	ipcs -q -i $prll_Q > /dev/null 2>&1
+	[[ $? -ne 0 ]] && return 130
+	echo "PRLL: Cleaning up." 2>&1
+	ipcrm -q $prll_Q
+	[[ -n $prll_ksharrays_set ]] && setopt noksharrays
+    }
+    trap prll_cleanup SIGINT
+
     echo "PRLL: Starting jobserver." 2>&1
     ( # run in a subshell so this code can be suspended as a unit
 	local prll_jarg
@@ -71,7 +80,6 @@ function prll() {
 	    ) &
 	    let prll_progress+=1
 	done
-	echo "PRLL: Jobserver finished, cleaning up."
-	ipcrm -q $prll_Q
     )
+    prll_cleanup
 }

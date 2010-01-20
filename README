@@ -148,18 +148,6 @@ function. Here is a stub for a function that takes three arguments:
 KNOWN ISSUES
 ------------
 
-- Forcing of the ksharrays option.
-  The ksharrays option for zsh should not be forced on. Turning it on
-  only for the duration of the function causes trouble if the function
-  is aborted. This might/should be handled by modifying array indexing.
-
-- Handle termination gracefully.
-  Currently, terminating prll execution prematurely leaves behind a
-  message queue. Cleanup should be done on SIGINT. This may also help
-  solve the ksharrays issue. However, care should be taken when
-  handling signals -- make sure the jobserver passes the signal to the
-  shell, which can do the cleanup in a trap. Test for reliability.
-
 - Missing 'make test' target.
   Tests should be added to make it easy to check whether the package
   works reliably or at all.
