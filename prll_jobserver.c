@@ -21,12 +21,6 @@
 #include <errno.h>
 
 int main(int argc, char ** argv) {
-  // Sanity check
-  if (sizeof(long) < sizeof(key_t)) {
-    fprintf(stderr, "%s: Check failed. Data type 'key_t' longer than 'long'.\n",
-	    argv[0]);
-    return 1;
-  }
   if (argc < 4) {
     fprintf(stderr,
 	    "%s: jobserver for the prll() shell function.\n"
