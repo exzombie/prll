@@ -91,10 +91,15 @@ USAGE
 -----
 
 Synopsis: prll function_name arguments ...
+	  prll -s 'code' arguments ...
 
 To execute a task, create a shell function that does something to its
 first argument. Pass that function to prll along with the arguments
 you wish to execute it on.
+
+As an alternative, you may pass the '-s' flag, followed by a
+string. The string will be executed as if it were the body of a shell
+function. Therefore, you may use $1 to reference it's first parameter.
 
 The number of tasks to be run in parallel is provided via the
 PRLL_NR_CPUS environment variable. If it is not provided, prll will
@@ -135,6 +140,15 @@ However, you now need to be careful not to forget the parentheses. When
 using the 'function' keyword, they are optional. If you leave it out,
 they are not.
 
+All examples here are very short. In practice, it is quicker to pass
+such a short function on the command line directly:
+
+  prll -s 'mogrify -flip $1' *.jpg
+
+prll now automatically wraps the code in an internal function so you
+don't have to. Don't forget about the single quotes, or the shell will
+expand $1 before prll is run.
+
 
 If you have a more complicated function that has to take more than one
 argument, you should use a trick: combine multiple arguments into one
@@ -155,10 +169,6 @@ KNOWN ISSUES
 - Have an option to pass parameters on stdin.
   Passing a very long list of arguments would be simpler, especially
   when the function takes more than one argument.
-
-- Have an option to pass code in a string instead of a function.
-  If code to be executed is short, passing it as a string would make
-  interactive use quicker.
 
 - Checking for the size of key_t in the jobserver is ugly.
   Put that check into a separate file and have 'make' check it at

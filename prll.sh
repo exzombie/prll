@@ -8,9 +8,12 @@
 function prll() {
     if [[ -z $1 ]] ; then
 	cat <<-EOF
-	USAGE: prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
+	USAGE:
+               prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
+               prll -s 'fun_string' fun_arg1 fun_arg2 ...
 	
 	Shell function 'fun_name' will be run for each 'fun_arg'.
+        Alternatively, shell code 'fun_string' will be executed.
 	The number of processes to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable. If it is unset, prll will
 	attempt to read the number of CPUs from /proc/cpuinfo.
@@ -36,6 +39,14 @@ function prll() {
 
     local prll_funname=$1
     shift
+    if [[ $prll_funname == "-s" ]] ; then
+	local prll_fun_str=$1
+	shift
+	function prll_str2func() {
+	    eval $prll_fun_str
+	}
+	prll_funname=prll_str2func
+    fi
     local -a prll_params
     prll_params=("$@")
     local prll_nr_args=${#prll_params[@]}
