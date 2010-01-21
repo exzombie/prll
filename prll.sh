@@ -20,10 +20,9 @@ function prll() {
 	EOF
 	return 1
     fi
-    which awk sed egrep ipcs ipcrm ipcmk prll_jobserver > /dev/null
+    /usr/bin/which awk sed egrep ipcs ipcrm ipcmk prll_jobserver > /dev/null
     if [[ $? -ne 0 ]] ; then
-	echo "PRLL: Missing some utilities. Search results:" 2>&1
-	which awk sed egrep ipcs ipcrm ipcmk prll_jobserver 2>&1
+	echo "PRLL: Missing some utilities." 1>&2
 	return 1
     fi
     if [[ -n $ZSH_VERSION ]] ; then
@@ -56,39 +55,39 @@ function prll() {
 	PRLL_NR_CPUS=$prll_nr_args
     fi
     local prll_progress=0
-    echo "PRLL: Using $PRLL_NR_CPUS CPUs" 2>&1
+    echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
     local prll_Qkey
     local prll_Q="$(ipcmk -Q | sed -r 's/.+ ([0-9]+)$/\1/' | egrep -x '[0-9]+')"
     if [[ $? -ne 0 ]] ; then
-	echo "PRLL: Failed to create message queue." 2>&1
+	echo "PRLL: Failed to create message queue." 1>&2
 	return 1
     else
 	prll_Qkey=$(ipcs -q | awk "\$2 == $prll_Q { print \$1 }")
 	echo "PRLL: created message queue with id $prll_Q and key $prll_Qkey" \
-	    2>&1
+	    1>&2
     fi
 
     function prll_cleanup() {
 	trap - SIGINT
 	ipcs -q -i $prll_Q > /dev/null 2>&1
 	[[ $? -ne 0 ]] && return 130
-	echo "PRLL: Cleaning up." 2>&1
+	echo "PRLL: Cleaning up." 1>&2
 	ipcrm -q $prll_Q
 	[[ -n $prll_ksharrays_set ]] && setopt noksharrays
     }
     trap prll_cleanup SIGINT
 
-    echo "PRLL: Starting jobserver." 2>&1
+    echo "PRLL: Starting jobserver." 1>&2
     ( # run in a subshell so this code can be suspended as a unit
 	local prll_jarg
 	prll_jobserver s $prll_Qkey $PRLL_NR_CPUS $prll_nr_args | \
 	    while read prll_jarg; do
 	    echo "PRLL: Starting job ${prll_jarg}." \
 		"Progress: $((prll_progress*100/prll_nr_args))%" \
-		"Arg: ${prll_params[$prll_jarg]}" 2>&1
+		"Arg: ${prll_params[$prll_jarg]}" 1>&2
 	    (
 		$prll_funname "${prll_params[$prll_jarg]}"
-		echo "PRLL: Job number $prll_jarg finished." 2>&1
+		echo "PRLL: Job number $prll_jarg finished." 1>&2
 		prll_jobserver c $prll_Qkey $prll_jarg
 	    ) &
 	    let prll_progress+=1
