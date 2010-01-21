@@ -1,0 +1,181 @@
+commit 7380f0b (refs/heads/master)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 12:25:35 2010 +0100
+
+    Note Piotr's contribution.
+
+commit 428ff55
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 12:21:40 2010 +0100
+
+    Include a notice on where to get current known issues.
+
+commit 3403260 (refs/remotes/origin/master)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 11:32:38 2010 +0100
+
+    Make sanity check a build-time check.
+    
+    Checking for external programs is still done at runtime to
+    make including the shell function in scripts easier.
+
+commit ceffb05
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 10:37:53 2010 +0100
+
+    Remove internal functions on cleanup.
+
+commit c1ab1df
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 10:24:23 2010 +0100
+
+    Redo the 'which' check. Reverse the wrong stderr redirections.
+
+commit 5f95647
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 09:59:55 2010 +0100
+
+    Some comments.
+
+commit e3c38e2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 09:55:43 2010 +0100
+
+    An option to pass code in a string instead of a function.
+
+commit bfb20be
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Jan 20 15:23:18 2010 +0100
+
+    Adds graceful termination, SIGINT handling and optional ksharrays.
+    
+    Handler is only in the shell; it seems SIGINT interrupts the subshell,
+    not the jobserver, so the shell always receives the signal. Further
+    testing is required to determine whether this is fully robust, although
+    timing the signal to arrive while the jobserver is running will be tricky.
+
+commit b60cb70
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Jan 18 09:28:14 2010 +0100
+
+    Add key_t check to the list of known issues.
+
+commit a9e086a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Jan 15 22:04:01 2010 +0100
+
+    Add graceful termination to the list of known issues.
+
+commit 0ed3148
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Jan 15 10:43:26 2010 +0100
+
+    Added "Known Issues" section to the README.
+
+commit 50e0188
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 14 08:56:33 2010 +0100
+
+    README additions.
+
+commit 4d914b7
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Jan 5 21:04:29 2010 +0100
+
+    Make the Makefile more Gentoo friendly.
+
+commit ba052dd
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Jan 3 18:46:07 2010 +0100
+
+    Corrections in README.
+
+commit 4efb919 (tag: refs/tags/prll-0.2)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 16:43:56 2009 +0100
+
+    Print the function argument.
+
+commit e1a80e8
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 16:38:04 2009 +0100
+
+    zsh needs to have ksharrays enabled from outside.
+
+commit 3082331
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 15:47:17 2009 +0100
+
+    Workaround the ridiculous bash's 'wait' limitation.
+
+commit 200fe50
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 15:32:09 2009 +0100
+
+    Add a note about manual removal of message queues.
+
+commit 639a351
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 15:24:08 2009 +0100
+
+    prll.sh: print usage instructions when run with no arguments.
+
+commit 17d8a83
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 15:11:53 2009 +0100
+
+    Updated README to include the new webpages.
+
+commit 419a7d4
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Dec 27 13:54:59 2009 +0100
+
+    Put the main loop into a subshell; it can be suspended.
+
+commit c053d13 (tag: refs/tags/prll-0.1)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Dec 26 11:48:39 2009 +0100
+
+    Renamed the project from mapp to prll.
+
+commit 5ab2e3c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Dec 26 11:17:06 2009 +0100
+
+    AUTHORS file and README typo correction.
+
+commit f81d3a1
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Dec 26 09:45:36 2009 +0100
+
+    README: additions and corrections.
+
+commit 42b3a05
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Dec 23 18:00:49 2009 +0100
+
+    Drop the ANSI C idea. Use C99 and define _SVID_SOURCE.
+
+commit 609067c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Dec 23 17:26:30 2009 +0100
+
+    Corrected licensing info.
+
+commit bf7fe21
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Dec 23 17:20:27 2009 +0100
+
+    README, unfinished.
+
+commit 89fcd9e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Dec 23 17:15:09 2009 +0100
+
+    Licensing information.
+
+commit 73780db
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Dec 23 15:47:40 2009 +0100
+
+    Initial commit.
