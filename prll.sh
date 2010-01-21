@@ -39,6 +39,7 @@ function prll() {
 
     local prll_funname=$1
     shift
+    # Do we have a function handle or a string?
     if [[ $prll_funname == "-s" ]] ; then
 	local prll_fun_str=$1
 	shift
@@ -47,6 +48,7 @@ function prll() {
 	}
 	prll_funname=prll_str2func
     fi
+    # Put all arguments into an array
     local -a prll_params
     prll_params=("$@")
     local prll_nr_args=${#prll_params[@]}
