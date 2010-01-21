@@ -162,6 +162,20 @@ function. Here is a stub for a function that takes three arguments:
 KNOWN ISSUES
 ------------
 
+This section describes issues and bugs that were known at the time of
+release. For more current information, check the newer version of this
+file. You can find it in the project's git repository:
+
+  http://prll.git.sourceforge.net/git/gitweb.cgi?p=prll/prll;a=tree
+
+There, you will find out which new issues were found and which of the
+old issues were fixed. If you have an issue that is not described,
+check the git log if it was ever found and fixed. If not, please
+contact the author. Suggestions are welcome, patches even more so.
+
+
+Known issues:
+
 - Missing 'make test' target.
   Tests should be added to make it easy to check whether the package
   works reliably or at all.
