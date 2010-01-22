@@ -46,6 +46,7 @@ function prll() {
 	    eval $prll_fun_str
 	}
 	prll_funname=prll_str2func
+	local prll_str2func_on=1
     fi
     # Put all arguments into an array
     local -a prll_params
@@ -74,7 +75,8 @@ function prll() {
 	echo "PRLL: Cleaning up." 1>&2
 	ipcrm -q $prll_Q
 	[[ -n $prll_ksharrays_set ]] && setopt noksharrays
-	unset -f prll_cleanup prll_str2func
+	unset -f prll_cleanup
+	[[ -n $prll_str2func_on ]] && unset -f prll_str2func
     }
     trap prll_cleanup SIGINT
 
