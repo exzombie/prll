@@ -1,4 +1,30 @@
-commit 7380f0b (refs/heads/master)
+commit 10960e4 (refs/heads/master)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 28 19:13:37 2010 +0100
+
+    Redo the fix for unsetting prll_str2func.
+
+commit c546775
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 28 19:10:36 2010 +0100
+
+    Revert "Fix a nonfatal error when unsetting prll_str2func."
+    
+    This reverts commit 743d1b5e18a3d070754ac2f0ec20bdd02ece5477.
+
+commit 743d1b5 (refs/remotes/origin/master)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Jan 22 09:22:32 2010 +0100
+
+    Fix a nonfatal error when unsetting prll_str2func.
+
+commit c96214e (tag: refs/tags/prll-0.3)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 21 12:27:17 2010 +0100
+
+    Release version 0.3.
+
+commit 7380f0b
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 12:25:35 2010 +0100
 
@@ -10,7 +36,7 @@ Date:   Thu Jan 21 12:21:40 2010 +0100
 
     Include a notice on where to get current known issues.
 
-commit 3403260 (refs/remotes/origin/master)
+commit 3403260
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 11:32:38 2010 +0100
 
