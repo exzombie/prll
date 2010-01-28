@@ -74,7 +74,7 @@ function prll() {
 	echo "PRLL: Cleaning up." 1>&2
 	ipcrm -q $prll_Q
 	[[ -n $prll_ksharrays_set ]] && setopt noksharrays
-	unset -f prll_cleanup prll_str2func
+	unset -f prll_cleanup prll_str2func > /dev/null 2>&1
     }
     trap prll_cleanup SIGINT
 
