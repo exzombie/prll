@@ -176,6 +176,8 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
+- Document it and/or make it easier to cross-compile.
+
 - Missing 'make test' target.
   Tests should be added to make it easy to check whether the package
   works reliably or at all.
