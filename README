@@ -106,10 +106,18 @@ PRLL_NR_CPUS environment variable. If it is not provided, prll will
 look into the /proc/cpuinfo file and extract the number of CPUs in
 your computer.
 
-If you need to abort the execution, the message queue created for
-communication will probably be left to linger. You can list the queues
-with the 'ipcs' command and remove them with the 'ipcrm'
-command. Refer to your system's documentation for details.
+If you need to abort the execution, you can do it with the usual
+Ctrl+C key combination. prll prits the jobs' PIDs so you can easily
+track down and terminate them if necessary. prll will not do it
+automatically because only you can decide whether they are still doing
+useful work or not. Also, jobs print completion notifications on their
+own so you will know when they are done even if prll itself is
+terminated. The jobserver might print a "file not found" message,
+which is expected in case of premature termination.
+ 
+prll cleans after itself, but if you are worried about stale message
+queues, you can list them with the 'ipcs' command and remove them with
+the 'ipcrm' command. Refer to your system's documentation for details.
 
 
 Examples:

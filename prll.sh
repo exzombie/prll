@@ -83,14 +83,14 @@ function prll() {
 	local prll_jarg
 	prll_jobserver s $prll_Qkey $PRLL_NR_CPUS $prll_nr_args | \
 	    while read prll_jarg; do
-	    echo "PRLL: Starting job ${prll_jarg}." \
-		"Progress: $((prll_progress*100/prll_nr_args))%" \
-		"Arg: ${prll_params[$prll_jarg]}" 1>&2
 	    (
 		$prll_funname "${prll_params[$prll_jarg]}"
 		echo "PRLL: Job number $prll_jarg finished." 1>&2
 		prll_jobserver c $prll_Qkey $prll_jarg
 	    ) &
+	    echo "PRLL: Starting job ${prll_jarg}, PID $!" \
+		"Progress: $((prll_progress*100/prll_nr_args))%" \
+		"Arg: ${prll_params[$prll_jarg]}" 1>&2
 	    let prll_progress+=1
 	done
     )
