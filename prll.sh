@@ -40,10 +40,10 @@ function prll() {
     shift
     # Do we have a function handle or a string?
     if [[ $prll_funname == "-s" ]] ; then
-	local prll_fun_str=$1
+	local prll_fun_str="$1"
 	shift
 	function prll_str2func() {
-	    eval $prll_fun_str
+	    eval "$prll_fun_str"
 	}
 	prll_funname=prll_str2func
     fi

@@ -163,7 +163,10 @@ argument, you should use a trick: combine multiple arguments into one
 when passing them to prll, then split them again inside your
 function. Here is a stub for a function that takes three arguments:
 
+  # for zsh only
   function myfn() { echo $1 | read a b c; process $a; compute $b; kill $c; }
+  # for both bash and zsh
+  function myfn() { read a b c < <(echo $1); process $a; compute $b; kill $c; }
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 
