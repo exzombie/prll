@@ -63,7 +63,7 @@ function prll() {
 	return 1
     else
 	prll_Qkey=$(ipcs -q | awk "\$2 == $prll_Q { print \$1 }")
-	echo "PRLL: created message queue with id $prll_Q and key $prll_Qkey" \
+	echo "PRLL: Created message queue with id $prll_Q and key $prll_Qkey" \
 	    1>&2
     fi
 
