@@ -79,7 +79,7 @@ function prll() {
     trap prll_cleanup SIGINT
 
     echo "PRLL: Starting jobserver." 1>&2
-    ( # run in a subshell so this code can be suspended as a unit
+    ( # Run in a subshell so this code can be suspended as a unit
 	local prll_jarg
 	prll_jobserver s $prll_Qkey $PRLL_NR_CPUS $prll_nr_args | \
 	    while read prll_jarg; do
