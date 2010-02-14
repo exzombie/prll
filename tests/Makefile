@@ -19,18 +19,18 @@ zsh_found:
 	-which zsh && touch zsh_found
 
 any_found: zsh_found bash_found
-	[[ -f bash_found && -f zsh_found ]] && touch both_found
-	[[ -f bash_found || -f zsh_found ]] && touch any_found
+	-test -f bash_found -a -f zsh_found  && touch both_found
+	test -f bash_found -o -f zsh_found  && touch any_found
 
 $(ANY_TESTS): any_found
-	@if [[ -f both_found ]] ; then \
+	@if test -f both_found  ; then \
 		echo "Testing both bash and zsh"; \
 		bash $@ && zsh $@; \
-	elif [[ -f bash_found ]] ; then \
-		echo "Testing bash only" \
+	elif test -f bash_found  ; then \
+		echo "Testing bash only"; \
 		bash $@; \
-	elif [[ -f zsh_found ]] ; then \
-		echo "Testing zsh only" \
+	elif test -f zsh_found  ; then \
+		echo "Testing zsh only"; \
 		zsh $@; \
 	else \
 		echo "Something's wrong"; \
@@ -38,10 +38,18 @@ $(ANY_TESTS): any_found
 	fi
 
 $(BASH_TESTS): bash_found
-	bash $@
+	if test -f bash_found ; then \
+		bash $@; \
+	else \
+		true; \
+	fi
 
 $(ZSH_TESTS): zsh_found
-	zsh $@
+	if test -f zsh_found ; then \
+		zsh $@; \
+	else \
+		true; \
+	fi
 
 # For emacs' flymake-mode
 .PHONY: check-syntax
