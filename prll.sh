@@ -94,5 +94,5 @@ function prll() {
 	    let prll_progress+=1
 	done
     )
-    prll_cleanup
+    declare -f prll_cleanup > /dev/null && prll_cleanup
 }
