@@ -59,7 +59,12 @@ compiler options, like so
 
   make CFLAGS=whatever
 
-When this is done, copy the prll_jobserver executable to a directory
+You may wish to run 'make test' at this point. It will do some simple
+test to verify that prll produces correct results. The test suite is
+not comprehensive, however, and is itself not well tested, so you
+should try prll on real-world data before coming to any conclusions.
+
+When prll is built, copy the prll_jobserver executable to a directory
 you have in your PATH. For example, to do a system-wide installation,
 run as root
 
@@ -187,11 +192,9 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
-- Document it and/or make it easier to cross-compile.
+- Document cross-compilation and make it easier to cross-compile.
 
-- Missing 'make test' target.
-  Tests should be added to make it easy to check whether the package
-  works reliably or at all.
+- Expand the test suite.
 
 - Have an option to pass parameters on stdin.
   Passing a very long list of arguments would be simpler, especially
