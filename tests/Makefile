@@ -2,8 +2,8 @@ CFLAGS ?= -g -O2 -fomit-frame-pointer -Wformat -pedantic
 CFLAGS += --std=c99
 
 BASH_TESTS = 
-ZSH_TESTS = 
-ANY_TESTS = sleeps
+ZSH_TESTS = ksharr
+ANY_TESTS = sleeps string
 
 .PHONY: clean all $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
 
@@ -23,14 +23,17 @@ any_found: zsh_found bash_found
 	[[ -f bash_found || -f zsh_found ]] && touch any_found
 
 $(ANY_TESTS): any_found
-	if [[ -f both_found ]] ; then \
+	@if [[ -f both_found ]] ; then \
+		echo "Testing both bash and zsh"; \
 		bash $@ && zsh $@; \
 	elif [[ -f bash_found ]] ; then \
+		echo "Testing bash only" \
 		bash $@; \
 	elif [[ -f zsh_found ]] ; then \
+		echo "Testing zsh only" \
 		zsh $@; \
 	else \
-	echo "Something's wrong"; \
+		echo "Something's wrong"; \
 		false; \
 	fi
 

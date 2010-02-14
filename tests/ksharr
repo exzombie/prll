@@ -1,0 +1,14 @@
+source ../prll.sh
+PATH="../:$PATH"
+
+echo
+echo "Testing whether ksharrays are set/unset."
+echo
+
+setopt ksharrays
+PRLL_NR_CPUS=1 prll -s 'true' junk
+setopt | grep ksharrays > /dev/null || exit 1
+
+unsetopt ksharrays
+PRLL_NR_CPUS=1 prll -s 'true' junk
+setopt | grep ksharrays > /dev/null && exit 1 || true
