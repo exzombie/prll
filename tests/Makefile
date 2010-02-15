@@ -3,7 +3,7 @@ CFLAGS += --std=c99
 
 BASH_TESTS = 
 ZSH_TESTS = ksharr
-ANY_TESTS = sleeps string pipesleeps manysleep
+ANY_TESTS = sleeps string pipesleeps manysleep funcsetting
 
 .PHONY: clean all $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
 

@@ -93,7 +93,6 @@ function prll() {
 	    fi
 	    echo "PRLL: Cleaning up." 1>&2
 	    ipcrm -q $prll_Q
-	    unset -f prll_cleanup prll_str2func > /dev/null 2>&1
 	}
 	trap prll_cleanup SIGINT
 
@@ -156,4 +155,5 @@ function prll() {
 	done
 	declare -f prll_cleanup > /dev/null && prll_cleanup nosig
     )
+    unset -f prll_str2func > /dev/null 2>&1
 }

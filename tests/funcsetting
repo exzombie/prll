@@ -1,0 +1,12 @@
+source ../prll.sh
+PATH="../:$PATH"
+
+echo
+echo "Testing whether internal functions are properly unset."
+echo
+
+PRLL_NR_CPUS=1 prll -s 'true' junk
+
+declare -f prll_str2func && exit 1
+declare -f prll_cleanup && exit 1
+true
