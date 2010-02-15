@@ -1,0 +1,21 @@
+source ../prll.sh
+PATH="../:$PATH"
+
+echo
+echo "A sleep test using pipes."
+echo
+
+function slptst() { echo Sleeping $1 seconds.; sleep $1; }
+echo 5 1 3 2 4 | tr ' ' '\n' | \
+     PRLL_NR_CPUS=1 prll slptst -p | sort | diff -q - sleeps.dat
+echo 5 1 3 2 4 | tr ' ' '\n' | \
+PRLL_NR_CPUS=3 prll slptst -p | sort | diff -q - sleeps.dat
+echo 5 1 3 2 4 | tr ' ' '\n' | \
+PRLL_NR_CPUS=10 prll slptst -p | sort | diff -q - sleeps.dat
+
+echo 5 1 3 2 4 | tr ' \n' '\0' | \
+     PRLL_NR_CPUS=1 prll slptst -0 | sort | diff -q - sleeps.dat
+echo 5 1 3 2 4 | tr ' \n' '\0' | \
+PRLL_NR_CPUS=3 prll slptst -0 | sort | diff -q - sleeps.dat
+echo 5 1 3 2 4 | tr ' \n' '\0' | \
+PRLL_NR_CPUS=10 prll slptst -0 | sort | diff -q - sleeps.dat

@@ -3,14 +3,14 @@ CFLAGS += --std=c99
 
 BASH_TESTS = 
 ZSH_TESTS = ksharr
-ANY_TESTS = sleeps string
+ANY_TESTS = sleeps string pipesleeps manysleep
 
 .PHONY: clean all $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
 
 all: $(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS)
 
 clean:
-	rm -f bash_found zsh_found any_found both_found
+	rm -f bash_found zsh_found any_found both_found manysleep.err
 
 bash_found:
 	-which bash && touch bash_found
@@ -25,6 +25,7 @@ any_found: zsh_found bash_found
 $(ANY_TESTS): any_found
 	@if test -f both_found  ; then \
 		echo "Testing both bash and zsh"; \
+		echo "Test:" $@ \
 		bash $@ && zsh $@; \
 	elif test -f bash_found  ; then \
 		echo "Testing bash only"; \
