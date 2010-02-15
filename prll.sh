@@ -25,13 +25,6 @@ function prll() {
 	echo "PRLL: Missing some utilities." 1>&2
 	return 1
     fi
-    if [[ -n $ZSH_VERSION ]] ; then
-	setopt | grep -x ksharrays > /dev/null
-	if [[ $? -ne 0 ]] ; then
-	    local prll_ksharrays_set=1
-	    setopt ksharrays
-	fi
-    fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
 	local PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
     fi
@@ -79,23 +72,31 @@ function prll() {
 	    1>&2
     fi
 
-    function prll_cleanup() {
-	trap - SIGINT
-	ipcs -q -i $prll_Q > /dev/null 2>&1
-	[[ $? -ne 0 ]] && return 130
-	echo "PRLL: Cleaning up." 1>&2
-	prll_jobserver c $prll_Qkey 1
-	ipcrm -q $prll_Q
-	[[ -n $prll_ksharrays_set ]] && setopt noksharrays
-	unset -f prll_cleanup prll_str2func > /dev/null 2>&1
-	true
-    }
-    trap prll_cleanup SIGINT
-
     echo "PRLL: Starting jobserver." 1>&2
     # Get the first jobs started
     for i in $(seq 1 $PRLL_NR_CPUS) ; do prll_jobserver c $prll_Qkey 0; done
     ( # Run in a subshell so this code can be suspended as a unit
+	if [[ -n $ZSH_VERSION ]] ; then
+	    setopt ksharrays
+	fi
+
+	function prll_cleanup() {
+	    trap - SIGINT
+	    ipcs -q -i $prll_Q > /dev/null 2>&1
+	    [[ $? -ne 0 ]] && return 130
+	    if [[ $1 != "nosig" ]] ; then
+		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
+		while [[ $prll_progress -ge $prll_jbfinish ]] ; do
+		    prll_jobserver o $prll_Qkey || break
+		    let prll_jbfinish+=1
+		done
+	    fi
+	    echo "PRLL: Cleaning up." 1>&2
+	    ipcrm -q $prll_Q
+	    unset -f prll_cleanup prll_str2func > /dev/null 2>&1
+	}
+	trap prll_cleanup SIGINT
+
 	local prll_finish_code='
                                local prll_finishing=yes
 		               let prll_jbfinish+=1
@@ -107,6 +108,7 @@ function prll() {
 			         let prll_progress=$((PRLL_NR_CPUS-1))
 		               fi
 		               continue'
+
 	local prll_progress=0 prll_jbfinish=0 prll_finishing=no
 	while prll_jobserver o $prll_Qkey ; do
 	    if [[ $prll_finishing == "yes" ]] ; then
@@ -152,6 +154,6 @@ function prll() {
 	    let prll_progress+=1
 	    [[ $prll_progress -ge $PRLL_NR_CPUS ]] && let prll_jbfinish+=1
 	done
+	declare -f prll_cleanup > /dev/null && prll_cleanup nosig
     )
-    declare -f prll_cleanup > /dev/null && prll_cleanup
 }
