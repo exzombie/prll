@@ -1,5 +1,5 @@
 /* 
-   Copyright 2009 Jure Varlec
+   Copyright 2010 Jure Varlec
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,7 @@
 #include <errno.h>
 
 int main(int argc, char ** argv) {
-  if (argc < 4) {
+  if (argc < 3) {
     fprintf(stderr,
 	    "%s: jobserver for the prll() shell function.\n"
 	    "Consult the prll source and documentation for usage.\n"
@@ -31,11 +31,13 @@ int main(int argc, char ** argv) {
   }
 
   // Choosing operating mode
-  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE} mode;
+  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE, PRLL_GETONE_MODE} mode;
   if (argv[1][0] == 's' && argv[1][1] == '\0')
     mode = PRLL_SERVER_MODE;
   else if (argv[1][0] == 'c' && argv[1][1] == '\0')
     mode = PRLL_CLIENT_MODE;
+  else if (argv[1][0] == 'o' && argv[1][1] == '\0')
+    mode = PRLL_GETONE_MODE;
   else {
     fprintf(stderr, "%s: incorrect mode specification: %s\n", argv[0], argv[1]);
     return 1;
@@ -56,6 +58,10 @@ int main(int argc, char ** argv) {
   // Do the work
   // CLIENT MODE
   if (mode == PRLL_CLIENT_MODE) {
+    if (argc < 4) {
+      fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
+      return 1;
+    }
     msg.msgtype = msgtype;
     msg.jarg = strtol(argv[3], 0, 0);
     if (errno) {
@@ -68,56 +74,31 @@ int main(int argc, char ** argv) {
     }
   // SERVER MODE
   } else if (mode == PRLL_SERVER_MODE) {
-    if (argc < 5) {
-      fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
-      return 1;
-    }
-    unsigned long nr_cpus = strtoul(argv[3], 0, 0);
-    if (errno) {
-      perror(argv[0]);
-      return 1;
-    }
-    const unsigned long jobs = strtoul(argv[4], 0, 0);
-    if (errno) {
-      perror(argv[0]);
-      return 1;
-    }
-    if (jobs == 0)
-      return 0;
-    if (jobs < nr_cpus)
-      nr_cpus = jobs;
-
-    // We need to count both launched and completed jobs. The program
-    // must wait for all jobs to be completed, because bash's 'wait' sucks.
-    unsigned long i, k = jobs;
-    // Start the given number of threads
-    for (i = 0; i < nr_cpus; i++) {
-      printf("%lu\n", i);
-    }
-    fflush(stdout);
-
-    // Listening loop
-    while (i < jobs || k > 0) {
+    while (1) {
       if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
 	perror(argv[0]);
-	// Let's do the same job again. This makes sure that only jobs at 
-	// the end of the queue will remain unfinished in case of
-	// unexpected errors.
-	// Such an error might be caused by reading a message not meant for us.
 	continue;
       }
-      if (i < jobs) {
-	printf("%lu\n", i);
+      if (msg.jarg == 0) {
+	printf("\n");
 	fflush(stdout);
-	i++;
+      } else if (msg.jarg == 1) {
+	return 0;
+      } else {
+	fprintf(stderr, "%s: unknown command.\n", argv[0]);
       }
-      k--;
     }
-  } else {
-    // Shouldn't ever get here
-    fprintf(stderr, "WTF!? %s exiting in panic...\n", argv[0]);
-    return 1;
+  } else if (mode == PRLL_GETONE_MODE) {
+    if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
+      perror(argv[0]);
+    }
+    if (msg.jarg == 0) {
+      return 0;
+    } else if (msg.jarg == 1) {
+      return 1;
+    } else {
+      fprintf(stderr, "%s: unknown command.\n", argv[0]);
+    }
   }
-
   return 0;
 }
