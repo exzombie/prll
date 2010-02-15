@@ -8,12 +8,14 @@
 function prll() {
     if [[ -z $1 ]] ; then
 	cat <<-EOF
-	USAGE:
-               prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
-               prll -s 'fun_string' fun_arg1 fun_arg2 ...
+	USAGE: prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
+	       prll -s 'fun_string' fun_arg1 fun_arg2 ...
 	
 	Shell function 'fun_name' will be run for each 'fun_arg'.
-        Alternatively, shell code 'fun_string' will be executed.
+	Alternatively, using -s, shell code 'fun_string' will be executed.
+	Instead of 'fun_args', option -p may be given, which will cause
+	prll to read lines from its standard input.
+	Alternatively, option -0 will make it read null-delimited input.
 	The number of processes to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable. If it is unset, prll will
 	attempt to read the number of CPUs from /proc/cpuinfo.

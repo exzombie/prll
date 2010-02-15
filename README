@@ -63,7 +63,7 @@ compiler options, like so
   make CFLAGS=whatever
 
 You may wish to run 'make test' at this point. It will do some simple
-test to verify that prll produces correct results. The test suite is
+tests to verify that prll produces correct results. The test suite is
 not comprehensive, however, and is itself not well tested, so you
 should try prll on real-world data before coming to any conclusions.
 
@@ -206,6 +206,8 @@ Known issues:
 - Document cross-compilation and make it easier to cross-compile.
 
 - Expand the test suite.
+  Specifically, termination behaviour on interrupt currently has to be
+  checked manually.
 
 - Make prll a standalone program.
   Having prll as a standalone program would allow for a cleaner
