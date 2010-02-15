@@ -25,7 +25,7 @@ any_found: zsh_found bash_found
 $(ANY_TESTS): any_found
 	@if test -f both_found  ; then \
 		echo "Testing both bash and zsh"; \
-		echo "Test:" $@ \
+		echo "Test:" $@ ; \
 		bash $@ && zsh $@; \
 	elif test -f bash_found  ; then \
 		echo "Testing bash only"; \
@@ -39,14 +39,16 @@ $(ANY_TESTS): any_found
 	fi
 
 $(BASH_TESTS): bash_found
-	if test -f bash_found ; then \
+	@if test -f bash_found ; then \
+		echo "Test: " $@ ; \
 		bash $@; \
 	else \
 		true; \
 	fi
 
 $(ZSH_TESTS): zsh_found
-	if test -f zsh_found ; then \
+	@if test -f zsh_found ; then \
+		echo "Test: " $@ ; \
 		zsh $@; \
 	else \
 		true; \
