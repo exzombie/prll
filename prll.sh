@@ -22,7 +22,7 @@ function prll() {
 	EOF
 	return 1
     fi
-    /usr/bin/which awk sed seq egrep ipcs ipcrm ipcmk prll_jobserver > /dev/null
+    /usr/bin/which awk sed seq grep ipcs ipcrm prll_jobserver > /dev/null
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Missing some utilities." 1>&2
 	return 1
@@ -64,7 +64,7 @@ function prll() {
 
     echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
     local prll_Qkey
-    local prll_Q="$(ipcmk -Q | sed -r 's/.+ ([0-9]+)$/\1/' | egrep -x '[0-9]+')"
+    local prll_Q="$(prll_jobserver n)"
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Failed to create message queue." 1>&2
 	return 1

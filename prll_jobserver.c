@@ -21,7 +21,7 @@
 #include <errno.h>
 
 int main(int argc, char ** argv) {
-  if (argc < 3) {
+  if (argc < 2) {
     fprintf(stderr,
 	    "%s: jobserver for the prll() shell function.\n"
 	    "Consult the prll source and documentation for usage.\n"
@@ -31,24 +31,38 @@ int main(int argc, char ** argv) {
   }
 
   // Choosing operating mode
-  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE, PRLL_GETONE_MODE} mode;
+  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE, \
+	PRLL_GETONE_MODE, PRLL_CREATE_MODE} mode;
+  if (argv[1][0] == '\0')
+    goto arg_err;
   if (argv[1][0] == 's' && argv[1][1] == '\0')
     mode = PRLL_SERVER_MODE;
   else if (argv[1][0] == 'c' && argv[1][1] == '\0')
     mode = PRLL_CLIENT_MODE;
   else if (argv[1][0] == 'o' && argv[1][1] == '\0')
     mode = PRLL_GETONE_MODE;
+  else if (argv[1][0] == 'n' && argv[1][1] == '\0')
+    mode = PRLL_CREATE_MODE;
   else {
+  arg_err:
     fprintf(stderr, "%s: incorrect mode specification: %s\n", argv[0], argv[1]);
     return 1;
   }
 
   // Open the message queue and prepare the variable for the message
-  key_t qkey = strtol(argv[2], 0, 0);
-  int qid = msgget(qkey, 0);
-  if (qid == -1) {
-    perror(argv[0]);
-    return 1;
+  key_t qkey;
+  int qid;
+  if (mode != PRLL_CREATE_MODE) {
+    if (argc < 3) {
+      fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
+      return 1;
+    }
+    qkey = strtol(argv[2], 0, 0);
+    qid = msgget(qkey, 0);
+    if (qid == -1) {
+      perror(argv[0]);
+      return 1;
+    }
   }
   // msg.jarg will contain the job number that has completed.
   // This information is currently unused.
@@ -99,6 +113,44 @@ int main(int argc, char ** argv) {
     } else {
       fprintf(stderr, "%s: unknown command.\n", argv[0]);
     }
+  } else if (mode == PRLL_CREATE_MODE) {
+    do {
+      FILE * urnd = fopen("/dev/urandom", "r");
+      if (urnd == NULL)
+	urnd = fopen("/dev/random", "r");
+      if (urnd == NULL) {
+	fprintf(stderr, "%s: Couldn't open /dev/(u)random.\n", argv[0]);
+	perror(argv[0]);
+	return 1;
+      }
+      if (fread(&qkey, sizeof(key_t), 1, urnd) != 1) {
+	fprintf(stderr, "%s: Couldn't read from /dev/(u)random.\n", argv[0]);
+	perror(argv[0]);
+	return 1;
+      }
+      int status = fclose(urnd);
+      if (status != 0) {
+	if (errno == EINTR)
+	  status = fclose(urnd);
+	if (status != 0) {
+	  fprintf(stderr, "%s: Couldn't close /dev/(u)random.\n", argv[0]);
+	  perror(argv[0]);
+	  return 1;
+	}
+      }
+      // Bits read from /dev/urandom don't seem to make a
+      // reliable key by themselves, so we use them as a seed.
+      // random() is what ipcmk uses to make a key, so it should be fine.
+      srandom(qkey);
+      qkey = random();
+    } while (-1 == (qid = msgget(qkey, 0644 | IPC_CREAT | IPC_EXCL))
+	     && errno == EEXIST);
+    if (qid == -1) {
+      fprintf(stderr, "%s: Couldn't create message queue.\n", argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
+    printf("%d\n", qid);    
   }
   return 0;
 }
