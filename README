@@ -203,11 +203,16 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
-- Document cross-compilation and make it easier to cross-compile.
+- Running ipcmk more than once in short succession creates the same queue.
+  This affects multiple instances of prll running simultaneously and
+  thus parallel execution of the tests as well. It's OK as long as
+  multiple instances don't get started at the same time.
 
 - Expand the test suite.
   Specifically, termination behaviour on interrupt currently has to be
   checked manually.
+
+- Document cross-compilation and make it easier to cross-compile.
 
 - Make prll a standalone program.
   Having prll as a standalone program would allow for a cleaner
