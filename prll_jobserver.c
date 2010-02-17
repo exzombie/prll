@@ -45,7 +45,7 @@ int main(int argc, char ** argv) {
     mode = PRLL_CREATE_MODE;
   else {
   arg_err:
-    fprintf(stderr, "%s: incorrect mode specification: %s\n", argv[0], argv[1]);
+    fprintf(stderr, "%s: Incorrect mode specification: %s\n", argv[0], argv[1]);
     return 1;
   }
 
@@ -54,35 +54,36 @@ int main(int argc, char ** argv) {
   int qid;
   if (mode != PRLL_CREATE_MODE) {
     if (argc < 3) {
-      fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
+      fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
       return 1;
     }
     qkey = strtol(argv[2], 0, 0);
     qid = msgget(qkey, 0);
     if (qid == -1) {
+      fprintf(stderr, "%s: Couldn't open the message queue.\n", argv[0]);
       perror(argv[0]);
       return 1;
     }
   }
-  // msg.jarg will contain the job number that has completed.
-  // This information is currently unused.
   struct { long msgtype; long jarg; } msg;
   const long msgtype = 'm'+'a'+'p'+'p'; // arbitrary
 
   // Do the work
-  // CLIENT MODE
+  // CLIENT (SEND A SINGLE MESSAGE) MODE
   if (mode == PRLL_CLIENT_MODE) {
     if (argc < 4) {
-      fprintf(stderr, "%s: not enough parameters.\n", argv[0]);
+      fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
       return 1;
     }
     msg.msgtype = msgtype;
     msg.jarg = strtol(argv[3], 0, 0);
     if (errno) {
+      fprintf(stderr, "%s: Couldn't read the message argument.\n", argv[0]);
       perror(argv[0]);
       return 1;
     }
     if (msgsnd(qid, &msg, sizeof(long), 0)) {
+      fprintf(stderr, "%s: Couldn't send the message.\n", argv[0]);
       perror(argv[0]);
       return 1;
     }
@@ -99,9 +100,10 @@ int main(int argc, char ** argv) {
       } else if (msg.jarg == 1) {
 	return 0;
       } else {
-	fprintf(stderr, "%s: unknown command.\n", argv[0]);
+	fprintf(stderr, "%s: Unknown command.\n", argv[0]);
       }
     }
+  // GET A SINGLE MESSAGE MODE
   } else if (mode == PRLL_GETONE_MODE) {
     if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
       perror(argv[0]);
@@ -111,8 +113,10 @@ int main(int argc, char ** argv) {
     } else if (msg.jarg == 1) {
       return 1;
     } else {
-      fprintf(stderr, "%s: unknown command.\n", argv[0]);
+      fprintf(stderr, "%s: Unknown command.\n", argv[0]);
+      return 1;
     }
+  // CREATE A NEW QUEUE MODE
   } else if (mode == PRLL_CREATE_MODE) {
     do {
       FILE * urnd = fopen("/dev/urandom", "r");
