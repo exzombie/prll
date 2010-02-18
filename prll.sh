@@ -22,7 +22,7 @@ function prll() {
 	EOF
 	return 1
     fi
-    /usr/bin/which awk sed seq grep ipcs ipcrm prll_jobserver > /dev/null
+    /usr/bin/which awk sed tr grep ipcs ipcrm prll_jobserver > /dev/null
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Missing some utilities." 1>&2
 	return 1
@@ -76,7 +76,9 @@ function prll() {
 
     echo "PRLL: Starting jobserver." 1>&2
     # Get the first jobs started
-    for i in $(seq 1 $PRLL_NR_CPUS) ; do prll_jobserver c $prll_Qkey 0; done
+    for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
+	prll_jobserver c $prll_Qkey 0;
+    done
     ( # Run in a subshell so this code can be suspended as a unit
 	if [[ -n $ZSH_VERSION ]] ; then
 	    setopt ksharrays
