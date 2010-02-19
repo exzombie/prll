@@ -206,6 +206,12 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
+- Better support for map-reduce type processing.
+  It already works well and is used in the tests, however, each
+  function must take care not to output more than a stream buffer's
+  worth of data. If that happens, different functions' outputs become
+  interleaved, which is usually not desired.
+
 - Expand the test suite.
   Specifically, termination behaviour on interrupt currently has to be
   checked manually.
