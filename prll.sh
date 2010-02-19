@@ -96,6 +96,7 @@ function prll() {
 
 	function prll_cleanup() {
 	    trap - SIGINT
+	    prll_jobserver t $prll_Qkey || return 130
 	    if [[ $1 != "nosig" ]] ; then
 		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
 		while [[ $prll_progress -ge $prll_jbfinish ]] ; do

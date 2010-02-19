@@ -31,8 +31,11 @@ int main(int argc, char ** argv) {
   }
 
   // Choosing operating mode
-  enum {PRLL_CLIENT_MODE, PRLL_REMOVE_MODE, \
-	PRLL_GETONE_MODE, PRLL_CREATE_MODE} mode;
+  enum {
+    PRLL_CLIENT_MODE, PRLL_REMOVE_MODE,
+    PRLL_GETONE_MODE, PRLL_CREATE_MODE,
+    PRLL_TEST_MODE
+  } mode;
   if (argv[1][0] == '\0')
     goto arg_err;
   if (argv[1][0] == 'r' && argv[1][1] == '\0')
@@ -43,6 +46,8 @@ int main(int argc, char ** argv) {
     mode = PRLL_GETONE_MODE;
   else if (argv[1][0] == 'n' && argv[1][1] == '\0')
     mode = PRLL_CREATE_MODE;
+  else if (argv[1][0] == 't' && argv[1][1] == '\0')
+    mode = PRLL_TEST_MODE;
   else {
   arg_err:
     fprintf(stderr, "%s: Incorrect mode specification: %s\n", argv[0], argv[1]);
@@ -60,10 +65,13 @@ int main(int argc, char ** argv) {
     qkey = strtol(argv[2], 0, 0);
     qid = msgget(qkey, 0);
     if (qid == -1) {
-      fprintf(stderr, "%s: Couldn't open the message queue.\n", argv[0]);
-      perror(argv[0]);
+      if (mode != PRLL_TEST_MODE) {
+	fprintf(stderr, "%s: Couldn't open the message queue.\n", argv[0]);
+	perror(argv[0]);
+      }
       return 1;
-    }
+    } else if (mode == PRLL_TEST_MODE)
+      return 0;
   }
   struct { long msgtype; long jarg; } msg;
   const long msgtype = 'm'+'a'+'p'+'p'; // arbitrary
