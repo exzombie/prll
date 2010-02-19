@@ -223,6 +223,11 @@ Known issues:
 
 - Document cross-compilation and make it easier to cross-compile.
 
+- Shell's job table becomes saturated with a large number of jobs.
+  This is not an really an issue, since it happens when the number of
+  jobs is above 500 or so. Nevertheless, it might be possible to
+  disown jobs if such a large number of them should be required.
+
 - Make prll a standalone program.
   Having prll as a standalone program would allow for a cleaner
   implementation without a jobserver. However, it would complicate
