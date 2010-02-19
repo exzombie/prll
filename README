@@ -31,23 +31,22 @@ REQUIREMENTS
   - C compiler, such as gcc
   - OS support for System V Message Queues; GNU/Linux will do fine
   - device files /dev/urandom or /dev/random
-  - programs awk, sed, tr, grep, ipcs, and ipcrm
+  - the tr utility
+  - optional tests require utilites grep, sort and diff
 
 The programs listed should be part of your system by default, except
-perhaps the compiler and its toolchain. The special device files for
-random data are required to create a new message queue; using the
-current time for seeding a random number generator as the ipcmk
-utility does has proven unreliable.
-
-For now, prll has only been tested on GNU/Linux. It might need minor,
-simple modifications on other systems, like replacing sed syntax with
-the syntax of a different sed implementation.
+perhaps the compiler and its toolchain.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
 may lack this file or have a different syntax. Setting the
 PRLL_NR_CPUS environment variable renders the cpuinfo file unnecessary
 (see usage instructions below).
+
+For now, prll has only been tested on GNU/Linux. It might need minor,
+simple modifications on other systems, like replacing grep syntax with
+the syntax of a different grep implementation.
+
 
 INSTALLATION
 ------------

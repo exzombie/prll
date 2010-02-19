@@ -22,12 +22,25 @@ function prll() {
 	EOF
 	return 1
     fi
-    /usr/bin/which awk sed tr grep ipcs ipcrm prll_jobserver > /dev/null
+    /usr/bin/which prll_jobserver > /dev/null
     if [[ $? -ne 0 ]] ; then
-	echo "PRLL: Missing some utilities." 1>&2
+	echo "PRLL: Missing prll_jobserver." 1>&2
+	return 1
+    fi
+    /usr/bin/which tr > /dev/null
+    if [[ $? -ne 0 ]] ; then
+	echo "PRLL: Missing tr." 1>&2
 	return 1
     fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
+	/usr/bin/which grep > /dev/null
+	if [[ $? -ne 0 || ! -a /proc/cpuinfo ]] ; then
+	    echo "PRLL: Environment variable PRLL_NR_CPUS is not set" 1>&2
+	    echo "PRLL: and either the grep utility is missing or" 1>&2
+	    echo "PRLL: there is no /proc/cpuinfo file." 1>&2
+	    echo "PRLL: Please set the PRLL_NR_CPUS variable." 1>&2
+	    return 1
+	fi
 	local PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
     fi
 
@@ -63,15 +76,12 @@ function prll() {
     fi
 
     echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
-    local prll_Qkey
-    local prll_Q="$(prll_jobserver n)"
+    local prll_Qkey="$(prll_jobserver n)"
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Failed to create message queue." 1>&2
 	return 1
     else
-	prll_Qkey=$(ipcs -q | awk "\$2 == $prll_Q { print \$1 }")
-	echo "PRLL: Created message queue with id $prll_Q and key $prll_Qkey" \
-	    1>&2
+	echo "PRLL: Created message queue with key $prll_Qkey" 1>&2
     fi
 
     echo "PRLL: Starting jobserver." 1>&2
@@ -86,8 +96,6 @@ function prll() {
 
 	function prll_cleanup() {
 	    trap - SIGINT
-	    ipcs -q -i $prll_Q > /dev/null 2>&1
-	    [[ $? -ne 0 ]] && return 130
 	    if [[ $1 != "nosig" ]] ; then
 		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
 		while [[ $prll_progress -ge $prll_jbfinish ]] ; do
@@ -96,7 +104,7 @@ function prll() {
 		done
 	    fi
 	    echo "PRLL: Cleaning up." 1>&2
-	    ipcrm -q $prll_Q
+	    prll_jobserver r $prll_Qkey
 	}
 	trap prll_cleanup SIGINT
 

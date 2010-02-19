@@ -31,12 +31,12 @@ int main(int argc, char ** argv) {
   }
 
   // Choosing operating mode
-  enum {PRLL_CLIENT_MODE, PRLL_SERVER_MODE, \
+  enum {PRLL_CLIENT_MODE, PRLL_REMOVE_MODE, \
 	PRLL_GETONE_MODE, PRLL_CREATE_MODE} mode;
   if (argv[1][0] == '\0')
     goto arg_err;
-  if (argv[1][0] == 's' && argv[1][1] == '\0')
-    mode = PRLL_SERVER_MODE;
+  if (argv[1][0] == 'r' && argv[1][1] == '\0')
+    mode = PRLL_REMOVE_MODE;
   else if (argv[1][0] == 'c' && argv[1][1] == '\0')
     mode = PRLL_CLIENT_MODE;
   else if (argv[1][0] == 'o' && argv[1][1] == '\0')
@@ -86,22 +86,6 @@ int main(int argc, char ** argv) {
       fprintf(stderr, "%s: Couldn't send the message.\n", argv[0]);
       perror(argv[0]);
       return 1;
-    }
-  // SERVER MODE
-  } else if (mode == PRLL_SERVER_MODE) {
-    while (1) {
-      if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
-	perror(argv[0]);
-	continue;
-      }
-      if (msg.jarg == 0) {
-	printf("\n");
-	fflush(stdout);
-      } else if (msg.jarg == 1) {
-	return 0;
-      } else {
-	fprintf(stderr, "%s: Unknown command.\n", argv[0]);
-      }
     }
   // GET A SINGLE MESSAGE MODE
   } else if (mode == PRLL_GETONE_MODE) {
@@ -154,7 +138,14 @@ int main(int argc, char ** argv) {
       perror(argv[0]);
       return 1;
     }
-    printf("%d\n", qid);    
-  }
+    printf("%#X\n", qkey);
+  // REMOVE MODE
+  } else if (mode == PRLL_REMOVE_MODE) {
+    if (msgctl(qid, IPC_RMID, NULL)) {
+      fprintf(stderr, "%s: Couldn't remove message queue.\n", argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
+  }    
   return 0;
 }

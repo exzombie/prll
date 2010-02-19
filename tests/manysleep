@@ -6,11 +6,10 @@ echo "Trying to cause a race."
 echo
 
 rm -f manysleep.err
-seq 1 5000 | \
+echo {1..5000} | tr ' ' '\n' | \
     PRLL_NR_CPUS=500 prll -s 'sleep 3; echo Instance $1.' -p 2> manysleep.err \
     | sort  | diff -q - manysleep.dat
 if [[ $? -ne 0 ]] ; then
    echo "Check manysleep.err for errors."
    exit 1
 fi
-

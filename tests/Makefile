@@ -11,6 +11,12 @@ all: $(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS)
 
 clean:
 	rm -f bash_found zsh_found any_found both_found manysleep.err
+	rm -f utilities_found
+
+$(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS): utilities_found
+
+utilities_found:
+	/usr/bin/which tr grep sort diff && touch utilities_found
 
 bash_found:
 	-which bash && touch bash_found
