@@ -29,12 +29,16 @@ REQUIREMENTS
 
   - bash or zsh
   - C compiler, such as gcc
-  - OS support for System V Message Queues; GNU/Linux will do fine
+  - OS support for System V Message Queues
   - device files /dev/urandom or /dev/random
-  - optional tests require utilites tr, grep, sort and diff
+  - optional tests require utilites tr, grep, sort, diff and uname
 
-The programs listed should be part of your system by default, except
-perhaps the compiler and its toolchain.
+Systems tested: GNU/Linux, FreeBSD, MacOS X
+
+These requirements should be satisfied by your system by default,
+excepting perhaps the compiler and its toolchain, which are not
+installed by default on systems such as Ubuntu Linux. Refer to your
+system's documentation on how to install missing programs.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
@@ -42,10 +46,12 @@ may lack this file or have a different syntax. Setting the
 PRLL_NR_CPUS environment variable renders the cpuinfo file unnecessary
 (see usage instructions below).
 
-For now, prll has only been tested on GNU/Linux. It might need minor,
-simple modifications on other systems, like replacing grep syntax with
-the syntax of a different grep implementation.
-
+Linux systems that were tested had much larger Message Queue size than
+non-Linux systems. Queue size dictates the maximum number of jobs that
+can be run in parallel. A rule of thumb: a BSD system can run about 20
+jobs, depending on the number of existing queues, while a Linux system
+can run over 500 jobs; at that point, shell's job table becomes
+saturated.
 
 INSTALLATION
 ------------
