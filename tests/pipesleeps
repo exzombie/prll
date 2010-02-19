@@ -1,3 +1,4 @@
+export LC_ALL=C
 source ../prll.sh
 PATH="../:$PATH"
 
