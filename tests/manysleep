@@ -6,6 +6,14 @@ echo
 echo "Trying to cause a race."
 echo
 
+# non-linux sistems have queue sizes too small for this test
+uname -s | grep Linux > /dev/null
+if [[ $? -ne 0 ]] ; then
+   echo "Non-Linux system detected."
+   echo "This test has no relevance. Skipping."
+   exit 0
+fi
+
 rm -f manysleep.err
 echo {1..5000} | tr ' ' '\n' | \
     PRLL_NR_CPUS=500 prll -s 'sleep 3; echo Instance $1.' -p 2> manysleep.err \
