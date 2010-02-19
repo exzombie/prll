@@ -163,5 +163,7 @@ function prll() {
 	done
 	declare -f prll_cleanup > /dev/null && prll_cleanup nosig
     )
+    local prll_status=$?
     unset -f prll_str2func > /dev/null 2>&1
+    return $prll_status
 }
