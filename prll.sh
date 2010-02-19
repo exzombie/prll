@@ -27,11 +27,6 @@ function prll() {
 	echo "PRLL: Missing prll_jobserver." 1>&2
 	return 1
     fi
-    /usr/bin/which tr > /dev/null
-    if [[ $? -ne 0 ]] ; then
-	echo "PRLL: Missing tr." 1>&2
-	return 1
-    fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
 	/usr/bin/which grep > /dev/null
 	if [[ $? -ne 0 || ! -a /proc/cpuinfo ]] ; then

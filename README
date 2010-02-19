@@ -31,8 +31,7 @@ REQUIREMENTS
   - C compiler, such as gcc
   - OS support for System V Message Queues; GNU/Linux will do fine
   - device files /dev/urandom or /dev/random
-  - the tr utility
-  - optional tests require utilites grep, sort and diff
+  - optional tests require utilites tr, grep, sort and diff
 
 The programs listed should be part of your system by default, except
 perhaps the compiler and its toolchain.
