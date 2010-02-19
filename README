@@ -217,6 +217,8 @@ Known issues:
   worth of data. If that happens, different functions' outputs become
   interleaved, which is usually not desired.
 
+- Implement terminating prll from within the function it executes.
+
 - Expand the test suite.
   Specifically, termination behaviour on interrupt currently has to be
   checked manually.
