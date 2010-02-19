@@ -7,6 +7,8 @@ ANY_TESTS = sleeps string pipesleeps manysleep funcsetting
 
 .PHONY: clean all $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
 
+.PRECIOUS: $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
+
 all: $(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS)
 
 clean:
