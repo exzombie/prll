@@ -12,7 +12,8 @@ clean:
 sanitycheck: check_key_size
 	./check_key_size && touch sanitycheck || (rm -f sanitycheck && false)
 
-prll_jobserver: | sanitycheck
+prll_jobserver: sanitycheck
+	$(CC) $(CFLAGS) -o prll_jobserver prll_jobserver.c
 
 test: prll_jobserver
 	$(MAKE) -C tests
