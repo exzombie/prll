@@ -1,0 +1,41 @@
+prll NEWS -- history of user-visible changes.
+=============================================
+
+Version 0.4
+
+- Job PID and exit code are printed.
+- Several tests are now available.
+- Function arguments can be passed via standard input.
+- Most dependencies have been dropped.
+- Multiple instances of prll can be executed simultaneously.
+- On interruption, prll waits for started jobs to finish.
+- On interruption, prll returns non-zero exit code.
+- BSD and MacOS X compatibility.
+
+
+Version 0.3.1
+
+- An annoying but non-fatal error message for zsh is fixed.
+
+
+Version 0.3
+
+- README tracks known issues.
+- Graceful termination is done using Ctrl+C.
+- ksharrays option is enabled in zsh for prll only, without annoying users who
+  don't like this option in their sessions.
+- Code is passed in a string instead of a shell function for shorter one-liners.
+- A changelog is included, dumped from git.
+
+
+Version 0.2
+
+- The ability to suspend execution.
+- Short usage instructions are printed.
+- zsh users are no longer annoyed by enabling ksharrays behind their backs.
+- Debugging and progress monitoring are helped by printing function arguments.
+
+
+Version 0.1
+
+- This is the initial version released to the world.
