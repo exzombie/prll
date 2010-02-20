@@ -32,13 +32,17 @@ REQUIREMENTS
   - OS support for System V Message Queues
   - device files /dev/urandom or /dev/random
   - optional tests require utilites tr, grep, sort, diff and uname
+  - recommended utility: bfr
 
 Systems tested: GNU/Linux, FreeBSD, OpenBSD, MacOS X
 
 These requirements should be satisfied by your system by default,
 excepting perhaps the compiler and its toolchain, which are not
 installed by default on systems such as Ubuntu Linux. Refer to your
-system's documentation on how to install missing programs.
+system's documentation on how to install missing programs. If the bfr
+utility isn't included in your package management system, you can find
+it at http://www.glines.org/software/bfr. See usage instructions for
+why it is important.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
@@ -149,6 +153,16 @@ prll cleans after itself, but if you are worried about stale message
 queues, you can list them with the 'ipcs' command and remove them with
 the 'ipcrm' command. Refer to your system's documentation for details.
 
+IMPORTANT:
+If each of your jobs prints a lot of output, more than a
+stream buffer's worth to be exact, you should redirect each function's
+output to a separate file. Otherwise, jobs' outputs will become
+interleaved. On the other hand, if each of your jobs outputs only a
+small amount of data, but you have many jobs overall, it can happen
+that some data can be lost. To prevent that, insert a small buffer in
+your command pipeline just after prll. See the pipe example further
+down.
+
 
 Examples:
 
@@ -198,6 +212,18 @@ function. Here is a stub for a function that takes three arguments:
   # for both bash and zsh
   function myfn() { read a b c <<<$1 ; process $a; compute $b; kill $c; }
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
+
+
+The next example demonstrates both using pipes to pass arguments and
+preventing loss of data when dealing with large amounts of output.
+
+  function myfn() { some; processing | goes && on; here; }
+  cat file_with_arguments | prll myfn -p | bfr > results
+
+The bfr utility will prevent data from getting lost. It may turn out
+that your system requires a larger buffer size than the default,
+although when testing on Linux, 2kB turned out to be large enough,
+while the default is 5MB, so it shouldn't be a problem.
 
 
 KNOWN ISSUES
