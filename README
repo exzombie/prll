@@ -14,11 +14,11 @@ Homepage: http://prll.sourceforge.net/
 DESCRIPTION
 -----------
 
-prll is designed to be used not just in shell scripts, but also in
+prll is designed to be used not just in shell scripts, but especially in
 interactive shells. To make the latter convenient, it is implemented
 as a shell function. Shells are not much good at automatic job
 management; see [1] for further discussion. Therefore, prll uses a
-jobserver, written in C. To prevent race conditions, System V Message
+helper program, written in C. To prevent race conditions, System V Message
 Queues are used to signal job completion.
 
 [1] http://prll.sourceforge.net/shell_parallel.html
@@ -33,7 +33,7 @@ REQUIREMENTS
   - device files /dev/urandom or /dev/random
   - optional tests require utilites tr, grep, sort, diff and uname
 
-Systems tested: GNU/Linux, FreeBSD, MacOS X
+Systems tested: GNU/Linux, FreeBSD, OpenBSD, MacOS X
 
 These requirements should be satisfied by your system by default,
 excepting perhaps the compiler and its toolchain, which are not
@@ -73,7 +73,13 @@ compiler options, like so
 You may wish to run 'make test' at this point. It will do some simple
 tests to verify that prll produces correct results. The test suite is
 not comprehensive, however, and is itself not well tested, so you
-should try prll on real-world data before coming to any conclusions.
+should try prll on real-world data before coming to any
+conclusions. Failure is not necessarily meaningful, either. For
+example, if there are already several message queues being used on
+your system, you may be running out of IPC memory. That would cause
+some tests to fail or hang (in fact, some are disabled on non-Linux
+systems for this reason), while it wouldn't interfere with normal
+operation as long as you don't run too many parallel jobs.
 
 When prll is built, copy the prll_jobserver executable to a directory
 you have in your PATH. For example, to do a system-wide installation,
@@ -83,7 +89,7 @@ run as root
   cp prll_jobserver /usr/local/bin/
 
 File prll.sh contains the shell function. The shell that will use it
-needs to source it. That means that: 
+needs to source it. That means that:
   - If you wish to use prll in a shell script, simply copy it in there.
   - If you wish to use prll in an interactive shell, source it.
 The latter means that you need to put the function somewhere where
@@ -96,11 +102,11 @@ directory, use that. For example
   cp prll.sh /etc/profile.d/
 
 The function should now be automatically sourced by login shells. To
-have every instance of bash source it, insert
+have every shell source it instead of only login shells, insert
 
   source /etc/profile
 
-into your .bashrc.
+into your .bashrc or .zshrc.
 
 
 USAGE
@@ -117,7 +123,7 @@ As an alternative, you may pass the '-s' flag, followed by a
 string. The string will be executed as if it were the body of a shell
 function. Therefore, you may use $1 to reference it's first parameter.
 
-Instead of arguments, you can put flags '-p' or '-0'. prll will then
+Instead of arguments, you can use flags '-p' or '-0'. prll will then
 take it's arguments from stdin. The '-p' flag will make it read lines
 and the '-0' flag will make it read null-delimited input. This mode
 emulates the 'xargs' utility a bit, but is easier for interactive use
@@ -138,7 +144,7 @@ useful work or not. Also, jobs print completion notifications on their
 own so you will know when they are done even if prll itself is
 terminated. Should that be the case, they will also print a harmless
 'file not found' message because the message queue will be removed.
- 
+
 prll cleans after itself, but if you are worried about stale message
 queues, you can list them with the 'ipcs' command and remove them with
 the 'ipcrm' command. Refer to your system's documentation for details.
@@ -244,7 +250,7 @@ LICENSING INFORMATION
 
 The user needs to be able to include the prll shell function in his
 own work, which might be anything. Therefore, the contents of prll.sh
-are provided under the terms of the WTFPL, version 2. 
+are provided under the terms of the WTFPL, version 2.
 See COPYING.WTFPL-2 for more information.
 
 The rest of the prll package is provided under the GNU General Public
