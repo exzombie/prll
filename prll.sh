@@ -149,7 +149,8 @@ function prll() {
 	    fi
 	    (
 		$prll_funname "$prll_jarg"
-		echo "PRLL: Job number $prll_progress finished." 1>&2
+		echo "PRLL: Job number $prll_progress finished. " \
+		    "Exit code: $?" 1>&2
 		prll_jobserver c $prll_Qkey 0
 	    ) &
 	    echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
