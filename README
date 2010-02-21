@@ -1,6 +1,6 @@
 prll
-version 0.1
-================
+version 0.4
+===========
 
 prll is a utility for use with bash or zsh. It provides a convenient
 interface for parallelizing the execution of a single task over

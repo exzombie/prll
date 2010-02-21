@@ -1,4 +1,301 @@
-commit 10960e4 (refs/heads/master)
+commit 9aa5129 (refs/remotes/origin/master, refs/heads/master)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 21 09:07:24 2010 +0100
+
+    Use immediate evaluation in tests Makefile.
+
+commit 7ebb0a9
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 21 08:56:26 2010 +0100
+
+    Change recursive make call for OpenBSD compatibility.
+
+commit 3e54326
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 21:45:26 2010 +0100
+
+    Cosmetics in NEWS.
+
+commit 1b206f3
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 21:44:48 2010 +0100
+
+    Print copyright in usage string.
+
+commit 41fdd7e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 21:08:45 2010 +0100
+
+    Describe preventing data loss using bfr.
+
+commit e736fce
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 16:31:53 2010 +0100
+
+    Many corrections in README.
+
+commit 7a1f860
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 14:24:26 2010 +0100
+
+    Update copyright lines.
+
+commit 73dbeb1
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 13:31:36 2010 +0100
+
+    A better way to pass multiple arguments in bash.
+
+commit fa534fb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 13:21:55 2010 +0100
+
+    Acknowledge contributors.
+
+commit 91d1084
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 13:08:51 2010 +0100
+
+    NEWS file, ready for 0.4 release.
+
+commit 16bebe3
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 11:53:28 2010 +0100
+
+    Print version number in usage string.
+
+commit 92747c1
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Feb 20 11:43:22 2010 +0100
+
+    Print job exit status.
+
+commit c381eff
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 20:58:39 2010 +0100
+
+    Known issue: terminating from within functions.
+
+commit d86e971
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 20:28:56 2010 +0100
+
+    Add job table saturation to known issues.
+
+commit 386bd28
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 20:28:10 2010 +0100
+
+    Update the requirements section of README.
+
+commit a7f96f9
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 19:29:04 2010 +0100
+
+    Don't run manysleep test on non-linux systems.
+
+commit 9d0e527
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 19:06:56 2010 +0100
+
+    Return nonzero status on interrupt.
+
+commit d4a04d2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 18:36:29 2010 +0100
+
+    Add tests as precious targets.
+    
+    BSD compatibility.
+
+commit 618e539
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 18:26:28 2010 +0100
+
+    Have an explicit rule for prll_jobserver.
+    
+    Removes the need for order-only prerequisites.
+    For BSD make compatibility.
+
+commit ef77bf0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 13:22:27 2010 +0100
+
+    Export C locale in test scripts.
+
+commit 2b57eb4
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 12:51:07 2010 +0100
+
+    Correction: tr is actually only required for tests.
+
+commit 4519efc
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 09:57:50 2010 +0100
+
+    Add output interleaving as a known issue.
+
+commit adf65bb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 09:48:18 2010 +0100
+
+    Fix interrupt behaviour.
+    
+    This adds a test mode to prll_jobserver to silently check
+    whether a queue exists.
+
+commit fc84020
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Feb 19 09:26:59 2010 +0100
+
+    Drop dependence on most of other utilities.
+    
+    Depend only on tr for operation and additionally on grep, sort
+    and diff for tests. Doing this increases MacOS X compatibility, but
+    full testing hasn't been done at this point.
+
+commit f6069f9
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Feb 18 18:39:51 2010 +0100
+
+    Drop the dependence on seq and document dependence on tr.
+
+commit bbc6fec
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Feb 17 08:55:30 2010 +0100
+
+    Update comments and error messages.
+
+commit bcdaea0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Feb 16 23:26:50 2010 +0100
+
+    Fix the ipcmk issue.
+    
+    Done by not using ipcmk. It turns out that ipcmk uses time() to
+    seed srandom(). Use /dev/urandom instead.
+    Fixes commit e3f99aea4357bbeb1bf7d50c0d964df822fae80c
+
+commit e3f99ae
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Feb 16 08:53:58 2010 +0100
+
+    Known issue: multiple ipcmks create the same queue.
+
+commit 90e7b73
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 17:05:19 2010 +0100
+
+    Update the usage string and correct the README.
+
+commit 7d9526e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 16:52:05 2010 +0100
+
+    Properly unset functions and add a test.
+
+commit eae05e0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 16:43:23 2010 +0100
+
+    Correct the tests Makefile.
+
+commit 1c084c2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 16:28:57 2010 +0100
+
+    Refine cleanup and interruption.
+    
+    Facilitated by moving the cleanup function and SIGINT trap
+    into the loop subshell. A side effect is also that setting the
+    ksharrays option in zsh can be unconditional, as it only applies to
+    the subshell, and must be set there.
+
+commit 4e8b16e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 14:14:10 2010 +0100
+
+    Test for pipes.
+
+commit 96f831d
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Feb 15 13:02:58 2010 +0100
+
+    Major rewrite to allow passing arguments via stdin.
+
+commit 1cebecb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 21:43:30 2010 +0100
+
+    Remove annoying error when interrupting execution.
+
+commit 1d9c6e7
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 21:09:51 2010 +0100
+
+    Expand the sleep test.
+
+commit 1245dca
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 20:26:34 2010 +0100
+
+    Update README; mention the tests.
+
+commit de2033a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 17:13:55 2010 +0100
+
+    Makefile fixes for tests.
+
+commit c486485
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 16:05:12 2010 +0100
+
+    Test passing function as a string and (un)setting ksharrays.
+
+commit 7eb8846
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 16:33:28 2010 +0100
+
+    A minor typo.
+
+commit 949acfe
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 15:32:51 2010 +0100
+
+    First test added.
+
+commit 044b306
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 14 14:48:01 2010 +0100
+
+    Minor typo in a comment.
+
+commit 9c9d5b2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Feb 11 20:29:05 2010 +0100
+
+    Properly quote function string. Update README on passing multiple args.
+
+commit 0eee895
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Feb 11 20:19:25 2010 +0100
+
+    Print the job PID. Update README on terminating jobs.
+
+commit 994e860
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Jan 29 09:59:24 2010 +0100
+
+    Make cross-compilation a known issue.
+
+commit 09d5c99 (tag: refs/tags/prll-0.3.1)
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Jan 28 19:18:18 2010 +0100
+
+    Release version 0.3.1.
+
+commit 10960e4
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 28 19:13:37 2010 +0100
 
@@ -12,7 +309,7 @@ Date:   Thu Jan 28 19:10:36 2010 +0100
     
     This reverts commit 743d1b5e18a3d070754ac2f0ec20bdd02ece5477.
 
-commit 743d1b5 (refs/remotes/origin/master)
+commit 743d1b5
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Jan 22 09:22:32 2010 +0100
 

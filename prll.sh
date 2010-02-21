@@ -8,7 +8,7 @@
 function prll() {
     if [[ -z $1 ]] ; then
 	cat <<-EOF
-	prll version 0.3.9999
+	prll version 0.4
 	Copyright 2009-2010 Jure Varlec
 
 	USAGE: prll fun_name fun_arg1 fun_arg2 fun_arg3 ...
