@@ -16,7 +16,7 @@ prll_jobserver: sanitycheck
 	$(CC) $(CFLAGS) -o prll_jobserver prll_jobserver.c
 
 test: prll_jobserver
-	$(MAKE) -C tests
+	cd tests && $(MAKE)
 
 # For emacs' flymake-mode
 .PHONY: check-syntax
