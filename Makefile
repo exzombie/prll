@@ -7,7 +7,7 @@ compile: prll_jobserver
 
 clean:
 	rm -f sanitycheck check_key_size prll_jobserver 
-	$(MAKE) -C tests clean
+	cd tests && $(MAKE) clean
 
 sanitycheck: check_key_size
 	./check_key_size && touch sanitycheck || (rm -f sanitycheck && false)
