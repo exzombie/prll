@@ -1,10 +1,5 @@
-export LC_ALL=C
-source ../prll.sh
-PATH="../:$PATH"
-
-echo
-echo "Testing whether passing a string works."
-echo
+TEST_DESCRIPTION="Testing whether passing a string works."
+. test_header.sh
 
 PRLL_NR_CPUS=1 prll -s 'echo Testing control characters. $1| grep control; \
 	       echo $1;' 5 1 3 2 4 | sort | diff -q - string.dat

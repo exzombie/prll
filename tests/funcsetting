@@ -1,10 +1,5 @@
-export LC_ALL=C
-source ../prll.sh
-PATH="../:$PATH"
-
-echo
-echo "Testing whether internal functions are properly unset."
-echo
+TEST_DESCRIPTION="Testing whether internal functions are properly unset."
+. test_header.sh
 
 PRLL_NR_CPUS=1 prll -s 'true' junk
 
