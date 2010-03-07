@@ -149,6 +149,10 @@ own so you will know when they are done even if prll itself is
 terminated. Should that be the case, they will also print a harmless
 'file not found' message because the message queue will be removed.
 
+The command 'prll_interrupt' is available from within your
+functions. It causes prll to abort execution in the same way as
+described above.
+
 prll cleans after itself, but if you are worried about stale message
 queues, you can list them with the 'ipcs' command and remove them with
 the 'ipcrm' command. Refer to your system's documentation for details.
@@ -214,6 +218,12 @@ function. Here is a stub for a function that takes three arguments:
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 
+You may wish to abort execution if one of the results is wrong. In
+that case, use something like this:
+
+     function myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
+
+
 The next example demonstrates both using pipes to pass arguments and
 preventing loss of data when dealing with large amounts of output.
 
@@ -249,11 +259,9 @@ Known issues:
   worth of data. If that happens, different functions' outputs become
   interleaved, which is usually not desired.
 
-- Implement terminating prll from within the function it executes.
-
 - Expand the test suite.
-  Specifically, termination behaviour on interrupt currently has to be
-  checked manually.
+  Specifically, termination behaviour on interrupt signal currently
+  has to be checked manually. Also, checking of stderr is not done.
 
 - Document cross-compilation and make it easier to cross-compile.
 
