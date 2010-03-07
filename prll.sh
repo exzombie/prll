@@ -104,11 +104,11 @@ function prll() {
 	    prll_qer t $prll_Qkey || return 130
 	    if [[ $1 != "nosig" ]] ; then
 		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
-		while [[ $prll_progress -ge $prll_jbfinish ]] ; do
-		    prll_qer o $prll_Qkey || break
-		    let prll_jbfinish+=1
-		done
 	    fi
+	    while [[ $prll_progress -ge $prll_jbfinish ]] ; do
+		prll_qer o $prll_Qkey || break
+		let prll_jbfinish+=1
+	    done
 	    echo "PRLL: Cleaning up." 1>&2
 	    prll_qer r $prll_Qkey
 	}
@@ -125,6 +125,13 @@ function prll() {
 			         let prll_progress=$((PRLL_NR_CPUS-1))
 		               fi
 		               continue'
+
+	function prll_interrupt() {
+	    echo "PRLL: Job $prll_progress interrupting execution." 1>&2
+	    echo "PRLL: Waiting for unfinished jobs." 1>&2
+	    prll_qer c $prll_Qkey 1
+	    return 130
+	}	
 
 	local prll_progress=0 prll_jbfinish=0 prll_finishing=no
 	while prll_qer o $prll_Qkey ; do
