@@ -6,14 +6,8 @@ CFLAGS += --std=c99
 compile: prll_qer
 
 clean:
-	rm -f sanitycheck check_key_size prll_qer 
+	rm -f prll_qer mkrandom.o
 	cd tests && $(MAKE) clean
-
-sanitycheck: check_key_size
-	./check_key_size && touch sanitycheck || (rm -f sanitycheck && false)
-
-prll_qer: sanitycheck
-	$(CC) $(CFLAGS) -o prll_qer prll_qer.c
 
 test: prll_qer
 	cd tests && $(MAKE)
@@ -22,3 +16,5 @@ test: prll_qer
 .PHONY: check-syntax
 check-syntax:
 	gcc -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
+
+prll_qer: mkrandom.o mkrandom.h

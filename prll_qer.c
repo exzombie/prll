@@ -19,6 +19,7 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "mkrandom.h"
 
 int main(int argc, char ** argv) {
   if (argc < 2) {
@@ -111,34 +112,10 @@ int main(int argc, char ** argv) {
   // CREATE A NEW QUEUE MODE
   } else if (mode == PRLL_CREATE_MODE) {
     do {
-      FILE * urnd = fopen("/dev/urandom", "r");
-      if (urnd == NULL)
-	urnd = fopen("/dev/random", "r");
-      if (urnd == NULL) {
-	fprintf(stderr, "%s: Couldn't open /dev/(u)random.\n", argv[0]);
-	perror(argv[0]);
+      if (mkrandom(&qkey)) {
+	fprintf(stderr, "%s: Error accessing /dev/(u)random.\n", argv[0]);
 	return 1;
       }
-      if (fread(&qkey, sizeof(key_t), 1, urnd) != 1) {
-	fprintf(stderr, "%s: Couldn't read from /dev/(u)random.\n", argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
-      int status = fclose(urnd);
-      if (status != 0) {
-	if (errno == EINTR)
-	  status = fclose(urnd);
-	if (status != 0) {
-	  fprintf(stderr, "%s: Couldn't close /dev/(u)random.\n", argv[0]);
-	  perror(argv[0]);
-	  return 1;
-	}
-      }
-      // Bits read from /dev/urandom don't seem to make a
-      // reliable key by themselves, so we use them as a seed.
-      // random() is what ipcmk uses to make a key, so it should be fine.
-      srandom(qkey);
-      qkey = random();
     } while (-1 == (qid = msgget(qkey, 0644 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
     if (qid == -1) {
