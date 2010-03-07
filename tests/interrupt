@@ -1,0 +1,14 @@
+TEST_DESCRIPTION="Testing interruption from within a function."
+. test_header.sh
+
+function slptst() {
+	 if [[ $1 == "k" ]] ; then
+	       	echo Interrupting.
+		prll_interrupt
+	 else
+		echo Sleeping $1 seconds.
+	 	sleep $1
+		echo Slept $1 seconds.
+	 fi
+}
+PRLL_NR_CPUS=3 prll slptst 5 1 2 k 4 3 | diff -q - interrupt.dat
