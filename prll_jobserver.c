@@ -10,7 +10,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
    
-   A copy of the GNU General Public License is provided in COPYING.GPL-3.
+   A copy of the GNU General Public License is provided in COPYING.
    If not, see <http://www.gnu.org/licenses/>.
 */
 

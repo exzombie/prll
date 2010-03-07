@@ -266,12 +266,7 @@ Known issues:
 LICENSING INFORMATION
 ---------------------
 
-The user needs to be able to include the prll shell function in his
-own work, which might be anything. Therefore, the contents of prll.sh
-are provided under the terms of the WTFPL, version 2.
-See COPYING.WTFPL-2 for more information.
-
-The rest of the prll package is provided under the GNU General Public
-License, version 3 or later. See COPYING.GPL-3 for more information.
+The prll package is provided under the GNU General Public
+License, version 3 or later. See COPYING for more information.
 
 Copyright 2009-2010 Jure Varlec
