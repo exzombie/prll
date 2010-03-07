@@ -3,19 +3,19 @@ CFLAGS += --std=c99
 
 .PHONY: clean compile test
 
-compile: prll_jobserver
+compile: prll_qer
 
 clean:
-	rm -f sanitycheck check_key_size prll_jobserver 
+	rm -f sanitycheck check_key_size prll_qer 
 	cd tests && $(MAKE) clean
 
 sanitycheck: check_key_size
 	./check_key_size && touch sanitycheck || (rm -f sanitycheck && false)
 
-prll_jobserver: sanitycheck
-	$(CC) $(CFLAGS) -o prll_jobserver prll_jobserver.c
+prll_qer: sanitycheck
+	$(CC) $(CFLAGS) -o prll_qer prll_qer.c
 
-test: prll_jobserver
+test: prll_qer
 	cd tests && $(MAKE)
 
 # For emacs' flymake-mode

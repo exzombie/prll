@@ -60,7 +60,7 @@ saturated.
 INSTALLATION
 ------------
 
-Compile prll_jobserver.c. You can use the included Makefile. If you
+Compile prll_qer.c. You can use the included Makefile. If you
 have gcc, you can simply run
 
   make
@@ -85,12 +85,12 @@ some tests to fail or hang (in fact, some are disabled on non-Linux
 systems for this reason), while it wouldn't interfere with normal
 operation as long as you don't run too many parallel jobs.
 
-When prll is built, copy the prll_jobserver executable to a directory
+When prll is built, copy the prll_qer executable to a directory
 you have in your PATH. For example, to do a system-wide installation,
 run as root
 
-  chown root:root prll_jobserver
-  cp prll_jobserver /usr/local/bin/
+  chown root:root prll_qer
+  cp prll_qer /usr/local/bin/
 
 File prll.sh contains the shell function. The shell that will use it
 needs to source it. That means that:

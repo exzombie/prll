@@ -23,7 +23,7 @@
 int main(int argc, char ** argv) {
   if (argc < 2) {
     fprintf(stderr,
-	    "%s: jobserver for the prll() shell function.\n"
+	    "%s: message queue tool for the prll() shell function.\n"
 	    "Consult the prll source and documentation for usage.\n"
 	    "Not meant to be used standalone.\n"
 	    , argv[0]);

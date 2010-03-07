@@ -32,9 +32,9 @@ function prll() {
 	EOF
 	return 1
     fi
-    /usr/bin/which prll_jobserver > /dev/null
+    /usr/bin/which prll_qer > /dev/null
     if [[ $? -ne 0 ]] ; then
-	echo "PRLL: Missing prll_jobserver." 1>&2
+	echo "PRLL: Missing prll_qer." 1>&2
 	return 1
     fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
@@ -81,7 +81,7 @@ function prll() {
     fi
 
     echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
-    local prll_Qkey="$(prll_jobserver n)"
+    local prll_Qkey="$(prll_qer n)"
     if [[ $? -ne 0 ]] ; then
 	echo "PRLL: Failed to create message queue." 1>&2
 	return 1
@@ -89,10 +89,10 @@ function prll() {
 	echo "PRLL: Created message queue with key $prll_Qkey" 1>&2
     fi
 
-    echo "PRLL: Starting jobserver." 1>&2
+    echo "PRLL: Starting work." 1>&2
     # Get the first jobs started
     for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
-	prll_jobserver c $prll_Qkey 0;
+	prll_qer c $prll_Qkey 0;
     done
     ( # Run in a subshell so this code can be suspended as a unit
 	if [[ -n $ZSH_VERSION ]] ; then
@@ -101,16 +101,16 @@ function prll() {
 
 	function prll_cleanup() {
 	    trap - SIGINT
-	    prll_jobserver t $prll_Qkey || return 130
+	    prll_qer t $prll_Qkey || return 130
 	    if [[ $1 != "nosig" ]] ; then
 		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
 		while [[ $prll_progress -ge $prll_jbfinish ]] ; do
-		    prll_jobserver o $prll_Qkey || break
+		    prll_qer o $prll_Qkey || break
 		    let prll_jbfinish+=1
 		done
 	    fi
 	    echo "PRLL: Cleaning up." 1>&2
-	    prll_jobserver r $prll_Qkey
+	    prll_qer r $prll_Qkey
 	}
 	trap prll_cleanup SIGINT
 
@@ -118,7 +118,7 @@ function prll() {
                                local prll_finishing=yes
 		               let prll_jbfinish+=1
 		               if [[ $prll_jbfinish -gt $prll_progress ]] ; then
-			         prll_jobserver c $prll_Qkey 1
+			         prll_qer c $prll_Qkey 1
                                  continue
                                fi
 		               if [[ $prll_progress -lt $PRLL_NR_CPUS ]] ; then
@@ -127,11 +127,11 @@ function prll() {
 		               continue'
 
 	local prll_progress=0 prll_jbfinish=0 prll_finishing=no
-	while prll_jobserver o $prll_Qkey ; do
+	while prll_qer o $prll_Qkey ; do
 	    if [[ $prll_finishing == "yes" ]] ; then
 		let prll_jbfinish+=1
 		if [[ $prll_jbfinish -gt $prll_progress ]] ; then
-		    prll_jobserver c $prll_Qkey 1
+		    prll_qer c $prll_Qkey 1
 		else
 		    continue
 		fi
@@ -161,7 +161,7 @@ function prll() {
 		$prll_funname "$prll_jarg"
 		echo "PRLL: Job number $prll_progress finished. " \
 		    "Exit code: $?" 1>&2
-		prll_jobserver c $prll_Qkey 0
+		prll_qer c $prll_Qkey 0
 	    ) &
 	    echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
 	    if [[ $prll_read == "no" ]] ; then
