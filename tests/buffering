@@ -1,0 +1,35 @@
+TEST_DESCRIPTION="Buffering test."
+source test_header.sh
+
+function lots_of_noise() {
+    nkk=$(for i in {1..3000}; do
+	echo -n "$RANDOM "
+	done | tr '\n' ' ')
+    nkk2=$(for i in {1..50} ; do echo -n $nkk; done)
+    for i in {1..100}; do echo $nkk2; done
+}
+
+if [[ ! -f buffering.ref ]] ; then
+    echo "Making reference data."
+    lots_of_noise | split -l1 - buffering.data
+    cat buffering.data* | sed "s/25/26/g" | sort > buffering.ref
+fi
+
+PRLL_NR_CPUS=1 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+    > buffering.dat1 || exit 1
+
+PRLL_NR_CPUS=10 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+    > buffering.dat10 || exit 1
+
+stats=0
+sort buffering.dat1 | diff -q buffering.ref -
+if [[ $? -ne 0 ]] ; then
+    stats=1
+    echo "Serial execution produced wrong results."
+fi
+sort buffering.dat10 | diff -q buffering.ref -
+if [[ $? -ne 0 ]] ; then
+    stats=1
+    echo "Parallel execution produced wrong results."
+fi
+exit $stats

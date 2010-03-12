@@ -13,7 +13,7 @@ all: $(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS)
 
 clean:
 	rm -f bash_found zsh_found any_found both_found manysleep.err
-	rm -f utilities_found
+	rm -f utilities_found buffering.*
 
 $(ANY_TESTS) $(BASH_TESTS) $(ZSH_TESTS): utilities_found
 

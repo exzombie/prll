@@ -83,7 +83,8 @@ example, if there are already several message queues being used on
 your system, you may be running out of IPC memory. That would cause
 some tests to fail or hang (in fact, some are disabled on non-Linux
 systems for this reason), while it wouldn't interfere with normal
-operation as long as you don't run too many parallel jobs.
+operation as long as you don't run too many parallel jobs. Also, be
+aware that full testing requires about 100MB disk space.
 
 When prll is built, copy the prll_qer executable to a directory
 you have in your PATH. For example, to do a system-wide installation,
