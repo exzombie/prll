@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Trying to cause a race."
-. test_header.sh
+source test_header.sh
 
 # non-linux sistems have queue sizes too small for this test
 uname -s | grep Linux > /dev/null

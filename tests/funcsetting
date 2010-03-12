@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Testing whether internal functions are properly unset."
-. test_header.sh
+source test_header.sh
 
 PRLL_NR_CPUS=1 prll -s 'true' junk
 

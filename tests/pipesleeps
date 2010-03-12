@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="A sleep test using pipes."
-. test_header.sh
+source test_header.sh
 
 function slptst() { echo Sleeping $1 seconds.; sleep $1; }
 echo 5 1 3 2 4 | tr ' ' '\n' | \

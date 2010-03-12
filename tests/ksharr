@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Testing whether ksharrays are set/unset."
-. test_header.sh
+source test_header.sh
 
 setopt ksharrays
 PRLL_NR_CPUS=1 prll -s 'true' junk
