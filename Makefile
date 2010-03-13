@@ -15,6 +15,6 @@ test: prll_qer
 # For emacs' flymake-mode
 .PHONY: check-syntax
 check-syntax:
-	gcc -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
+	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
 
 prll_qer: mkrandom.o mkrandom.h
