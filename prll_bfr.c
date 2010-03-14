@@ -155,7 +155,7 @@ int main(int argc, char ** argv) {
     for (unsigned long int page = 0; page < num_pages; page++) {
       written = fwrite(lst->data, 1, page_size, stdout);
       last_errno = errno;
-      lst = lst->next;
+      lst = llst_free(lst);
       if (ferror(stdout) || written != page_size) {
 	fprintf(stderr,
 		"%s: Error dumping data, exiting.\n   Error: %s\n",
@@ -165,6 +165,7 @@ int main(int argc, char ** argv) {
     }
     written = fwrite(lst->data, 1, last_page_len, stdout);
     last_errno = errno;
+    llst_free(lst);
     if (ferror(stdout) || written != last_page_len) {
       fprintf(stderr,
 	      "%s: Error dumping data, exiting.\n   Error: %s\n",
@@ -173,10 +174,6 @@ int main(int argc, char ** argv) {
     }
 
     // Unlocking is automatic because of SEM_UNDO.
-
-    while (head) {
-      head = llst_free(head);
-    }
 
   // CREATE A NEW SEMAPHORE MODE
   } else if (mode == PRLL_CREATE_MODE) {
