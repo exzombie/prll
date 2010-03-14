@@ -86,7 +86,37 @@ int main(int argc, char ** argv) {
 
   page_size = (size_t)sysconf(_SC_PAGESIZE);
 
-  assert(mode == PRLL_BUFFER_MODE); // DEV
+  key_t skey;
+  int sid;
+  if (mode != PRLL_CREATE_MODE) {
+    if (argc < 3) {
+      fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
+      return 1;
+    }
+    skey = strtol(argv[2], 0, 0);
+    sid = semget(skey, 1, 0);
+    if (sid == -1) {
+      if (mode != PRLL_TEST_MODE) {
+	fprintf(stderr, "%s: Couldn't open semaphore.\n", argv[0]);
+	perror(argv[0]);
+      }
+      return 1;
+    } else if (mode == PRLL_TEST_MODE)
+      return 0;
+  }
+
+  // Ops: 0: wait for zero; 1: take lock with undo on abort; 2: release lock.
+  struct sembuf sop[3];
+  sop[0].sem_num = 0;
+  sop[1].sem_num = 0;
+  sop[2].sem_num = 0;
+  sop[0].sem_flg = 0;
+  sop[1].sem_flg = SEM_UNDO;
+  sop[2].sem_flg = 0;
+  sop[0].sem_op = 0;
+  sop[1].sem_op = 1;
+  sop[3].sem_op = -1;
+
 
   // BUFFERING MODE
   if (mode == PRLL_BUFFER_MODE) {
@@ -139,7 +169,39 @@ int main(int argc, char ** argv) {
     while (head) {
       head = llst_free(head);
     }
-
+  // CREATE A NEW SEMAPHORE MODE
+  } else if (mode == PRLL_CREATE_MODE) {
+    do {
+      if (mkrandom(&skey)) {
+	fprintf(stderr, "%s: Error accessing /dev/(u)random.\n", argv[0]);
+	return 1;
+      }
+    } while (-1 == (sid = semget(skey, 1, 0644 | IPC_CREAT | IPC_EXCL))
+	     && errno == EEXIST);
+    if (sid == -1) {
+      fprintf(stderr, "%s: Couldn't create semaphore.\n", argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
+    union semun {
+      int val;
+      struct semid_ds *buf;
+      unsigned short  *array;
+    } arg;
+    arg.val = 0;
+    if (-1 == semctl(sid, 0, SETVAL, arg)) {
+      fprintf(stderr, "%s: Couldn't initialize semaphore.\n", argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
+    printf("%#X\n", skey);
+  // REMOVE MODE
+  } else if (mode == PRLL_REMOVE_MODE) {
+    if (semctl(sid, 0, IPC_RMID)) {
+      fprintf(stderr, "%s: Couldn't remove semaphore.\n", argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
   }
 
   return 0;

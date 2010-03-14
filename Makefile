@@ -17,4 +17,4 @@ test: prll_qer
 check-syntax:
 	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
 
-prll_qer: mkrandom.o mkrandom.h
+prll_bfr prll_qer: mkrandom.o mkrandom.h
