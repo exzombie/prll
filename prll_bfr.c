@@ -106,17 +106,13 @@ int main(int argc, char ** argv) {
   }
 
   // Ops: 0: wait for zero; 1: take lock with undo on abort; 2: release lock.
-  struct sembuf sop[3];
+  struct sembuf sop[2];
   sop[0].sem_num = 0;
   sop[1].sem_num = 0;
-  sop[2].sem_num = 0;
   sop[0].sem_flg = 0;
   sop[1].sem_flg = SEM_UNDO;
-  sop[2].sem_flg = 0;
   sop[0].sem_op = 0;
   sop[1].sem_op = 1;
-  sop[3].sem_op = -1;
-
 
   // BUFFERING MODE
   if (mode == PRLL_BUFFER_MODE) {
@@ -126,6 +122,7 @@ int main(int argc, char ** argv) {
     size_t last_page_len;
     int last_errno;
 
+    // Read
     while (! feof(stdin) && ! ferror(stdin)) {
       last_page_len = fread(lst->data, 1, page_size, stdin);
       last_errno = errno;
@@ -144,6 +141,15 @@ int main(int argc, char ** argv) {
 	      argv[0], strerror(last_errno));
     }
 
+    // Lock
+    if (semop(sid, sop, 2)) {
+      fprintf(stderr, "%s: Couldn't take semaphore, not writing data.\n",
+	      argv[0]);
+      perror(argv[0]);
+      return 1;
+    }
+
+    // Write
     size_t written;
     lst = head;
     for (unsigned long int page = 0; page < num_pages; page++) {
@@ -166,9 +172,12 @@ int main(int argc, char ** argv) {
       exit(1);
     }
 
+    // Unlocking is automatic because of SEM_UNDO.
+
     while (head) {
       head = llst_free(head);
     }
+
   // CREATE A NEW SEMAPHORE MODE
   } else if (mode == PRLL_CREATE_MODE) {
     do {
