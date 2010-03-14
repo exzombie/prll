@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <assert.h>
+#include <malloc.h>
 #include <sys/sem.h>
 #include "mkrandom.h"
 
@@ -84,7 +85,10 @@ int main(int argc, char ** argv) {
     return 1;
   }
 
-  page_size = (size_t)sysconf(_SC_PAGESIZE);
+  // Get 16 pages per malloc and let free release memory back to the OS.
+  page_size = 16 * (size_t)sysconf(_SC_PAGESIZE);
+  mallopt(M_TRIM_THRESHOLD, page_size-1);
+  mallopt(M_MMAP_THRESHOLD, page_size-1);
 
   key_t skey;
   int sid;
