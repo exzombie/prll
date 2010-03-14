@@ -3,10 +3,10 @@ CFLAGS += --std=c99
 
 .PHONY: clean compile test
 
-compile: prll_qer
+compile: prll_qer prll_bfr
 
 clean:
-	rm -f prll_qer mkrandom.o
+	rm -f prll_qer prll_bfr mkrandom.o
 	cd tests && $(MAKE) clean
 
 test: prll_qer

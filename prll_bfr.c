@@ -1,0 +1,146 @@
+/* 
+   Copyright 2009-2010 Jure Varlec
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   A copy of the GNU General Public License is provided in COPYING.
+   If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#define _SVID_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <limits.h>
+#include <assert.h>
+#include <sys/sem.h>
+#include "mkrandom.h"
+
+size_t page_size;
+
+struct llst {
+  char * data;
+  struct llst * next;
+};
+
+struct llst * llst_alloc() {
+  struct llst * lst;
+  if ( !(lst = malloc(sizeof(struct llst))) ) {
+    perror(0);
+    exit(1);
+  }
+  if ( !(lst->data = malloc(page_size)) ) {
+    perror(0);
+    exit(1);
+  }
+  lst->next = NULL;
+  return lst;
+}
+
+struct llst * llst_free(struct llst * lst) {
+  struct llst * tmp = lst->next;
+  free(lst->data);
+  free(lst);
+  return tmp;
+}
+
+int main(int argc, char ** argv) {
+  if (argc < 2) {
+    fprintf(stderr,
+	    "%s: buffering tool for the prll() shell function.\n"
+	    "Consult the prll source and documentation for usage.\n"
+	    "Not meant to be used standalone.\n"
+	    , argv[0]);
+    return 1;
+  }
+
+  // Choosing operating mode
+  enum {
+    PRLL_BUFFER_MODE, PRLL_REMOVE_MODE,
+    PRLL_CREATE_MODE, PRLL_TEST_MODE
+  } mode;
+  if (argv[1][0] == '\0')
+    goto arg_err;
+  if (argv[1][0] == 'r' && argv[1][1] == '\0')
+    mode = PRLL_REMOVE_MODE;
+  else if (argv[1][0] == 'b' && argv[1][1] == '\0')
+    mode = PRLL_BUFFER_MODE;
+  else if (argv[1][0] == 'n' && argv[1][1] == '\0')
+    mode = PRLL_CREATE_MODE;
+  else if (argv[1][0] == 't' && argv[1][1] == '\0')
+    mode = PRLL_TEST_MODE;
+  else {
+  arg_err:
+    fprintf(stderr, "%s: Incorrect mode specification: %s\n", argv[0], argv[1]);
+    return 1;
+  }
+
+  page_size = (size_t)sysconf(_SC_PAGESIZE);
+
+  assert(mode == PRLL_BUFFER_MODE); // DEV
+
+  // BUFFERING MODE
+  if (mode == PRLL_BUFFER_MODE) {
+    struct llst * head = llst_alloc();
+    struct llst * lst = head;
+    unsigned long num_pages = 0;
+    size_t last_page_len;
+    int last_errno;
+
+    while (! feof(stdin) && ! ferror(stdin)) {
+      last_page_len = fread(lst->data, 1, page_size, stdin);
+      last_errno = errno;
+      if (last_page_len == page_size) {
+	num_pages++;
+	lst->next = llst_alloc();
+	lst = lst->next;
+      } else {
+	assert(feof(stdin) || ferror(stdin));
+      }
+    }
+
+    if (ferror(stdin)) {
+      fprintf(stderr,
+	      "%s: Error reading data, dumping what I have.\n   Error: %s\n",
+	      argv[0], strerror(last_errno));
+    }
+
+    size_t written;
+    lst = head;
+    for (unsigned long int page = 0; page < num_pages; page++) {
+      written = fwrite(lst->data, 1, page_size, stdout);
+      last_errno = errno;
+      lst = lst->next;
+      if (ferror(stdout) || written != page_size) {
+	fprintf(stderr,
+		"%s: Error dumping data, exiting.\n   Error: %s\n",
+		argv[0], strerror(last_errno));
+	exit(1);
+      }
+    }
+    written = fwrite(lst->data, 1, last_page_len, stdout);
+    last_errno = errno;
+    if (ferror(stdout) || written != last_page_len) {
+      fprintf(stderr,
+	      "%s: Error dumping data, exiting.\n   Error: %s\n",
+	      argv[0], strerror(last_errno));
+      exit(1);
+    }
+
+    while (head) {
+      head = llst_free(head);
+    }
+
+  }
+
+  return 0;
+}
