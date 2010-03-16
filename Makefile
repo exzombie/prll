@@ -9,7 +9,7 @@ clean:
 	rm -f prll_qer prll_bfr mkrandom.o
 	cd tests && $(MAKE) clean
 
-test: prll_qer
+test: prll_qer prll_bfr
 	cd tests && $(MAKE)
 
 # For emacs' flymake-mode
