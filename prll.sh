@@ -37,6 +37,17 @@ function prll() {
 	echo "PRLL: Missing prll_qer." 1>&2
 	return 1
     fi
+    # Do we do buffering?
+    if [[ $1 == "-b" ]] ; then
+	local prll_unbuffer=yes
+	shift
+    else
+	/usr/bin/which prll_bfr > /dev/null
+	if [[ $? -ne 0 ]] ; then
+	    echo "PRLL: Missing prll_bfr." 1>&2
+	    return 1
+	fi
+    fi
     if [[ -z $PRLL_NR_CPUS ]] ; then
 	/usr/bin/which grep > /dev/null
 	if [[ $? -ne 0 || ! -a /proc/cpuinfo ]] ; then
@@ -89,6 +100,16 @@ function prll() {
 	echo "PRLL: Created message queue with key $prll_Qkey" 1>&2
     fi
 
+    if [[ $prll_unbuffer != "yes" ]] ; then
+	local prll_Skey="$(prll_bfr n)"
+	if [[ $? -ne 0 ]] ; then
+	    echo "PRLL: Failed to create semaphore." 1>&2
+	    return 1
+	else
+	    echo "PRLL: Created semaphore with key $prll_Skey" 1>&2
+	fi
+    fi
+
     echo "PRLL: Starting work." 1>&2
     # Get the first jobs started
     for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
@@ -111,6 +132,9 @@ function prll() {
 	    done
 	    echo "PRLL: Cleaning up." 1>&2
 	    prll_qer r $prll_Qkey
+	    if [[ $prll_unbuffer != "yes" ]] ; then
+		prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
+	    fi
 	}
 	trap prll_cleanup SIGINT
 
@@ -164,12 +188,15 @@ function prll() {
 		echo "Something's wrong..." 1>&2
 		exit 1
 	    fi
+
 	    (
 		$prll_funname "$prll_jarg"
 		echo "PRLL: Job number $prll_progress finished. " \
 		    "Exit code: $?" 1>&2
 		prll_qer c $prll_Qkey 0
-	    ) &
+	    ) | \
+	    ( [[ $prll_unbuffer == "yes" ]] && cat || prll_bfr b $prll_Skey ) &
+
 	    echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
 	    if [[ $prll_read == "no" ]] ; then
 		echo -n "Progress: $((prll_progress*100/prll_nr_args))% " 1>&2
