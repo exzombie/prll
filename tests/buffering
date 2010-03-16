@@ -15,21 +15,47 @@ if [[ ! -f buffering.ref ]] ; then
     cat buffering.data* | sed "s/25/26/g" | sort > buffering.ref
 fi
 
-PRLL_NR_CPUS=1 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+rm -f buffering.dat{1,1b,10,10b}
+
+PRLL_NR_CPUS=1 prll -b -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
     > buffering.dat1 || exit 1
 
-PRLL_NR_CPUS=10 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+PRLL_NR_CPUS=1 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+    > buffering.dat1b || exit 1
+
+PRLL_NR_CPUS=10 prll -b -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
     > buffering.dat10 || exit 1
+
+PRLL_NR_CPUS=10 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+    > buffering.dat10b || exit 1
 
 stats=0
 sort buffering.dat1 | diff -q buffering.ref -
 if [[ $? -ne 0 ]] ; then
     stats=1
-    echo "Serial execution produced wrong results."
+    echo "Unbuffered serial execution produced wrong results."
+else
+    echo "Unbuffered serial execution produced correct results."
+fi
+sort buffering.dat1b | diff -q buffering.ref -
+if [[ $? -ne 0 ]] ; then
+    stats=1
+    echo "Buffered serial execution produced wrong results."
+else
+    echo "Buffered serial execution produced correct results."
 fi
 sort buffering.dat10 | diff -q buffering.ref -
 if [[ $? -ne 0 ]] ; then
+    echo "Unbuffered parallel execution produced wrong results, as expected."
+else
+    echo "Unbuffered parallel execution produced correct results,"
+    echo "which is rather unexpected."
+fi
+sort buffering.dat10b | diff -q buffering.ref -
+if [[ $? -ne 0 ]] ; then
     stats=1
-    echo "Parallel execution produced wrong results."
+    echo "Buffered parallel execution produced wrong results."
+else
+    echo "Buffered parallel execution produced correct results."
 fi
 exit $stats

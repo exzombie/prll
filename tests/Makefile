@@ -3,7 +3,7 @@ CFLAGS += --std=c99
 
 BASH_TESTS := 
 ZSH_TESTS := ksharr
-ANY_TESTS := sleeps interrupt string pipesleeps manysleep funcsetting
+ANY_TESTS := sleeps interrupt string pipesleeps manysleep funcsetting buffering
 
 .PHONY: clean all $(BASH_TEST) $(ZSH_TESTS) $(ANY_TESTS)
 
