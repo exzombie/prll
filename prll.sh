@@ -196,9 +196,15 @@ function prll() {
 		$prll_funname "$prll_jarg"
 		echo "PRLL: Job number $prll_progress finished. " \
 		    "Exit code: $?" 1>&2
-		prll_qer c $prll_Qkey 0
 	    ) | \
-	    ( [[ $prll_unbuffer == "yes" ]] && cat || prll_bfr b $prll_Skey ) &
+	    (
+		if [[ $prll_unbuffer == "yes" ]] ; then
+		    cat
+		else
+		    prll_bfr b $prll_Skey
+		fi
+		prll_qer c $prll_Qkey 0
+	    ) &
 
 	    echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
 	    if [[ $prll_read == "no" ]] ; then
