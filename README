@@ -14,12 +14,14 @@ Homepage: http://prll.sourceforge.net/
 DESCRIPTION
 -----------
 
-prll is designed to be used not just in shell scripts, but especially in
-interactive shells. To make the latter convenient, it is implemented
-as a shell function. Shells are not much good at automatic job
-management; see [1] for further discussion. Therefore, prll uses a
-helper program, written in C. To prevent race conditions, System V Message
-Queues are used to signal job completion.
+prll is designed to be used not just in shell scripts, but especially
+in interactive shells. To make the latter convenient, it is
+implemented as a shell function. Shells are not much good at automatic
+job management; see [1] for further discussion. Therefore, prll uses
+helper programs, written in C. To prevent race conditions, System V
+Message Queues and Semaphores are used to signal job completion. It
+also features full output buffering to prevent mangling of data
+because of concurrent output.
 
 [1] http://prll.sourceforge.net/shell_parallel.html
 
@@ -29,20 +31,18 @@ REQUIREMENTS
 
   - bash or zsh
   - C compiler, such as gcc
-  - OS support for System V Message Queues
+  - OS support for System V Message Queues and Semaphores
   - device files /dev/urandom or /dev/random
-  - optional tests require utilites tr, grep, sort, diff and uname
-  - recommended utility: bfr
+  - the cat utility
+  - optional tests require utilites tr, grep, sort, split,
+    sed, diff and uname
 
 Systems tested: GNU/Linux, FreeBSD, OpenBSD, MacOS X
 
 These requirements should be satisfied by your system by default,
 excepting perhaps the compiler and its toolchain, which are not
 installed by default on systems such as Ubuntu Linux. Refer to your
-system's documentation on how to install missing programs. If the bfr
-utility isn't included in your package management system, you can find
-it at http://www.glines.org/software/bfr. See usage instructions for
-why it is important.
+system's documentation on how to install missing programs.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
@@ -54,7 +54,7 @@ Linux systems that were tested had much larger Message Queue size than
 non-Linux systems. Queue size dictates the maximum number of jobs that
 can be run in parallel. A rule of thumb: a BSD system can run about 20
 jobs, depending on the number of existing queues, while a Linux system
-can run over 500 jobs; at that point, shell's job table becomes
+can run over 500 jobs; at that point, the shell's job table becomes
 saturated.
 
 INSTALLATION
@@ -86,12 +86,12 @@ systems for this reason), while it wouldn't interfere with normal
 operation as long as you don't run too many parallel jobs. Also, be
 aware that full testing requires about 100MB disk space.
 
-When prll is built, copy the prll_qer executable to a directory
-you have in your PATH. For example, to do a system-wide installation,
-run as root
+When prll is built, copy the prll_qer and prll_bfr executables to a
+directory you have in your PATH. For example, to do a system-wide
+installation, run as root
 
-  chown root:root prll_qer
-  cp prll_qer /usr/local/bin/
+  chown root:root prll_qer prll_bfr
+  cp prll_qer prll_bfr /usr/local/bin/
 
 File prll.sh contains the shell function. The shell that will use it
 needs to source it. That means that:
@@ -117,8 +117,10 @@ into your .bashrc or .zshrc.
 USAGE
 -----
 
-Synopsis: prll function_name arguments ...
-	  prll -s 'code' arguments ...
+Synopsis: prll [-b] function_name arguments ...
+	  prll [-b] -s 'code' arguments ...
+
+Order of options is important.
 
 To execute a task, create a shell function that does something to its
 first argument. Pass that function to prll along with the arguments
@@ -133,6 +135,8 @@ take it's arguments from stdin. The '-p' flag will make it read lines
 and the '-0' flag will make it read null-delimited input. This mode
 emulates the 'xargs' utility a bit, but is easier for interactive use
 because xargs makes it hard to pass complex commands.
+
+The '-b' option disables output buffering. See below for explanation.
 
 The number of tasks to be run in parallel is provided via the
 PRLL_NR_CPUS environment variable. If it is not provided, prll will
@@ -155,18 +159,33 @@ functions. It causes prll to abort execution in the same way as
 described above.
 
 prll cleans after itself, but if you are worried about stale message
-queues, you can list them with the 'ipcs' command and remove them with
-the 'ipcrm' command. Refer to your system's documentation for details.
+queues or semaphores, you can list them with the 'ipcs' command and
+remove them with the 'ipcrm' command. Refer to your system's
+documentation for details.
 
 IMPORTANT:
-If each of your jobs prints a lot of output, more than a
-stream buffer's worth to be exact, you should redirect each function's
-output to a separate file. Otherwise, jobs' outputs will become
-interleaved. On the other hand, if each of your jobs outputs only a
-small amount of data, but you have many jobs overall, it can happen
-that some data can be lost. To prevent that, insert a small buffer in
-your command pipeline just after prll. See the pipe example further
-down.
+
+prll does internal output buffering by default. This is to prevent
+interleaving of several jobs' outputs and thus mangling of data. Each
+job has its own buffer into which it writes, and these buffers make
+sure that at most one job writes to standard output at any one
+time. This buffer is not limited in size, and might read all data that
+a job writes. Therefore, if your jobs print a lot of data on standard
+output, they will consume A LOT OF MEMORY.
+
+If your jobs print a lot of data, you need to redirect each job's
+standard output to a file, and each job needs it's own file. In that
+case, everything will be fine. It complicates writing the shell
+function, though. If you believe that each of your jobs will output
+only a small amount of data (up to 4kB on Linux, it depends on the
+size of your OS' pipe buffer) but you are afraid that errors might
+creep in and cause spurious output, you can avoid accidental memory
+hogging by disabling buffering with the '-b' option.
+
+Let it be clear that this size limitation applies to the individual
+job's output. It does not concern the size of the whole output.
+
+Standard error is not buffered and will not cause memory consumption.
 
 
 Examples:
@@ -225,16 +244,12 @@ that case, use something like this:
      function myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
 
 
-The next example demonstrates both using pipes to pass arguments and
-preventing loss of data when dealing with large amounts of output.
+If you have many arguments to process, it might be easier to pass them
+on standard input. Suppose each line of a file is an argument of its
+own. Simply pipe the file into prll:
 
   function myfn() { some; processing | goes && on; here; }
-  cat file_with_arguments | prll myfn -p | bfr > results
-
-The bfr utility will prevent data from getting lost. It may turn out
-that your system requires a larger buffer size than the default,
-although when testing on Linux, 2kB turned out to be large enough,
-while the default is 5MB, so it shouldn't be a problem.
+  cat file_with_arguments | prll myfn -p > results
 
 
 KNOWN ISSUES
@@ -254,15 +269,10 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
-- Better support for map-reduce type processing.
-  It already works well and is used in the tests, however, each
-  function must take care not to output more than a stream buffer's
-  worth of data. If that happens, different functions' outputs become
-  interleaved, which is usually not desired.
-
 - Expand the test suite.
-  Specifically, termination behaviour on interrupt signal currently
-  has to be checked manually. Also, checking of stderr is not done.
+  Specifically, termination behaviour on external interrupt signal
+  currently has to be checked manually. Also, checking of stderr
+  output is not done.
 
 - Document cross-compilation and make it easier to cross-compile.
 
