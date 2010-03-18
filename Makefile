@@ -7,10 +7,10 @@ compile: prll_qer prll_bfr
 
 clean:
 	rm -f prll_qer prll_bfr mkrandom.o
-	cd tests && $(MAKE) clean
+	$(MAKE) -C tests clean
 
 test: prll_qer prll_bfr
-	cd tests && $(MAKE)
+	$(MAKE) -C tests
 
 # For emacs' flymake-mode
 .PHONY: check-syntax

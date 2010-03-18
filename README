@@ -31,6 +31,7 @@ REQUIREMENTS
 
   - bash or zsh
   - C compiler, such as gcc
+  - GNU make
   - OS support for System V Message Queues and Semaphores
   - device files /dev/urandom or /dev/random
   - the cat utility
@@ -65,6 +66,7 @@ have gcc, you can simply run
 
   make
 
+On non-GNU systems, replace that with 'gmake'.
 If you have gcc and want different compiler options, do
 
   CFLAGS=whatever make
