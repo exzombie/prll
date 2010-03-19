@@ -9,24 +9,26 @@ function lots_of_noise() {
     for i in {1..100}; do echo $nkk2; done
 }
 
+function fltr() { cat $1 | tr 5 6 ; }
+
 if [[ ! -f buffering.ref ]] ; then
     echo "Making reference data."
     lots_of_noise | split -l1 - buffering.data
-    cat buffering.data* | sed "s/25/26/g" | sort > buffering.ref
+    cat buffering.data* | fltr - | sort > buffering.ref
 fi
 
 rm -f buffering.dat{1,1b,10,10b}
 
-PRLL_NR_CPUS=1 prll -b -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+PRLL_NR_CPUS=1 prll -b fltr buffering.data* \
     > buffering.dat1 || exit 1
 
-PRLL_NR_CPUS=1 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+PRLL_NR_CPUS=1 prll fltr buffering.data* \
     > buffering.dat1b || exit 1
 
-PRLL_NR_CPUS=10 prll -b -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+PRLL_NR_CPUS=10 prll -b fltr buffering.data* \
     > buffering.dat10 || exit 1
 
-PRLL_NR_CPUS=10 prll -s 'cat $1 | sed "s/25/26/g"' buffering.data* \
+PRLL_NR_CPUS=10 prll fltr buffering.data* \
     > buffering.dat10b || exit 1
 
 stats=0

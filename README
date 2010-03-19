@@ -35,8 +35,7 @@ REQUIREMENTS
   - OS support for System V Message Queues and Semaphores
   - device files /dev/urandom or /dev/random
   - the cat utility
-  - optional tests require utilites tr, grep, sort, split,
-    sed, diff and uname
+  - optional tests require utilites tr, grep, sort, split, diff and uname
 
 Systems tested: GNU/Linux, FreeBSD, OpenBSD, MacOS X
 
