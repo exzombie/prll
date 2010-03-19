@@ -14,6 +14,7 @@
    If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "config.h"
 #define _SVID_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +23,9 @@
 #include <unistd.h>
 #include <limits.h>
 #include <assert.h>
+#ifdef HAVE_MALLOPT_H
 #include <malloc.h>
+#endif
 #include <sys/sem.h>
 #include "mkrandom.h"
 
@@ -87,8 +90,11 @@ int main(int argc, char ** argv) {
 
   // Get 16 pages per malloc and let free release memory back to the OS.
   page_size = 16 * (size_t)sysconf(_SC_PAGESIZE);
+
+#ifdef HAVE_MALLOPT_H
   mallopt(M_TRIM_THRESHOLD, page_size-1);
   mallopt(M_MMAP_THRESHOLD, page_size-1);
+#endif
 
   key_t skey;
   int sid;
