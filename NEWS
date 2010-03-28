@@ -1,6 +1,15 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+Version 0.4.9999
+
+- Build process now configures build-time options (currently checks
+  only for mallopt()).
+- Full output buffering to prevent output interleaving.
+- Interrupting execution from within functions is possible.
+- Licence changed to GPL version 3 or later for prll.sh as well.
+
+
 Version 0.4
 
 - Job PID and exit code are printed.
@@ -22,9 +31,10 @@ Version 0.3
 
 - README tracks known issues.
 - Graceful termination is done using Ctrl+C.
-- ksharrays option is enabled in zsh for prll only, without annoying users who
-  don't like this option in their sessions.
-- Code is passed in a string instead of a shell function for shorter one-liners.
+- ksharrays option is enabled in zsh for prll only, without annoying
+  users who don't like this option in their sessions.
+- Code is passed in a string instead of a shell function for shorter
+  one-liners.
 - A changelog is included, dumped from git.
 
 
@@ -32,8 +42,10 @@ Version 0.2
 
 - The ability to suspend execution.
 - Short usage instructions are printed.
-- zsh users are no longer annoyed by enabling ksharrays behind their backs.
-- Debugging and progress monitoring are helped by printing function arguments.
+- zsh users are no longer annoyed by enabling ksharrays behind
+  their backs.
+- Debugging and progress monitoring are helped by printing function
+  arguments.
 
 
 Version 0.1
