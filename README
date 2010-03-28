@@ -192,7 +192,10 @@ creep in and cause spurious output, you can avoid accidental memory
 hogging by disabling buffering with the '-b' option.
 
 Let it be clear that this size limitation applies to the individual
-job's output. It does not concern the size of the whole output.
+job's output. It does not concern the size of the whole output. For
+example, if you have 1000 jobs, you run 5 of them at a time, and each
+prints 10MB of data, using buffering will take up at most 50MB of RAM,
+not 10000MB. If you can't spare those 50MB, use files to collect data.
 
 Standard error is not buffered and will not cause memory consumption.
 
