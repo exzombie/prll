@@ -7,7 +7,8 @@ compile: prll_qer prll_bfr
 
 clean:
 	rm -f prll_qer prll_bfr mkrandom.o
-	rm -f $(foreach cfger, .h _keytype _mallopt, config$(cfger))
+	rm -f $(foreach cfger, .h _keytype _mallopt, config$(cfger) \
+		config$(cfger).log)
 	$(MAKE) -C tests clean
 
 test: prll_qer prll_bfr
@@ -18,10 +19,12 @@ test: prll_qer prll_bfr
 check-syntax:
 	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
 
-prll_bfr prll_qer: mkrandom.o mkrandom.h config.h
+prll_bfr prll_qer: mkrandom.o mkrandom.h | config.h
 
 config.h: config_keytype.c config_mallopt.c
-	echo "// Automatically generated configuration for prll." > $@
-	$(foreach cfger,$^,\
-	$(MAKE) $(cfger:.c=) && ./$(cfger:.c=) >> $@ || true; \
-	)
+	@echo "--==CONFIGURING==--"
+	@echo "// Automatically generated configuration for prll." > $@
+	@$(foreach cfger,$^,\
+	$(MAKE) $(cfger:.c=) 2>$(cfger:.c=.log) && ./$(cfger:.c=) >> $@ \
+	|| true; )
+	@echo "--==DONE CONFIGURING==--"
