@@ -138,6 +138,8 @@ emulates the 'xargs' utility a bit, but is easier for interactive use
 because xargs makes it hard to pass complex commands.
 
 The '-b' option disables output buffering. See below for explanation.
+Alternatively, buffering may be disabled by setting the PRLL_BUFFER
+environment variable to "no".
 
 The number of tasks to be run in parallel is provided via the
 PRLL_NR_CPUS environment variable. If it is not provided, prll will

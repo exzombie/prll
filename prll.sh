@@ -41,7 +41,7 @@ function prll() {
 	return 1
     fi
     # Do we do buffering?
-    if [[ $1 == "-b" ]] ; then
+    if [[ $1 == "-b" || $PRLL_BUFFER == "no" || $PRLL_BUFFER == 0 ]] ; then
 	local prll_unbuffer=yes
 	shift
     else
