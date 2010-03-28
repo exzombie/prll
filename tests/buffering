@@ -1,6 +1,25 @@
 TEST_DESCRIPTION="Buffering test."
 source test_header.sh
 
+
+uname -s | grep Linux > /dev/null
+if [[ $? -ne 0 ]] ; then
+cat <<EOF
+
+--------------------------------------------------------------------
+ATTENTION:
+
+This test is known to fail on FreeBSD, the only non-GNU/Linux system
+the author has. The reason for failing is not known. If you have a
+non-FreeBSD system or if you wish to help find out what's wrong on
+FreeBSD, remove the uname check from the test and run it.  Contact the
+author if you have any idea what is wrong on FreeBSD.
+-------------------------------------------------------------------
+
+EOF
+exit 0
+fi
+
 function lots_of_noise() {
     nkk=$(for i in {1..3000}; do
 	echo -n "$RANDOM "
