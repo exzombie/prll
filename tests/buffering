@@ -6,14 +6,19 @@ function lots_of_noise() {
 	echo -n "$RANDOM " # Make a long line
 	done | tr '\n' ' ')
     nkk2=$(for i in {1..50} ; do echo -n $nkk; done) # Make a longer line
-    for i in {1..100}; do echo $RANDOM $nkk2; done # Make lines slightly unique
+    count=0
+    for i in {1..100}; do
+	# Make lines slightly unique
+    	echo $RANDOM $nkk2 > buffering.data$(printf "%02d" $count)
+	let count+=1
+    done
 }
 
 function fltr() { cat $1 | tr 5 6 ; }
 
 if [[ ! -f buffering.ref ]] ; then
     echo "Making reference data."
-    lots_of_noise | split -l1 - buffering.data
+    lots_of_noise
     cat buffering.data* | fltr - | sort > buffering.ref
 fi
 
