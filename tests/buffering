@@ -22,10 +22,10 @@ fi
 
 function lots_of_noise() {
     nkk=$(for i in {1..3000}; do
-	echo -n "$RANDOM "
+	echo -n "$RANDOM " # Make a long line
 	done | tr '\n' ' ')
-    nkk2=$(for i in {1..50} ; do echo -n $nkk; done)
-    for i in {1..100}; do echo $nkk2; done
+    nkk2=$(for i in {1..50} ; do echo -n $nkk; done) # Make a longer line
+    for i in {1..100}; do echo $RANDOM $nkk2; done # Make lines slightly unique
 }
 
 function fltr() { cat $1 | tr 5 6 ; }
