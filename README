@@ -57,12 +57,6 @@ jobs, depending on the number of existing queues, while a Linux system
 can run over 500 jobs; at that point, the shell's job table becomes
 saturated.
 
-Another limitation on non-Linux systems is that output buffering seems
-to be unreliable. While it is enabled by default, it can be easily
-disabled if necessary. See further down for more information on what
-buffering does, why it is useful and what to do if you can't use it.
-
-
 INSTALLATION
 ------------
 
@@ -280,8 +274,6 @@ contact the author. Suggestions are welcome, patches even more so.
 
 
 Known issues:
-
-- Buffering is unreliable on FreeBSD and possibly other systems.
 
 - Expand the test suite.
   Specifically, termination behaviour on external interrupt signal
