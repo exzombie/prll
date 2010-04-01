@@ -85,7 +85,8 @@ your system, you may be running out of IPC memory. That would cause
 some tests to fail or hang (in fact, some are disabled on non-Linux
 systems for this reason), while it wouldn't interfere with normal
 operation as long as you don't run too many parallel jobs. Also, be
-aware that full testing requires about 100MB disk space.
+aware that full testing requires several hundred megabytes of disk
+space.
 
 When prll is built, copy the prll_qer and prll_bfr executables to a
 directory you have in your PATH. For example, to do a system-wide
@@ -129,7 +130,8 @@ you wish to execute it on.
 
 As an alternative, you may pass the '-s' flag, followed by a
 string. The string will be executed as if it were the body of a shell
-function. Therefore, you may use $1 to reference it's first parameter.
+function. Therefore, you may use $1 to reference its first parameter.
+Be sure to quote the string properly to prevent shell expansion.
 
 Instead of arguments, you can use flags '-p' or '-0'. prll will then
 take it's arguments from stdin. The '-p' flag will make it read lines
@@ -155,7 +157,12 @@ automatically because only you can decide whether they are still doing
 useful work or not. Also, jobs print completion notifications on their
 own so you will know when they are done even if prll itself is
 terminated. Should that be the case, they will also print a harmless
-'file not found' message because the message queue will be removed.
+'file not found' message because the message queue will be
+removed. But be aware that if you force prll to terminate by using
+Ctrl+C twice, the semaphore used to synchronise buffers will be
+removed along with the message queue and your jobs will be unable to
+print anything. This is not a problem when jobs don't write to
+standard output or when buffering is disabled.
 
 The command 'prll_interrupt' is available from within your
 functions. It causes prll to abort execution in the same way as
@@ -210,7 +217,10 @@ once, you should use
 
 Or, to make it permanent in the current shell, do
 
-  export PRLL_NR_CPUS=3
+  PRLL_NR_CPUS=3
+
+on a line of its own. You don't need to export the variable because
+prll automatically has access to everything your shell can see.
 
 
 To make things shorter, you can leave out the 'function' keyword when
@@ -243,6 +253,9 @@ function. Here is a stub for a function that takes three arguments:
   function myfn() { read a b c <<<$1 ; process $a; compute $b; kill $c; }
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
+If you have even more complex requirements, you can use the '-0'
+option and pipe null-delimited data into prll.
+
 
 You may wish to abort execution if one of the results is wrong. In
 that case, use something like this:
@@ -250,8 +263,8 @@ that case, use something like this:
      function myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
 
 
-If you have many arguments to process, it might be easier to pass them
-on standard input. Suppose each line of a file is an argument of its
+If you have many arguments to process, it might be easier to pipe them
+to standard input. Suppose each line of a file is an argument of its
 own. Simply pipe the file into prll:
 
   function myfn() { some; processing | goes && on; here; }
@@ -263,7 +276,8 @@ KNOWN ISSUES
 
 This section describes issues and bugs that were known at the time of
 release. For more current information, check the newer version of this
-file. You can find it in the project's git repository:
+file. You can find it in the project's git repository, also accessible
+directly using a web browser:
 
   http://prll.git.sourceforge.net/git/gitweb.cgi?p=prll/prll;a=tree
 
