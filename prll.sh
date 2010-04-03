@@ -178,12 +178,12 @@ function prll() {
 		    prll_jarg="${prll_params[$prll_progress]}"
 		fi
 	    elif [[ $prll_read == "stdin" ]] ; then
-		read prll_jarg
+		IFS='\n' read prll_jarg
 		if [[ $? -ne 0 ]] ; then
 		    eval "$prll_finish_code"
 		fi
 	    elif [[ $prll_read == "null" ]] ; then
-		read -r -d $'\0' prll_jarg
+		IFS='' read -r -d $'\0' prll_jarg
 		if [[ $? -ne 0 ]] ; then
 		    eval "$prll_finish_code"
 		fi
