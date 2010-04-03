@@ -117,7 +117,7 @@ int main(int argc, char ** argv) {
 	fprintf(stderr, "%s: Error accessing /dev/(u)random.\n", argv[0]);
 	return 1;
       }
-    } while (-1 == (qid = msgget(qkey, 0644 | IPC_CREAT | IPC_EXCL))
+    } while (-1 == (qid = msgget(qkey, 0600 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
     if (qid == -1) {
       fprintf(stderr, "%s: Couldn't create message queue.\n", argv[0]);
