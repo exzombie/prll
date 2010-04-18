@@ -370,6 +370,15 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
+- Reading standard input is slow.
+  This is mostly fine because it only gets annoying when reading
+  rather large chunks, and in such a case, it is reasonable to split
+  them into separate files. It is only really inconvenient when you
+  have a huge file which you cannot afford to split. Implementing a
+  faster internal splitting on stdin is quite possible, but difficult
+  to do elegantly. It will only be considered if there is a genuine
+  need for it.
+
 - Expand the test suite.
   Specifically, termination behaviour on external interrupt signal
   currently has to be checked manually. Also, checking of stderr
