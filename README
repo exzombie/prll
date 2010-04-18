@@ -10,9 +10,24 @@ simple to fully utilize a multicore/multiprocessor machine.
 
 Homepage: http://prll.sourceforge.net/
 
+Contents of this file:
+----------------------
 
-DESCRIPTION
-===========
+  1 - Description
+  2 - Requirements
+  3 - Installation
+  4 - Usage
+    4.1 - Summary of options
+    4.2 - Operation
+    4.3 - Aborting execution and cleanup
+    4.4 - Buffering
+    4.5 - Examples
+  5 - Known Issues
+  6 - Licensing Information
+
+
+1 DESCRIPTION
+=============
 
 prll is designed to be used not just in shell scripts, but especially
 in interactive shells. To make the latter convenient, it is
@@ -26,8 +41,8 @@ because of concurrent output.
 [1] http://prll.sourceforge.net/shell_parallel.html
 
 
-REQUIREMENTS
-============
+2 REQUIREMENTS
+==============
 
   - bash or zsh
   - C compiler, such as gcc
@@ -58,8 +73,8 @@ can run over 500 jobs; at that point, the shell's job table becomes
 saturated.
 
 
-INSTALLATION
-============
+3 INSTALLATION
+==============
 
 Compile prll_qer.c. You can use the included Makefile. If you
 have gcc, you can simply run
@@ -117,16 +132,16 @@ have every shell source it instead of only login shells, insert
 into your .bashrc or .zshrc.
 
 
-USAGE
-=====
+4 USAGE
+=======
 
 Synopsis: prll [-b] function_name arguments ...
 	  prll [-b] -s 'code' arguments ...
 
 Order of options is important.
 
-Summary of options:
--------------------
+4.1 Summary of options:
+-----------------------
 
   function_name:   Name of the shell function to be executed.
   arguments:	   List of arguments that function_name should be
@@ -140,8 +155,8 @@ Summary of options:
   -0	Same as -p, but use the null character as delimiter instead of
   	newline.
 
-Operation:
-----------
+4.2 Operation:
+--------------
 
 To execute a task, create a shell function that does something to its
 first argument. Pass that function to prll along with the arguments
@@ -171,8 +186,8 @@ PRLL_NR_CPUS environment variable. If it is not provided, prll will
 look into the /proc/cpuinfo file and extract the number of CPUs in
 your computer.
 
-Aborting execution and cleanup:
--------------------------------
+4.3 Aborting execution and cleanup:
+-----------------------------------
 
 If you need to abort execution, you can do it with the usual Ctrl+C
 key combination. prll will wait for remaining jobs to complete before
@@ -199,8 +214,8 @@ queues or semaphores, you can list them with the 'ipcs' command and
 remove them with the 'ipcrm' command. Refer to your system's
 documentation for details.
 
-Buffering:
-----------
+4.4 Buffering:
+--------------
 
 Transport of data between programs is normally buffered by the
 operating system. These buffers are small (e.g. 4kB on Linux), but are
@@ -281,8 +296,8 @@ output. OS buffers standard error differently (i.e. by lines) and prll
 does nothing to change that.
 
 
-Examples:
----------
+4.5 Examples:
+-------------
 
 Suppose you have a set of photos that you wish to process using the
 'mogrify' utility. Simply do
@@ -352,8 +367,8 @@ own. Simply pipe the file into prll:
   cat file_with_arguments | prll myfn -p > results
 
 
-KNOWN ISSUES
-------------
+5 KNOWN ISSUES
+==============
 
 This section describes issues and bugs that were known at the time of
 release. For more current information, check the newer version of this
@@ -392,8 +407,8 @@ Known issues:
   disown jobs if such a large number of them should be required.
 
 
-LICENSING INFORMATION
----------------------
+6 LICENSING INFORMATION
+=======================
 
 The prll package is provided under the GNU General Public
 License, version 3 or later. See COPYING for more information.
