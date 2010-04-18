@@ -394,6 +394,9 @@ Known issues:
   to do elegantly. It will only be considered if there is a genuine
   need for it.
 
+- User should be able to limit buffer memory usage, but still use
+  buffering without loss of data. Is this possible to solve elegantly?
+
 - Expand the test suite.
   Specifically, termination behaviour on external interrupt signal
   currently has to be checked manually. Also, checking of stderr
