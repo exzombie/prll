@@ -2,17 +2,17 @@ prll
 version 0.4.9999
 ===========
 
-prll is a utility for use with bash or zsh. It provides a convenient
-interface for parallelizing the execution of a single task over
-multiple data files, or actually any kind of data that you can pass as
-a function argument. It is meant to make it simple to fully utilize a
-multicore/multiprocessor machine.
+prll (pronounced "parallel") is a utility for use with bash or zsh. It
+provides a convenient interface for parallelizing the execution of a
+single task over multiple data files, or actually any kind of data
+that you can pass as a function argument. It is meant to make it
+simple to fully utilize a multicore/multiprocessor machine.
 
 Homepage: http://prll.sourceforge.net/
 
 
 DESCRIPTION
------------
+===========
 
 prll is designed to be used not just in shell scripts, but especially
 in interactive shells. To make the latter convenient, it is
@@ -27,7 +27,7 @@ because of concurrent output.
 
 
 REQUIREMENTS
-------------
+============
 
   - bash or zsh
   - C compiler, such as gcc
@@ -57,8 +57,9 @@ jobs, depending on the number of existing queues, while a Linux system
 can run over 500 jobs; at that point, the shell's job table becomes
 saturated.
 
+
 INSTALLATION
-------------
+============
 
 Compile prll_qer.c. You can use the included Makefile. If you
 have gcc, you can simply run
@@ -117,12 +118,30 @@ into your .bashrc or .zshrc.
 
 
 USAGE
------
+=====
 
 Synopsis: prll [-b] function_name arguments ...
 	  prll [-b] -s 'code' arguments ...
 
 Order of options is important.
+
+Summary of options:
+-------------------
+
+  function_name:   Name of the shell function to be executed.
+  arguments:	   List of arguments that function_name should be
+  		   executed over.
+
+  -b	Disable output buffering.
+  -s	Take a string of shell code instead of a shell function name.
+  -p	Read arguments as lines from standard input instead of command
+  	line. This option must be used at the end of command line
+  	(i.e. instead of the argument list).
+  -0	Same as -p, but use the null character as delimiter instead of
+  	newline.
+
+Operation:
+----------
 
 To execute a task, create a shell function that does something to its
 first argument. Pass that function to prll along with the arguments
@@ -130,14 +149,18 @@ you wish to execute it on.
 
 As an alternative, you may pass the '-s' flag, followed by a
 string. The string will be executed as if it were the body of a shell
-function. Therefore, you may use $1 to reference its first parameter.
+function. Therefore, you may use $1 to reference its first argument.
 Be sure to quote the string properly to prevent shell expansion.
 
 Instead of arguments, you can use flags '-p' or '-0'. prll will then
-take it's arguments from stdin. The '-p' flag will make it read lines
+take its arguments from stdin. The '-p' flag will make it read lines
 and the '-0' flag will make it read null-delimited input. This mode
 emulates the 'xargs' utility a bit, but is easier for interactive use
-because xargs makes it hard to pass complex commands.
+because xargs makes it hard to pass complex commands. Reading large
+arguments (such as lines several kilobytes long) in this fashion is
+slow, however. If your data comes in such large chunks, it is much
+faster to split it into several files and pass a list of those to prll
+instead.
 
 The '-b' option disables output buffering. See below for explanation.
 Alternatively, buffering may be disabled by setting the PRLL_BUFFER
@@ -147,6 +170,9 @@ The number of tasks to be run in parallel is provided via the
 PRLL_NR_CPUS environment variable. If it is not provided, prll will
 look into the /proc/cpuinfo file and extract the number of CPUs in
 your computer.
+
+Aborting execution and cleanup:
+-------------------------------
 
 If you need to abort execution, you can do it with the usual Ctrl+C
 key combination. prll will wait for remaining jobs to complete before
@@ -173,35 +199,90 @@ queues or semaphores, you can list them with the 'ipcs' command and
 remove them with the 'ipcrm' command. Refer to your system's
 documentation for details.
 
-IMPORTANT:
+Buffering:
+----------
 
-prll does internal output buffering by default. This is to prevent
-interleaving of several jobs' outputs and thus mangling of data. Each
-job has its own buffer into which it writes, and these buffers make
-sure that at most one job writes to standard output at any one
-time. This buffer is not limited in size, and might read all data that
-a job writes. Therefore, if your jobs print a lot of data on standard
-output, they will consume A LOT OF MEMORY.
+Transport of data between programs is normally buffered by the
+operating system. These buffers are small (e.g. 4kB on Linux), but are
+enough to enhance performance. Multiple programs writing to the same
+destination, as is the case with prll, is then arranged like this:
 
-If your jobs print a lot of data, you need to redirect each job's
-standard output to a file, and each job needs it's own file. In that
-case, everything will be fine. It complicates writing the shell
-function, though. If you believe that each of your jobs will output
-only a small amount of data (up to 4kB on Linux, it depends on the
-size of your OS' pipe buffer) but you are afraid that errors might
-creep in and cause spurious output, you can avoid accidental memory
-hogging by disabling buffering with the '-b' option.
+  +-----+    +-----------+
+  | job |--->| OS buffer |\
+  +-----+    +-----------+ \
+			    \
+  +-----+    +-----------+   \+-------------+
+  | job |--->| OS buffer |--->| Output/File |
+  +-----+    +-----------+   /+-------------+
+			    /
+  +-----+    +-----------+ /
+  | job |--->| OS buffer |/
+  +-----+    +-----------+
 
-Let it be clear that this size limitation applies to the individual
-job's output. It does not concern the size of the whole output. For
-example, if you have 1000 jobs, you run 5 of them at a time, and each
-prints 10MB of data, using buffering will take up at most 50MB of RAM,
-not 10000MB. If you can't spare those 50MB, use files to collect data.
+The output can be passed to another program, over a network or into a
+file. But the jobs run in parallel, so the question is: what will the
+data they produce look like at the destination when they write it at
+the same time?
 
-Standard error is not buffered and will not cause memory consumption.
+If a job writes less data than the size of the OS buffer, then
+everything is fine: the buffer is never filled and the OS flushes it
+when the job exits. All output from that job is in one piece because
+the OS will flush only one buffer at a time.
+
+If, however, a job writes more data than that, then the OS flushes the
+buffer each time it is filled. Because several jobs run in parallel,
+their outputs become interleaved at the destination, which is not
+good.
+
+prll does additional job output buffering by default. The actual
+arrangement when running prll looks like this:
+
+  +-----+    +-----------+    +-------------+
+  | job |--->| OS buffer |--->| prll buffer |\
+  +-----+    +-----------+    +-------------+ \
+			       	     | 	       \
+  +-----+    +-----------+    +-------------+   \+-------------+
+  | job |--->| OS buffer |--->| prll buffer |--->| Output/File |
+  +-----+    +-----------+    +-------------+   /+-------------+
+			       	     | 	       /
+  +-----+    +-----------+    +-------------+ /
+  | job |--->| OS buffer |--->| prll buffer |/
+  +-----+    +-----------+    +-------------+
+
+Note the vertical connections between prll buffers: they synchronise
+so that they only write data to the destination one at a time. They
+make sure that all of the output of a single job is in one piece. To
+keep performance high, the jobs must keep running, therefore each
+buffer must be able to keep taking in data, even if it cannot
+immediately write it. To make this possible, prll buffers aren't
+limited in size: they grow to accomodate all data a job produces.
+
+This raises another concern: you need to have enough memory to contain
+the data until it can be written. If your jobs produce more data than
+you have memory, you need to redirect it to files. Have each job
+create a file and redirect all its output to that file. You can do
+that however you want, but there should be a helpful utility available
+on your sysyem: 'mktemp'. It is dedicated to creating files with
+unique names.
+
+As noted at the beginning of this section, prll's additional buffering
+can be disabled. It is not necessary to do this when each job writes
+to its own file. It is meant to be used as a safety measure. prll was
+written with interactive use in mind, and when writing functions on
+the fly, it can easily happen that an error creeps in. If an error
+causes spurious output (e.g. if the function gets stuck in an infinite
+loop) it can easily waste a lot of memory. The option to disable
+buffering is meant to be used when you believe that your jobs should
+only produce a small amount of data, but aren't sure that they
+actually will.
+
+It should be noted that buffering only applies to standard
+output. OS buffers standard error differently (i.e. by lines) and prll
+does nothing to change that.
 
 
 Examples:
+---------
 
 Suppose you have a set of photos that you wish to process using the
 'mogrify' utility. Simply do
