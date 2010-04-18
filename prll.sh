@@ -178,7 +178,7 @@ function prll() {
 		    prll_jarg="${prll_params[$prll_progress]}"
 		fi
 	    elif [[ $prll_read == "stdin" ]] ; then
-		IFS='\n' read prll_jarg
+		IFS='' read -r -d $'\n' prll_jarg
 		if [[ $? -ne 0 ]] ; then
 		    eval "$prll_finish_code"
 		fi
@@ -189,7 +189,7 @@ function prll() {
 		fi
 	    else
 		echo "Something's wrong..." 1>&2
-		exit 1
+		return 1
 	    fi
 
 	    (
