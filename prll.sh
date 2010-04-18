@@ -13,27 +13,32 @@
 #  If not, see <http://www.gnu.org/licenses/>.
 
 function prll() {
-    if [[ -z $1 ]] ; then
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" ]] ; then
 	cat <<-EOF
 	prll version 0.4.9999
 	Copyright 2009-2010 Jure Varlec
 
 	USAGE: prll [-b] fun_name fun_arg1 fun_arg2 fun_arg3 ...
 	       prll [-b] -s 'fun_string' fun_arg1 fun_arg2 ...
-	
+
 	Order of options is important.
+
 	Shell function 'fun_name' will be run for each 'fun_arg'.
 	Alternatively, using -s, shell code 'fun_string' will be executed.
+
 	Instead of 'fun_args', option -p may be given, which will cause
 	prll to read lines from its standard input.
 	Alternatively, option -0 will make it read null-delimited input.
+
 	Option -b disables output buffering.
+
 	The number of processes to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable. If it is unset, prll will
 	attempt to read the number of CPUs from /proc/cpuinfo.
+
 	See the README for more information.
 	EOF
-	return 1
+	[[ -z "$1" ]] && return 1 || return 0
     fi
     /usr/bin/which prll_qer > /dev/null
     if [[ $? -ne 0 ]] ; then
