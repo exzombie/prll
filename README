@@ -214,10 +214,12 @@ The command 'prll_interrupt' is available from within your
 functions. It causes prll to abort execution in the same way as
 described above.
 
-prll cleans after itself, but if you are worried about stale message
-queues or semaphores, you can list them with the 'ipcs' command and
-remove them with the 'ipcrm' command. Refer to your system's
-documentation for details.
+prll cleans after itself, except when you force termination. If you
+are worried about stale message queues or semaphores, you can list
+them with the 'ipcs' command and remove them with the 'ipcrm'
+command. Refer to your system's documentation for details. Be aware
+that other programs might (and often do) make use of IPC facilities,
+so make sure you remove the correct queue or semaphore.
 
 4.4 Buffering:
 --------------
@@ -389,6 +391,12 @@ contact the author. Suggestions are welcome, patches even more so.
 
 
 Known issues:
+
+- Forced termination (Ctrl+C pressed twice) should clean up.
+
+- prll is not compatible with POSIX shells.
+  Martin Väth has provided a port of a previous version. Changes will
+  be merged in the future.
 
 - Reading standard input is slow.
   This is mostly fine because it only gets annoying when reading
