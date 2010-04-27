@@ -8,6 +8,7 @@ Version 0.4.9999
   only for mallopt()).
 - Full output buffering to prevent output interleaving.
 - Interrupting execution from within functions is possible.
+- Installing system-wide will not break non-compatible shells.
 - Licence changed to GPL version 3 or later for prll.sh as well.
 
 

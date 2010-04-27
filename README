@@ -131,11 +131,6 @@ have every shell source it instead of only login shells, insert
 
 into your .bashrc or .zshrc.
 
-ATTENTION: Do not install prll.sh into /etc/profile.d if any user on
-your machine uses a Bourne shell other than bash or zsh, as it might
-cause problems. Put it somewhere else, where interested users can
-source it from ther .bashrc or .zshrc.
-
 
 4 USAGE
 =======
