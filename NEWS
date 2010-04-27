@@ -1,7 +1,7 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
-Version 0.4.9999
+Version 0.5
 
 - Makefiles require GNU make.
 - Build process now configures build-time options (currently checks

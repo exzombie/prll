@@ -1,5 +1,5 @@
 prll
-version 0.4.9999
+version 0.5
 ===========
 
 prll (pronounced "parallel") is a utility for use with bash or zsh. It

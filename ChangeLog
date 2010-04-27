@@ -1,106 +1,448 @@
-commit 9aa5129 (refs/remotes/origin/master, refs/heads/master)
+commit ba94858f9c668c427fcec01ce685fe785467b3ad
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Apr 27 11:24:28 2010 +0200
+
+    Prevent non-{bash,zsh} shells from sourcing prll.sh.
+
+commit 6e2d77b26dc4fd908cb5a5539cedb898f6a6d5cb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Apr 26 16:34:23 2010 +0200
+
+    Known issues: cleanup on forced termination and POSIX compatibility.
+
+commit c6d207312cf22001e6bb3384bb741b687309531c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Apr 26 09:42:38 2010 +0200
+
+    Warn about installing system-wide with other shells.
+
+commit 897da83e165843b9d5d0522c6da122babdeb5e04
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 22:51:29 2010 +0200
+
+    Enhance the usage string.
+
+commit a4b4454daff766200e388128aa63e34ba08dd0b5
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 22:04:53 2010 +0200
+
+    Fix reading lines and turn an exit statement into return.
+
+commit fb647397e972092d1df74fb29c17efb5981d3083
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 21:47:45 2010 +0200
+
+    Add limiting buffer memory to known issues.
+
+commit d0460837bd3f06ddac06633cd330835681034343
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 21:37:03 2010 +0200
+
+    README: fix sectioning and add table of contents.
+
+commit eb428f4caf70cae440490da00060453b8b392ae5
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 17:50:38 2010 +0200
+
+    Add slow reading of stdin to known issues.
+
+commit 1439912158742bcf527b5d8bd9894ce35f96df6b
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Apr 18 17:45:09 2010 +0200
+
+    README: better sectioning and deeper explanation of buffering.
+
+commit f7c98aa317753188247769f0778abb25b157783c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Apr 3 13:07:30 2010 +0200
+
+    Make permissions on queues and semaphores more restrictive.
+
+commit b45ce1682167be7859df34a46b50821de16e1e45
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Apr 3 12:02:18 2010 +0200
+
+    Fix handling of non-printable characters when using stdin.
+
+commit c19e72ec4d226b00aa3cc096380b8efdae85c034
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Apr 1 21:12:56 2010 +0200
+
+    README: corrections and clarifications.
+
+commit 3dee3daa9dce4c719a0cb51aff456a95c73bebc0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 31 15:05:14 2010 +0200
+
+    Avoid using 'split' in buffering test. Fixes FreeBSD.
+
+commit 39697aa41420167f0267558f799ce2992e5f7675
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 31 14:59:01 2010 +0200
+
+    Revert the disabling of buffering on non-Linux systems.
+    
+    This reverts commit 9abd16181c1c1fc810bdd5ed67e76eefeff5393a and
+    commit 0d5124c763f3049d85cdbfa25604abb985111518.
+
+commit 1ab120fe357e7eb738aabd22a8875f2c50853dec
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 31 13:42:54 2010 +0200
+
+    Enhance the buffering test by making lines unique.
+
+commit 58999c35cb1c403673ea0067621a814acdb051ac
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 22:11:52 2010 +0200
+
+    Update NEWS.
+
+commit 584a64c74a60c55f603a691452351ae31eb65a1e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 22:07:27 2010 +0200
+
+    Update NEWS. Also, reformat it as lines were too long.
+
+commit fb9caf47742899211b0708fe3a17d330cf8dbd7b
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 21:04:48 2010 +0200
+
+    Clarify the buffer size in README.
+
+commit 0d5124c763f3049d85cdbfa25604abb985111518
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 20:51:09 2010 +0200
+
+    Note the buffering issue in the README, also add it to known issues.
+
+commit 9f84ab7bac3ce93b0aee69437875d45432adbd41
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 20:37:18 2010 +0200
+
+    Control buffering via environment variable.
+
+commit c0e6cd341eb75b809945a712f09f4f10581b79bc
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 20:13:48 2010 +0200
+
+    Make configuration and compilation cleaner.
+
+commit 9abd16181c1c1fc810bdd5ed67e76eefeff5393a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 19:24:49 2010 +0200
+
+    Disable the buffering test on non-Linux systems with big fat notice.
+
+commit 1e6dcb24c26cd00b053016a7aca301ecde55acbb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 28 18:52:34 2010 +0200
+
+    Fix interrupt test.
+    
+    It now seems to work reliably both in bash and zsh. Fixed by
+    only failing the test if several attempts fail consistently.
+
+commit 096db0af09351d5fe344558d521aa7d845b0ac9a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Mar 19 11:13:15 2010 +0100
+
+    Get rid of sed dependence in tests for BSD compatibility.
+
+commit 214fba4f6db2dad3b94e4ba2a62a270a739bf0f2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Mar 19 10:26:52 2010 +0100
+
+    Implement compile tests.
+    
+    We need some kind of configuration, but autotools are quite an overkill.
+    This commit includes tests for size of key_t and usability of mallopt().
+
+commit 4743db85c90ce69fd221ee31c052aeb56d8a5528
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Thu Mar 18 08:35:39 2010 +0100
+
+    Support only GNU make.
+
+commit 1470923d967761fd4448444120596262fd4af865
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 17 21:08:29 2010 +0100
+
+    Make the job send the finish message only after bfr has finished.
+
+commit b43864e939cb6db5fcb47b84a32473dd7147347f
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 17 20:34:04 2010 +0100
+
+    Fix tests.
+
+commit fc908e58e01ff253a80873ac1d41a6bf82af0bc3
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 17 18:26:37 2010 +0100
+
+    Make interrupt test bash only.
+    
+    In zsh, output order is not as predictable. The test fails as a false
+    positive in about a third of cases.
+
+commit b950a38b57252d07c1a1103f190564bf1b5fe2ed
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Wed Mar 17 09:07:15 2010 +0100
+
+    Document buffering. Various other small fixes in README.
+
+commit b3344d954ba6c2d84a1d838b182ba3c15e90bdfa
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Mar 16 20:35:33 2010 +0100
+
+    Fix the interrupt test.
+    
+    It checks the order of output, so it must run unbuffered.
+
+commit 8f17cac060771e5dfa4374b7468ba99c834aaa14
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Mar 16 20:20:22 2010 +0100
+
+    Add dependence on prll_bfr for the test target.
+
+commit 3a468ee13f475584fa01ff49ced919bb2e9942d2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Mar 16 20:19:10 2010 +0100
+
+    Expand the buffering test and enable it in the makefile.
+
+commit 531cecf4ddf5fb91d0050f7946051be5fc543347
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Mar 16 20:17:31 2010 +0100
+
+    Use buffering in the shell function.
+
+commit 79250bc7226b7b071b74ae2a98d8b9267ea1ffb0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 14 17:04:48 2010 +0100
+
+    Optimize memory allocation.
+    
+    Use bigger chunks. Order malloc to use mmap to get memory so that
+    it can be released back to the system.
+
+commit c03c51b7375b9b107e0b023860a9611ef0270b6c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 14 11:53:09 2010 +0100
+
+    Free buffer memory on the fly when writing.
+
+commit dc1c2d4699ff8003fcc783bde8fcb0fb0ef4e42c
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 14 11:47:37 2010 +0100
+
+    Use semaphores to lock buffer output.
+
+commit 29704cdbd683af2e9c6b72e1b319dea4da45846a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 14 11:18:03 2010 +0100
+
+    Semaphore creation and removal.
+
+commit ced98f8413624475f40be1633dd77391729acaac
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 14 10:24:53 2010 +0100
+
+    Initial implementation of buffering.
+    
+    Does not do semafores yet.
+
+commit 2a2b84d49bc5d4448f1110d3978de1547d8c0cfb
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sat Mar 13 23:05:34 2010 +0100
+
+    Fix emacs' flymake line to use C99 mode.
+
+commit a587353b5c3671f7f94bb7c5f35c2543b734d56b
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Mar 12 11:52:42 2010 +0100
+
+    Buffering test implemented, but not enabled in makefile.
+    
+    It fails, of course, since output buffering isn't enabled yet.
+
+commit 6e7d3988448cf61899f2b5b9a6a07cf0196b7e0a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Fri Mar 12 11:59:37 2010 +0100
+
+    Change the header sourcing line in tests.
+
+commit b84c2f28e3d8ced9c8e04e0afa2c5792f3e1834a
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 12:16:59 2010 +0100
+
+    Document interrupting from a function.
+
+commit acfc1b7264ae87e6f6093bd8228c456a6124b9fd
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 12:05:58 2010 +0100
+
+    Test the interruption.
+
+commit bb524306c7c295baf248c0eea249d441dd4f37a0
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 11:54:02 2010 +0100
+
+    Enable interrupting from within a function.
+
+commit 0bec36ca74988953b91cbe5f7218f14e423e5624
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 10:41:49 2010 +0100
+
+    Remove the sanity check and split random out of qer.
+
+commit 4efca421e187342dc1218ef70984de5dcbb618e2
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 10:07:48 2010 +0100
+
+    Rename the jobserver, because it isn't one anymore.
+
+commit fc1e5a71fcd4f8de821de6057b8e4f2128c9a38e
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Mar 7 09:21:08 2010 +0100
+
+    Licence change.
+    
+    The prll function has grown quite a bit bigger than before.
+    It's not something small/trivial to just put into a script anymore.
+
+commit c2f5334ce61d354047d6805b035f17ac83103445
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Mar 1 18:07:52 2010 +0100
+
+    Split test header. Print the shell type when testing.
+
+commit 168f31b4ba9e3e21f63c6c6cda52de2f4097a8d4
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Mon Mar 1 17:49:56 2010 +0100
+
+    Being a shell function is not really an issue, removed. Fixed a typo.
+
+commit 2d809d90d09f70e9f79263c1c4ab7f9ea189ae87
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Feb 23 10:54:08 2010 +0100
+
+    Change another recursive make call for OpenBSD compatibility.
+
+commit 47c0cd5395e564bc7da9b7c6cb6348cf39c165e8
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Tue Feb 23 10:51:59 2010 +0100
+
+    Post-release version number.
+
+commit 27a8a36f28aa939fb54cd63363f41fefa8ea26a5
+Author: Jure Varlec <jure.varlec@gmail.com>
+Date:   Sun Feb 21 10:13:40 2010 +0100
+
+    Release version 0.4.
+
+commit 9aa51298739abb1e59e4c036145c95bff101ba69
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 21 09:07:24 2010 +0100
 
     Use immediate evaluation in tests Makefile.
 
-commit 7ebb0a9
+commit 7ebb0a937fb7ddf37a30ce72126bc48d6663dfb2
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 21 08:56:26 2010 +0100
 
     Change recursive make call for OpenBSD compatibility.
 
-commit 3e54326
+commit 3e543261418915c81ba2c43cfc6cc228fdc341ee
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 21:45:26 2010 +0100
 
     Cosmetics in NEWS.
 
-commit 1b206f3
+commit 1b206f30beeda5aa75d2781b67f56a78fc89cf3e
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 21:44:48 2010 +0100
 
     Print copyright in usage string.
 
-commit 41fdd7e
+commit 41fdd7e8138b82b4d3541e97c2c868491ed6e4f3
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 21:08:45 2010 +0100
 
     Describe preventing data loss using bfr.
 
-commit e736fce
+commit e736fce26bf8552f61e2708cb9f9bfa86e5176ec
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 16:31:53 2010 +0100
 
     Many corrections in README.
 
-commit 7a1f860
+commit 7a1f860cc088070e80bfd2359e082d0d90de9d39
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 14:24:26 2010 +0100
 
     Update copyright lines.
 
-commit 73dbeb1
+commit 73dbeb19577de39f57a7d88e6f9f5ac4a57e8f87
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 13:31:36 2010 +0100
 
     A better way to pass multiple arguments in bash.
 
-commit fa534fb
+commit fa534fb821c74773056831ef09650294d2669c95
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 13:21:55 2010 +0100
 
     Acknowledge contributors.
 
-commit 91d1084
+commit 91d108471bb6d82c3966c1ee7c0330b17f35e174
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 13:08:51 2010 +0100
 
     NEWS file, ready for 0.4 release.
 
-commit 16bebe3
+commit 16bebe3ba68e5b652b0e955a8504985bdbda20ea
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 11:53:28 2010 +0100
 
     Print version number in usage string.
 
-commit 92747c1
+commit 92747c1c6490d916e7f57255c963a3d23051651a
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Feb 20 11:43:22 2010 +0100
 
     Print job exit status.
 
-commit c381eff
+commit c381eff60a680b7f731abe6f0303b98a228664b2
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 20:58:39 2010 +0100
 
     Known issue: terminating from within functions.
 
-commit d86e971
+commit d86e97110b3e82a9ddf28f5a2ec15fe7b0c6138b
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 20:28:56 2010 +0100
 
     Add job table saturation to known issues.
 
-commit 386bd28
+commit 386bd2835a8dc74c3153ee611c2d8cacf05eb8a9
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 20:28:10 2010 +0100
 
     Update the requirements section of README.
 
-commit a7f96f9
+commit a7f96f97bf3b149b3be9daa460455341523e56d0
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 19:29:04 2010 +0100
 
     Don't run manysleep test on non-linux systems.
 
-commit 9d0e527
+commit 9d0e5271f31cf3d275bb7354bfb014bdd2c54577
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 19:06:56 2010 +0100
 
     Return nonzero status on interrupt.
 
-commit d4a04d2
+commit d4a04d2edb628651d290bc646470318f79631aac
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 18:36:29 2010 +0100
 
@@ -108,7 +450,7 @@ Date:   Fri Feb 19 18:36:29 2010 +0100
     
     BSD compatibility.
 
-commit 618e539
+commit 618e5391651c32eeda8d4e54d29c7c91071b198b
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 18:26:28 2010 +0100
 
@@ -117,25 +459,25 @@ Date:   Fri Feb 19 18:26:28 2010 +0100
     Removes the need for order-only prerequisites.
     For BSD make compatibility.
 
-commit ef77bf0
+commit ef77bf0a7e693ba1dda8d03c8ffb52f54faf1f89
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 13:22:27 2010 +0100
 
     Export C locale in test scripts.
 
-commit 2b57eb4
+commit 2b57eb4e484861cee81e98557ad4ed1dec73f4b5
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 12:51:07 2010 +0100
 
     Correction: tr is actually only required for tests.
 
-commit 4519efc
+commit 4519efc2ec4e503b132cd13dbedd5ee579c6fdb3
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 09:57:50 2010 +0100
 
     Add output interleaving as a known issue.
 
-commit adf65bb
+commit adf65bbd0f0208e128ed766ebd344519c126890c
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 09:48:18 2010 +0100
 
@@ -144,7 +486,7 @@ Date:   Fri Feb 19 09:48:18 2010 +0100
     This adds a test mode to prll_jobserver to silently check
     whether a queue exists.
 
-commit fc84020
+commit fc840202a83e7cb30fd8b742dea45f4bac46e902
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Feb 19 09:26:59 2010 +0100
 
@@ -154,19 +496,19 @@ Date:   Fri Feb 19 09:26:59 2010 +0100
     and diff for tests. Doing this increases MacOS X compatibility, but
     full testing hasn't been done at this point.
 
-commit f6069f9
+commit f6069f99086141495b72cee172e0b853d7fd009f
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Feb 18 18:39:51 2010 +0100
 
     Drop the dependence on seq and document dependence on tr.
 
-commit bbc6fec
+commit bbc6fecc12730b13bfaba49f7fd8125e8e6bc73c
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Feb 17 08:55:30 2010 +0100
 
     Update comments and error messages.
 
-commit bcdaea0
+commit bcdaea004c4cfea1b8b232a84ffeb8b89b2203a0
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Tue Feb 16 23:26:50 2010 +0100
 
@@ -176,31 +518,31 @@ Date:   Tue Feb 16 23:26:50 2010 +0100
     seed srandom(). Use /dev/urandom instead.
     Fixes commit e3f99aea4357bbeb1bf7d50c0d964df822fae80c
 
-commit e3f99ae
+commit e3f99aea4357bbeb1bf7d50c0d964df822fae80c
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Tue Feb 16 08:53:58 2010 +0100
 
     Known issue: multiple ipcmks create the same queue.
 
-commit 90e7b73
+commit 90e7b73df7edc8845665b226da8591dc1f235c04
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 17:05:19 2010 +0100
 
     Update the usage string and correct the README.
 
-commit 7d9526e
+commit 7d9526e4c4df32035af672100c9da4d059c2abc5
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 16:52:05 2010 +0100
 
     Properly unset functions and add a test.
 
-commit eae05e0
+commit eae05e0f70c7d340b628baf39886666994713086
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 16:43:23 2010 +0100
 
     Correct the tests Makefile.
 
-commit 1c084c2
+commit 1c084c239058b8df8f62b1088a4d1b8d5336cd94
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 16:28:57 2010 +0100
 
@@ -211,97 +553,97 @@ Date:   Mon Feb 15 16:28:57 2010 +0100
     ksharrays option in zsh can be unconditional, as it only applies to
     the subshell, and must be set there.
 
-commit 4e8b16e
+commit 4e8b16e436c4e80791ad815d39711ba4bb301c41
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 14:14:10 2010 +0100
 
     Test for pipes.
 
-commit 96f831d
+commit 96f831d2a598cce434e10f23291d07114961e7ea
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Feb 15 13:02:58 2010 +0100
 
     Major rewrite to allow passing arguments via stdin.
 
-commit 1cebecb
+commit 1cebecb6181df4f582efd663ab854605acabdf6d
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 21:43:30 2010 +0100
 
     Remove annoying error when interrupting execution.
 
-commit 1d9c6e7
+commit 1d9c6e78d4134d6744577b81a0434603543456cf
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 21:09:51 2010 +0100
 
     Expand the sleep test.
 
-commit 1245dca
+commit 1245dca0033d3f50797f85a9fe40e66082ae950e
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 20:26:34 2010 +0100
 
     Update README; mention the tests.
 
-commit de2033a
+commit de2033acee64390e7e379f49220ead0552ef6ffa
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 17:13:55 2010 +0100
 
     Makefile fixes for tests.
 
-commit c486485
+commit c4864857bcc29b4a37ae1abc125a9e2dbfb7f190
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 16:05:12 2010 +0100
 
     Test passing function as a string and (un)setting ksharrays.
 
-commit 7eb8846
+commit 7eb8846a86f3a94c607108ea41da056d9d27c0ee
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 16:33:28 2010 +0100
 
     A minor typo.
 
-commit 949acfe
+commit 949acfebf5b1adcd60aed4b051ad3376fab55038
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 15:32:51 2010 +0100
 
     First test added.
 
-commit 044b306
+commit 044b3066303d9c50e9780348ff0df2b4307b0300
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Feb 14 14:48:01 2010 +0100
 
     Minor typo in a comment.
 
-commit 9c9d5b2
+commit 9c9d5b290acdbf6aac09660f30c8c586f12120ce
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Feb 11 20:29:05 2010 +0100
 
     Properly quote function string. Update README on passing multiple args.
 
-commit 0eee895
+commit 0eee8954943a48d78c6300ecca6aedc742da5b63
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Feb 11 20:19:25 2010 +0100
 
     Print the job PID. Update README on terminating jobs.
 
-commit 994e860
+commit 994e860327adb317c13a1303694f0c48cc9fe16b
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Jan 29 09:59:24 2010 +0100
 
     Make cross-compilation a known issue.
 
-commit 09d5c99 (tag: refs/tags/prll-0.3.1)
+commit 09d5c9994f060074c6f9928974815c7b2416cbbe
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 28 19:18:18 2010 +0100
 
     Release version 0.3.1.
 
-commit 10960e4
+commit 10960e46df1d886cf3ae26867f2cc739bd8a7217
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 28 19:13:37 2010 +0100
 
     Redo the fix for unsetting prll_str2func.
 
-commit c546775
+commit c54677534ac30bfe94b46b10fd0704f641b622fc
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 28 19:10:36 2010 +0100
 
@@ -309,31 +651,31 @@ Date:   Thu Jan 28 19:10:36 2010 +0100
     
     This reverts commit 743d1b5e18a3d070754ac2f0ec20bdd02ece5477.
 
-commit 743d1b5
+commit 743d1b5e18a3d070754ac2f0ec20bdd02ece5477
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Jan 22 09:22:32 2010 +0100
 
     Fix a nonfatal error when unsetting prll_str2func.
 
-commit c96214e (tag: refs/tags/prll-0.3)
+commit c96214ea69e9e975bf7889338e8785dc4a1afba2
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 12:27:17 2010 +0100
 
     Release version 0.3.
 
-commit 7380f0b
+commit 7380f0b13d89270984e3cf5e78317468888e20b7
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 12:25:35 2010 +0100
 
     Note Piotr's contribution.
 
-commit 428ff55
+commit 428ff556ff4f49a621e89386fe7397d8e10cc218
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 12:21:40 2010 +0100
 
     Include a notice on where to get current known issues.
 
-commit 3403260
+commit 3403260ddab3f696ee82e15d97e0bfe7b624771d
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 11:32:38 2010 +0100
 
@@ -342,31 +684,31 @@ Date:   Thu Jan 21 11:32:38 2010 +0100
     Checking for external programs is still done at runtime to
     make including the shell function in scripts easier.
 
-commit ceffb05
+commit ceffb053a83709106774c32f8db24ecfb44538b6
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 10:37:53 2010 +0100
 
     Remove internal functions on cleanup.
 
-commit c1ab1df
+commit c1ab1df29a46d778e82a415cd1549ef3d88f1f55
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 10:24:23 2010 +0100
 
     Redo the 'which' check. Reverse the wrong stderr redirections.
 
-commit 5f95647
+commit 5f956474af4a48c177f67de945b313ba7e4eea5a
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 09:59:55 2010 +0100
 
     Some comments.
 
-commit e3c38e2
+commit e3c38e2925539a6b2e28f034c03d621b5ac62dce
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 21 09:55:43 2010 +0100
 
     An option to pass code in a string instead of a function.
 
-commit bfb20be
+commit bfb20be9ffef57a227ebba126873a41f721eb9cc
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Jan 20 15:23:18 2010 +0100
 
@@ -377,127 +719,127 @@ Date:   Wed Jan 20 15:23:18 2010 +0100
     testing is required to determine whether this is fully robust, although
     timing the signal to arrive while the jobserver is running will be tricky.
 
-commit b60cb70
+commit b60cb7034efedc336aa8046c9c66490bc9a06949
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Mon Jan 18 09:28:14 2010 +0100
 
     Add key_t check to the list of known issues.
 
-commit a9e086a
+commit a9e086af5e27bf2f6cf22402071cfd7597dc4335
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Jan 15 22:04:01 2010 +0100
 
     Add graceful termination to the list of known issues.
 
-commit 0ed3148
+commit 0ed31488c88cb6cbe72eb79a04d44acb0b8320e9
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Fri Jan 15 10:43:26 2010 +0100
 
     Added "Known Issues" section to the README.
 
-commit 50e0188
+commit 50e0188c18cb2a6fd07dfe46763891e4dbbc17ea
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Thu Jan 14 08:56:33 2010 +0100
 
     README additions.
 
-commit 4d914b7
+commit 4d914b7574e9ae828db258c9232b02dd5e1d457d
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Tue Jan 5 21:04:29 2010 +0100
 
     Make the Makefile more Gentoo friendly.
 
-commit ba052dd
+commit ba052dda848c64d9a1ea88ec2998025043d0960b
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Jan 3 18:46:07 2010 +0100
 
     Corrections in README.
 
-commit 4efb919 (tag: refs/tags/prll-0.2)
+commit 4efb9196b8e85286c29f9fe2f104166482d43525
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 16:43:56 2009 +0100
 
     Print the function argument.
 
-commit e1a80e8
+commit e1a80e8925f03b8707b124873e98326ec985e205
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 16:38:04 2009 +0100
 
     zsh needs to have ksharrays enabled from outside.
 
-commit 3082331
+commit 3082331e6f94564706ad5dfd01be81760dd1fa10
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 15:47:17 2009 +0100
 
     Workaround the ridiculous bash's 'wait' limitation.
 
-commit 200fe50
+commit 200fe501fa40e44d13f3dbbfda21c26ca85b13f5
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 15:32:09 2009 +0100
 
     Add a note about manual removal of message queues.
 
-commit 639a351
+commit 639a3515948f812f0571daf77c3ab93d14c4cdb8
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 15:24:08 2009 +0100
 
     prll.sh: print usage instructions when run with no arguments.
 
-commit 17d8a83
+commit 17d8a83bf41e9a0bf457ee9534f790ee31540dd0
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 15:11:53 2009 +0100
 
     Updated README to include the new webpages.
 
-commit 419a7d4
+commit 419a7d4bdf1e519ea665fe9373ca50f8ce021f42
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sun Dec 27 13:54:59 2009 +0100
 
     Put the main loop into a subshell; it can be suspended.
 
-commit c053d13 (tag: refs/tags/prll-0.1)
+commit c053d13f64101ec2e5034e983159ebaa7087e774
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Dec 26 11:48:39 2009 +0100
 
     Renamed the project from mapp to prll.
 
-commit 5ab2e3c
+commit 5ab2e3c260d7095f54236b0709a03edd04cb4bf9
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Dec 26 11:17:06 2009 +0100
 
     AUTHORS file and README typo correction.
 
-commit f81d3a1
+commit f81d3a1f253435c2511656afb1ec3574346b2ade
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Sat Dec 26 09:45:36 2009 +0100
 
     README: additions and corrections.
 
-commit 42b3a05
+commit 42b3a05c50fb465a3b8d7e546118069f5b32e589
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Dec 23 18:00:49 2009 +0100
 
     Drop the ANSI C idea. Use C99 and define _SVID_SOURCE.
 
-commit 609067c
+commit 609067c3d5785a3913cdc663983fe0507849f720
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Dec 23 17:26:30 2009 +0100
 
     Corrected licensing info.
 
-commit bf7fe21
+commit bf7fe21fec49a043ae0145c4b0901def886e5153
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Dec 23 17:20:27 2009 +0100
 
     README, unfinished.
 
-commit 89fcd9e
+commit 89fcd9e05f9ae5549fcf4151d97eebbffc5519ab
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Dec 23 17:15:09 2009 +0100
 
     Licensing information.
 
-commit 73780db
+commit 73780db0e134ce0a1aea2ee181dcb7030e5983dd
 Author: Jure Varlec <jure.varlec@gmail.com>
 Date:   Wed Dec 23 15:47:40 2009 +0100
 
