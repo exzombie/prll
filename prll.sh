@@ -14,7 +14,7 @@
 
 test -z "$BASH" -a -z "$ZSH_VERSION" && return
 function prll() {
-    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" ]] ; then
+    if [ -z "$1" -o "$1" = "-h" -o "$1" = "--help" ] ; then
 	cat <<-EOF
 	prll version 0.5.9999
 	Copyright 2009-2010 Jure Varlec
@@ -39,29 +39,30 @@ function prll() {
 
 	See the README for more information.
 	EOF
-	[[ -z "$1" ]] && return 1 || return 0
+	[ -z "$1" ] && return 1 || return 0
     fi
     /usr/bin/which prll_qer > /dev/null
-    if [[ $? -ne 0 ]] ; then
+    if [ "$?" -ne 0 ] ; then
 	echo "PRLL: Missing prll_qer." 1>&2
 	return 1
     fi
 
     (
         # Do we do buffering?
-	if [[ $1 == "-b" || $PRLL_BUFFER == "no" || $PRLL_BUFFER == 0 ]] ; then
+	if [ "$1" = "-b" -o "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] ;
+	then
 	    prll_unbuffer=yes
 	    shift
 	else
 	    /usr/bin/which prll_bfr > /dev/null
-	    if [[ $? -ne 0 ]] ; then
+	    if [ "$?" -ne 0 ] ; then
 		echo "PRLL: Missing prll_bfr." 1>&2
 		return 1
 	    fi
 	fi
-	if [[ -z $PRLL_NR_CPUS ]] ; then
+	if [ -z "$PRLL_NR_CPUS" ] ; then
 	    /usr/bin/which grep > /dev/null
-	    if [[ $? -ne 0 || ! -a /proc/cpuinfo ]] ; then
+	    if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
 		echo "PRLL: Environment variable PRLL_NR_CPUS is not set" 1>&2
 		echo "PRLL: and either the grep utility is missing or" 1>&2
 		echo "PRLL: there is no /proc/cpuinfo file." 1>&2
@@ -74,7 +75,7 @@ function prll() {
 	prll_funname=$1
 	shift
         # Do we have a function handle or a string?
-	if [[ $prll_funname == "-s" ]] ; then
+	if [ "$prll_funname" = "-s" ] ; then
 	    prll_fun_str="$1"
 	    shift
 	    function prll_str2func() {
@@ -84,10 +85,10 @@ function prll() {
 	fi
 
         # Do we read parameters or stdin?
-	if [[ $1 == "-p" ]] ; then
+	if [ "$1" = "-p" ] ; then
 	    prll_read=stdin
 	    shift
-	elif [[ $1 == "-0" || $1 == "-p0" ]] ; then
+	elif [ "$1" = "-0" -o "$1" = "-p0" ] ; then
 	    prll_read=null
 	    shift
 	else
@@ -96,23 +97,23 @@ function prll() {
 	    local -a prll_params
 	    prll_params=("$@")
 	    prll_nr_args=${#prll_params[@]}
-	    if [[ $prll_nr_args -lt $PRLL_NR_CPUS ]] ; then
+	    if [ "$prll_nr_args" -lt "$PRLL_NR_CPUS" ] ; then
 		PRLL_NR_CPUS=$prll_nr_args
 	    fi
 	fi
 
 	echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
 	prll_Qkey="$(prll_qer n)"
-	if [[ $? -ne 0 ]] ; then
+	if [ "$?" -ne 0 ] ; then
 	    echo "PRLL: Failed to create message queue." 1>&2
 	    return 1
 	else
 	    echo "PRLL: Created message queue with key $prll_Qkey" 1>&2
 	fi
 	
-	if [[ $prll_unbuffer != "yes" ]] ; then
+	if [ "$prll_unbuffer" != "yes" ] ; then
 	    prll_Skey="$(prll_bfr n)"
-	    if [[ $? -ne 0 ]] ; then
+	    if [ "$?" -ne 0 ] ; then
 		echo "PRLL: Failed to create semaphore." 1>&2
 		return 1
 	    else
@@ -126,23 +127,23 @@ function prll() {
 	    prll_qer c $prll_Qkey 0;
 	done
 	( # Run in a subshell so this code can be suspended as a unit
-	    if [[ -n $ZSH_VERSION ]] ; then
+	    if [ -n "$ZSH_VERSION" ] ; then
 		setopt ksharrays
 	    fi
 
 	    function prll_cleanup() {
 		trap - SIGINT
 		prll_qer t $prll_Qkey || return 130
-		if [[ $1 != "nosig" ]] ; then
+		if [ "$1" != "nosig" ] ; then
 		    echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
 		fi
-		while [[ $prll_progress -ge $prll_jbfinish ]] ; do
+		while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
 		    prll_qer o $prll_Qkey || break
 		    let prll_jbfinish+=1
 		done
 		echo "PRLL: Cleaning up." 1>&2
 		prll_qer r $prll_Qkey
-		if [[ $prll_unbuffer != "yes" ]] ; then
+		if [ "$prll_unbuffer" != "yes" ] ; then
 		    prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
 		fi
 	    }
@@ -151,11 +152,13 @@ function prll() {
 	    prll_finish_code='
                                prll_finishing=yes
 		               let prll_jbfinish+=1
-		               if [[ $prll_jbfinish -gt $prll_progress ]] ; then
+		               if [ "$prll_jbfinish" -gt "$prll_progress" ] ;
+                               then
 			         prll_qer c $prll_Qkey 1
                                  continue
                                fi
-		               if [[ $prll_progress -lt $PRLL_NR_CPUS ]] ; then
+		               if [ "$prll_progress" -lt "$PRLL_NR_CPUS" ] ;
+                               then
 			         let prll_progress=$((PRLL_NR_CPUS-1))
 		               fi
 		               continue'
@@ -171,29 +174,29 @@ function prll() {
 	    prll_jbfinish=0
 	    prll_finishing=no
 	    while prll_qer o $prll_Qkey ; do
-		if [[ $prll_finishing == "yes" ]] ; then
+		if [ "$prll_finishing" = "yes" ] ; then
 		    let prll_jbfinish+=1
-		    if [[ $prll_jbfinish -gt $prll_progress ]] ; then
+		    if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
 			prll_qer c $prll_Qkey 1
 		    else
 			continue
 		    fi
 		fi
 		prll_jarg=''
-		if [[ $prll_read == "no" ]] ; then
-		    if [[ $prll_progress -ge $prll_nr_args ]] ; then
+		if [ "$prll_read" = "no" ] ; then
+		    if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
 			eval "$prll_finish_code"
 		    else
 			prll_jarg="${prll_params[$prll_progress]}"
 		    fi
-		elif [[ $prll_read == "stdin" ]] ; then
+		elif [ "$prll_read" = "stdin" ] ; then
 		    IFS='' read -r -d $'\n' prll_jarg
-		    if [[ $? -ne 0 ]] ; then
+		    if [ "$?" -ne 0 ] ; then
 			eval "$prll_finish_code"
 		    fi
-		elif [[ $prll_read == "null" ]] ; then
+		elif [ "$prll_read" = "null" ] ; then
 		    IFS='' read -r -d $'\0' prll_jarg
-		    if [[ $? -ne 0 ]] ; then
+		    if [ "$?" -ne 0 ] ; then
 			eval "$prll_finish_code"
 		    fi
 		else
@@ -207,7 +210,7 @@ function prll() {
 			"Exit code: $?" 1>&2
 		) | \
 		    (
-		    if [[ $prll_unbuffer == "yes" ]] ; then
+		    if [ "$prll_unbuffer" = "yes" ] ; then
 			cat
 		    else
 			prll_bfr b $prll_Skey
@@ -216,14 +219,14 @@ function prll() {
 		) &
 
 		echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
-		if [[ $prll_read == "no" ]] ; then
+		if [ "$prll_read" = "no" ] ; then
 		    echo -n \
 			"Progress: $((prll_progress*100/prll_nr_args))% " 1>&2
 		    echo -n "Arg: $prll_jarg " 1>&2
 		fi
 		echo 1>&2
 		let prll_progress+=1
-		[[ $prll_progress -ge $PRLL_NR_CPUS ]] && let prll_jbfinish+=1
+		[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && let prll_jbfinish+=1
 	    done
 	    declare -f prll_cleanup > /dev/null && prll_cleanup nosig
 	)
