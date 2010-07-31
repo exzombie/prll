@@ -41,7 +41,7 @@ prll() {
 	EOF
 	[ -z "$1" ] && return 1 || return 0
     fi
-    /usr/bin/which prll_qer > /dev/null
+    command -v prll_qer > /dev/null
     if [ "$?" -ne 0 ] ; then
 	echo "PRLL: Missing prll_qer." 1>&2
 	return 1
@@ -68,13 +68,13 @@ prll() {
 	prll_unbuffer=yes
 	shift
     else
-	/usr/bin/which prll_bfr > /dev/null
+	command -v prll_bfr > /dev/null
 	if [ "$?" -ne 0 ] ; then
 	    prll_die "Missing prll_bfr."
 	fi
     fi
     if [ -z "$PRLL_NR_CPUS" ] ; then
-	/usr/bin/which grep > /dev/null
+	command -v grep > /dev/null
 	if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
 	    prll_die \
 		"Environment variable PRLL_NR_CPUS is not set" \
