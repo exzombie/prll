@@ -48,6 +48,21 @@ prll() {
     fi
 
 (
+    prll_die () {
+	for prll_i ; do
+	    printf "PRLL: %s\n" "$prll_i" 1>&2
+	done
+	exit 1
+    }
+    prll_msg () {
+	case $1 in
+	    '')	printf '\n' 1>&2 ;;
+	    -n)	shift; printf 'PRLL: %s' "$*" 1>&2 ;;
+	    -e)	shift; printf "$@" 1>&2 ;;
+	    *)	printf 'PRLL: %s\n' "$*" 1>&2 ;;
+	esac
+    }
+
     # Do we do buffering?
     if [ "$1" = "-b" -o "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] ; then
 	prll_unbuffer=yes
@@ -55,18 +70,17 @@ prll() {
     else
 	/usr/bin/which prll_bfr > /dev/null
 	if [ "$?" -ne 0 ] ; then
-	    echo "PRLL: Missing prll_bfr." 1>&2
-	    return 1
+	    prll_die "Missing prll_bfr."
 	fi
     fi
     if [ -z "$PRLL_NR_CPUS" ] ; then
 	/usr/bin/which grep > /dev/null
 	if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
-	    echo "PRLL: Environment variable PRLL_NR_CPUS is not set" 1>&2
-	    echo "PRLL: and either the grep utility is missing or" 1>&2
-	    echo "PRLL: there is no /proc/cpuinfo file." 1>&2
-	    echo "PRLL: Please set the PRLL_NR_CPUS variable." 1>&2
-	    return 1
+	    prll_die \
+		"Environment variable PRLL_NR_CPUS is not set" \
+		"and either the grep utility is missing or" \
+		"there is no /proc/cpuinfo file." \
+		"Please set the PRLL_NR_CPUS variable."
 	fi
 	PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
     fi
@@ -101,26 +115,24 @@ prll() {
 	fi
     fi
 
-    echo "PRLL: Using $PRLL_NR_CPUS CPUs" 1>&2
+    prll_msg "Using $PRLL_NR_CPUS CPUs"
     prll_Qkey="$(prll_qer n)"
     if [ "$?" -ne 0 ] ; then
-	echo "PRLL: Failed to create message queue." 1>&2
-	return 1
+	prll_die "Failed to create message queue."
     else
-	echo "PRLL: Created message queue with key $prll_Qkey" 1>&2
+	prll_msg "Created message queue with key $prll_Qkey"
     fi
 
     if [ "$prll_unbuffer" != "yes" ] ; then
 	prll_Skey="$(prll_bfr n)"
 	if [ "$?" -ne 0 ] ; then
-	    echo "PRLL: Failed to create semaphore." 1>&2
-	    return 1
+	    prll_die "Failed to create semaphore."
 	else
-	    echo "PRLL: Created semaphore with key $prll_Skey" 1>&2
+	    prll_msg "Created semaphore with key $prll_Skey"
 	fi
     fi
 
-    echo "PRLL: Starting work." 1>&2
+    prll_msg "Starting work."
     # Get the first jobs started
     for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
 	prll_qer c $prll_Qkey 0;
@@ -134,13 +146,13 @@ prll() {
 	    trap - SIGINT
 	    prll_qer t $prll_Qkey || return 130
 	    if [ "$1" != "nosig" ] ; then
-		echo "PRLL: Interrupted, waiting for unfinished jobs." 1>&2
+		prll_msg "Interrupted, waiting for unfinished jobs."
 	    fi
 	    while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
 		prll_qer o $prll_Qkey || break
 		let prll_jbfinish+=1
 	    done
-	    echo "PRLL: Cleaning up." 1>&2
+	    prll_msg "Cleaning up."
 	    prll_qer r $prll_Qkey
 	    if [ "$prll_unbuffer" != "yes" ] ; then
 		prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
@@ -161,8 +173,9 @@ prll() {
 		          continue'
 
 	prll_interrupt() {
-	    echo "PRLL: Job $prll_progress interrupting execution." 1>&2
-	    echo "PRLL: Waiting for unfinished jobs." 1>&2
+	    prll_msg \
+		"Job $prll_progress interrupting execution." \
+		"Waiting for unfinished jobs."
 	    prll_qer c $prll_Qkey 1
 	    return 130
 	}	
@@ -197,14 +210,12 @@ prll() {
 		    eval "$prll_finish_code"
 		fi
 	    else
-		echo "Something's wrong..." 1>&2
-		return 1
+		prll_die "Something's wrong..."
 	    fi
 
 	    (
 		$prll_funname "$prll_jarg"
-		echo "PRLL: Job number $prll_progress finished. " \
-		    "Exit code: $?" 1>&2
+		prll_msg "Job number $prll_progress finished. Exit code: $?"
 	    ) | \
 		(
 		if [ "$prll_unbuffer" = "yes" ] ; then
@@ -215,13 +226,12 @@ prll() {
 		prll_qer c $prll_Qkey 0
 	    ) &
 
-	    echo -n "PRLL: Starting job ${prll_progress}, PID $! " 1>&2
+	    prll_msg -n "Starting job ${prll_progress}, PID $! "
 	    if [ "$prll_read" = "no" ] ; then
-		echo -n \
-		    "Progress: $((prll_progress*100/prll_nr_args))% " 1>&2
-		echo -n "Arg: $prll_jarg " 1>&2
+		prll_msg -e "Progress: $((prll_progress*100/prll_nr_args))%% "
+		prll_msg -e "Arg: $prll_jarg "
 	    fi
-	    echo 1>&2
+	    prll_msg
 	    let prll_progress+=1
 	    [ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && let prll_jbfinish+=1
 	done
