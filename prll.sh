@@ -13,7 +13,7 @@
 #  If not, see <http://www.gnu.org/licenses/>.
 
 test -z "$BASH" -a -z "$ZSH_VERSION" && return
-function prll() {
+prll() {
     if [ -z "$1" -o "$1" = "-h" -o "$1" = "--help" ] ; then
 	cat <<-EOF
 	prll version 0.5.9999
@@ -77,7 +77,7 @@ function prll() {
     if [ "$prll_funname" = "-s" ] ; then
 	prll_fun_str="$1"
 	shift
-	function prll_str2func() {
+	prll_str2func() {
 	    eval "$prll_fun_str"
 	}
 	prll_funname=prll_str2func
@@ -130,7 +130,7 @@ function prll() {
 	    setopt ksharrays
 	fi
 
-	function prll_cleanup() {
+	prll_cleanup() {
 	    trap - SIGINT
 	    prll_qer t $prll_Qkey || return 130
 	    if [ "$1" != "nosig" ] ; then
@@ -160,7 +160,7 @@ function prll() {
 		          fi
 		          continue'
 
-	function prll_interrupt() {
+	prll_interrupt() {
 	    echo "PRLL: Job $prll_progress interrupting execution." 1>&2
 	    echo "PRLL: Waiting for unfinished jobs." 1>&2
 	    prll_qer c $prll_Qkey 1
