@@ -236,7 +236,7 @@ prll() {
 	    [ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
 		prll_jbfinish=$((prll_jbfinish + 1))
 	done
-	declare -f prll_cleanup > /dev/null && prll_cleanup nosig
+	prll_cleanup nosig
     )
 )
 return $?
