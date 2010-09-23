@@ -141,111 +141,108 @@ prll() {
     for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
 	prll_qer c $prll_Qkey 0;
     done
-    ( # Run in a subshell so this code can be suspended as a unit
-
-	# Prepare to clean up on interrupt and when finished
-	prll_cleanup() {
-	    trap - SIGINT
-	    prll_qer t $prll_Qkey || return 130
-	    if [ "$1" != "nosig" ] ; then
-		prll_msg "Interrupted, waiting for unfinished jobs."
-	    fi
-	    while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
-		prll_qer o $prll_Qkey || break
-		prll_jbfinish=$((prll_jbfinish + 1))
-	    done
-	    prll_msg "Cleaning up."
-	    prll_qer r $prll_Qkey
-	    if [ "$prll_unbuffer" != "yes" ] ; then
-		prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
-	    fi
-	}
-	trap prll_cleanup SIGINT
-
-	# This code will be evaluated to initiate the finishing run
-	prll_finish_code='
-                          prll_finishing=yes
-	                  prll_jbfinish=$((prll_jbfinish + 1))
-		          if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
-		              prll_qer c $prll_Qkey 1
-                              continue
-                          fi
-	                  if [ "$prll_progress" -lt "$PRLL_NR_CPUS" ] ; then
-			      prll_progress=$((PRLL_NR_CPUS-1))
-		          fi
-		          continue'
-
-	# A function for users. It gracefully aborts.
-	prll_interrupt() {
-	    prll_msg \
-		"Job $prll_progress interrupting execution." \
-		"Waiting for unfinished jobs."
-	    prll_qer c $prll_Qkey 1
-	    return 130
-	}	
-
-	prll_progress=0
-	prll_jbfinish=0
-	prll_finishing=no
-	# Main loop
-	while prll_qer o $prll_Qkey ; do
-	    if [ "$prll_finishing" = "yes" ] ; then
-		prll_jbfinish=$((prll_jbfinish + 1))
-		if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
-		    prll_qer c $prll_Qkey 1
-		else
-		    continue
-		fi
-	    fi
-	    prll_jarg=''
-	    if [ "$prll_read" = "no" ] ; then
-		if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
-		    eval "$prll_finish_code"
-		else
-		    prll_jarg="$1"
-		    shift
-		fi
-	    elif [ "$prll_read" = "stdin" ] ; then
-		IFS='' read -r -d $'\n' prll_jarg
-		if [ "$?" -ne 0 ] ; then
-		    eval "$prll_finish_code"
-		fi
-	    elif [ "$prll_read" = "null" ] ; then
-		IFS='' read -r -d $'\0' prll_jarg
-		if [ "$?" -ne 0 ] ; then
-		    eval "$prll_finish_code"
-		fi
-	    else
-		prll_die "Something's wrong..."
-	    fi
-
-	    # Spawn subshells that start the job and buffer
-	    (
-		$prll_funname "$prll_jarg"
-		prll_msg "Job number $prll_progress finished. Exit code: $?"
-	    ) | \
-	    (
-		if [ "$prll_unbuffer" = "yes" ] ; then
-		    cat
-		else
-		    prll_bfr b $prll_Skey
-		fi
-		prll_qer c $prll_Qkey 0
-	    ) &
-
-	    # Print status
-	    prll_msg -n "Starting job ${prll_progress}, PID $! "
-	    if [ "$prll_read" = "no" ] ; then
-		prll_msg -e "Progress: $((prll_progress*100/prll_nr_args))%% "
-		prll_msg -e "Arg: $prll_jarg "
-	    fi
-	    prll_msg
-	    prll_progress=$((prll_progress + 1))
-	    [ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
-		prll_jbfinish=$((prll_jbfinish + 1))
+    # Prepare to clean up on interrupt and when finished
+    prll_cleanup() {
+	trap - SIGINT
+	prll_qer t $prll_Qkey || return 130
+	if [ "$1" != "nosig" ] ; then
+	    prll_msg "Interrupted, waiting for unfinished jobs."
+	fi
+	while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
+	    prll_qer o $prll_Qkey || break
+	    prll_jbfinish=$((prll_jbfinish + 1))
 	done
-	prll_cleanup nosig
-    )
+	prll_msg "Cleaning up."
+	prll_qer r $prll_Qkey
+	if [ "$prll_unbuffer" != "yes" ] ; then
+	    prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
+	fi
+    }
+    trap prll_cleanup SIGINT
+
+    # This code will be evaluated to initiate the finishing run
+    prll_finish_code='
+                      prll_finishing=yes
+	              prll_jbfinish=$((prll_jbfinish + 1))
+	              if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
+		      prll_qer c $prll_Qkey 1
+                          continue
+                      fi
+	              if [ "$prll_progress" -lt "$PRLL_NR_CPUS" ] ; then
+		          prll_progress=$((PRLL_NR_CPUS-1))
+		      fi
+		      continue'
+
+    # A function for users. It gracefully aborts.
+    prll_interrupt() {
+	prll_msg \
+	    "Job $prll_progress interrupting execution." \
+	    "Waiting for unfinished jobs."
+	prll_qer c $prll_Qkey 1
+	return 130
+    }	
+
+    prll_progress=0
+    prll_jbfinish=0
+    prll_finishing=no
+    # Main loop
+    while prll_qer o $prll_Qkey ; do
+	if [ "$prll_finishing" = "yes" ] ; then
+	    prll_jbfinish=$((prll_jbfinish + 1))
+	    if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
+		prll_qer c $prll_Qkey 1
+	    else
+		continue
+	    fi
+	fi
+	prll_jarg=''
+	if [ "$prll_read" = "no" ] ; then
+	    if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
+		eval "$prll_finish_code"
+	    else
+		prll_jarg="$1"
+		shift
+	    fi
+	elif [ "$prll_read" = "stdin" ] ; then
+	    IFS='' read -r -d $'\n' prll_jarg
+	    if [ "$?" -ne 0 ] ; then
+		eval "$prll_finish_code"
+	    fi
+	elif [ "$prll_read" = "null" ] ; then
+	    IFS='' read -r -d $'\0' prll_jarg
+	    if [ "$?" -ne 0 ] ; then
+		eval "$prll_finish_code"
+	    fi
+	else
+	    prll_die "Something's wrong..."
+	fi
+	
+	# Spawn subshells that start the job and buffer
+	(
+	    $prll_funname "$prll_jarg"
+	    prll_msg "Job number $prll_progress finished. Exit code: $?"
+	) | \
+	(
+	    if [ "$prll_unbuffer" = "yes" ] ; then
+		cat
+	    else
+		prll_bfr b $prll_Skey
+	    fi
+	    prll_qer c $prll_Qkey 0
+	) &
+
+	# Print status
+	prll_msg -n "Starting job ${prll_progress}, PID $! "
+	if [ "$prll_read" = "no" ] ; then
+	    prll_msg -e "Progress: $((prll_progress*100/prll_nr_args))%% "
+	    prll_msg -e "Arg: $prll_jarg "
+	fi
+	prll_msg
+	prll_progress=$((prll_progress + 1))
+	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
+	    prll_jbfinish=$((prll_jbfinish + 1))
+    done
+    prll_cleanup nosig
 )
 return $?
 }
