@@ -155,7 +155,7 @@ prll() {
 	    fi
 	    while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
 		prll_qer o $prll_Qkey || break
-		let prll_jbfinish+=1
+		prll_jbfinish=$((prll_jbfinish + 1))
 	    done
 	    prll_msg "Cleaning up."
 	    prll_qer r $prll_Qkey
@@ -167,13 +167,13 @@ prll() {
 
 	prll_finish_code='
                           prll_finishing=yes
-	                  let prll_jbfinish+=1
+	                  prll_jbfinish=$((prll_jbfinish + 1))
 		          if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
 		              prll_qer c $prll_Qkey 1
                               continue
                           fi
 	                  if [ "$prll_progress" -lt "$PRLL_NR_CPUS" ] ; then
-			      let prll_progress=$((PRLL_NR_CPUS-1))
+			      prll_progress=$((PRLL_NR_CPUS-1))
 		          fi
 		          continue'
 
@@ -190,7 +190,7 @@ prll() {
 	prll_finishing=no
 	while prll_qer o $prll_Qkey ; do
 	    if [ "$prll_finishing" = "yes" ] ; then
-		let prll_jbfinish+=1
+		prll_jbfinish=$((prll_jbfinish + 1))
 		if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
 		    prll_qer c $prll_Qkey 1
 		else
@@ -237,8 +237,9 @@ prll() {
 		prll_msg -e "Arg: $prll_jarg "
 	    fi
 	    prll_msg
-	    let prll_progress+=1
-	    [ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && let prll_jbfinish+=1
+	    prll_progress=$((prll_progress + 1))
+	    [ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
+		prll_jbfinish=$((prll_jbfinish + 1))
 	done
 	declare -f prll_cleanup > /dev/null && prll_cleanup nosig
     )
