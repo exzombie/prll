@@ -112,9 +112,7 @@ prll() {
 
     # Put all arguments into an array
     if [ "$prll_read" = "no" ] ; then
-	local -a prll_params
-	prll_params=("$@")
-	prll_nr_args=${#prll_params[@]}
+	prll_nr_args=$#
 	if [ "$prll_nr_args" -lt "$PRLL_NR_CPUS" ] ; then
 	    PRLL_NR_CPUS=$prll_nr_args
 	fi
@@ -143,10 +141,6 @@ prll() {
 	prll_qer c $prll_Qkey 0;
     done
     ( # Run in a subshell so this code can be suspended as a unit
-	if [ -n "$ZSH_VERSION" ] ; then
-	    setopt ksharrays
-	fi
-
 	prll_cleanup() {
 	    trap - SIGINT
 	    prll_qer t $prll_Qkey || return 130
@@ -202,7 +196,8 @@ prll() {
 		if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
 		    eval "$prll_finish_code"
 		else
-		    prll_jarg="${prll_params[$prll_progress]}"
+		    prll_jarg="$1"
+		    shift
 		fi
 	    elif [ "$prll_read" = "stdin" ] ; then
 		IFS='' read -r -d $'\n' prll_jarg
