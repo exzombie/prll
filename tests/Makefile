@@ -31,7 +31,8 @@ any_found: zsh_found bash_found
 	test -f bash_found -o -f zsh_found  && touch any_found
 
 $(ANY_TESTS): any_found
-	@if test -f both_found  ; then \
+	@echo; echo; \
+	if test -f both_found  ; then \
 		echo "Testing both bash and zsh"; \
 		echo "Test:" $@ ; \
 		bash $@ && zsh $@; \
