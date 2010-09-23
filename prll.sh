@@ -63,6 +63,7 @@ prll() {
 
     command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
 
+    # Read parameters and environment variables
     prll_unbuffer="no"
     [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer="yes"
 
@@ -110,7 +111,7 @@ prll() {
 	fi
     fi
 
-    # Put all arguments into an array
+    # If not reading from stdin, setup positional arguments
     if [ "$prll_read" = "no" ] ; then
 	prll_nr_args=$#
 	if [ "$prll_nr_args" -lt "$PRLL_NR_CPUS" ] ; then
@@ -141,6 +142,8 @@ prll() {
 	prll_qer c $prll_Qkey 0;
     done
     ( # Run in a subshell so this code can be suspended as a unit
+
+	# Prepare to clean up on interrupt and when finished
 	prll_cleanup() {
 	    trap - SIGINT
 	    prll_qer t $prll_Qkey || return 130
@@ -159,6 +162,7 @@ prll() {
 	}
 	trap prll_cleanup SIGINT
 
+	# This code will be evaluated to initiate the finishing run
 	prll_finish_code='
                           prll_finishing=yes
 	                  prll_jbfinish=$((prll_jbfinish + 1))
@@ -171,6 +175,7 @@ prll() {
 		          fi
 		          continue'
 
+	# A function for users. It gracefully aborts.
 	prll_interrupt() {
 	    prll_msg \
 		"Job $prll_progress interrupting execution." \
@@ -182,6 +187,7 @@ prll() {
 	prll_progress=0
 	prll_jbfinish=0
 	prll_finishing=no
+	# Main loop
 	while prll_qer o $prll_Qkey ; do
 	    if [ "$prll_finishing" = "yes" ] ; then
 		prll_jbfinish=$((prll_jbfinish + 1))
@@ -213,11 +219,12 @@ prll() {
 		prll_die "Something's wrong..."
 	    fi
 
+	    # Spawn subshells that start the job and buffer
 	    (
 		$prll_funname "$prll_jarg"
 		prll_msg "Job number $prll_progress finished. Exit code: $?"
 	    ) | \
-		(
+	    (
 		if [ "$prll_unbuffer" = "yes" ] ; then
 		    cat
 		else
@@ -226,6 +233,7 @@ prll() {
 		prll_qer c $prll_Qkey 0
 	    ) &
 
+	    # Print status
 	    prll_msg -n "Starting job ${prll_progress}, PID $! "
 	    if [ "$prll_read" = "no" ] ; then
 		prll_msg -e "Progress: $((prll_progress*100/prll_nr_args))%% "
