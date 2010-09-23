@@ -14,47 +14,45 @@
 
 test -z "$BASH" -a -z "$ZSH_VERSION" && return
 prll() {
-    if [ -z "$1" -o "$1" = "-h" -o "$1" = "--help" ] ; then
+(
+    prll_usage() {
 	cat <<-EOF
 	prll version 0.5.9999
 	Copyright 2009-2010 Jure Varlec
 
-	USAGE: prll [-b] fun_name fun_arg1 fun_arg2 fun_arg3 ...
-	       prll [-b] -s 'fun_string' fun_arg1 fun_arg2 ...
+	USAGE: prll [ options ] { fun_name | -s 'fun_string' } fun_args ...
 
-	Order of options is important.
+	Shell function 'fun_name' will be run for each of 'fun_args'.
+	Alternatively, using -s, shell code 'fun_string' will be executed
+	as if it were the body of a function.
 
-	Shell function 'fun_name' will be run for each 'fun_arg'.
-	Alternatively, using -s, shell code 'fun_string' will be executed.
-
-	Instead of 'fun_args', option -p may be given, which will cause
-	prll to read lines from its standard input.
-	Alternatively, option -0 will make it read null-delimited input.
-
-	Option -b disables output buffering.
+	Summary of options:
+	 	-s str	Use string 'str' as shell code to run.
+	 	-p	Read lines from standard input and use them
+	 		instead of 'fun_args'.
+	 	-0	Same as -p, but reads null-delimited input.
+	 	-B	Enable output buffering, which is the default.
+	 		Use to override the PRLL_BUFFER env. variable.
+	 	-b	Disable output buffering.
+	 	-c num	Set number of CPUs to 'num'.
+	 	-q	Disable progress messages.
 
 	The number of processes to be run in parallel can be set with
-	the PRLL_NR_CPUS environment variable. If it is unset, prll will
-	attempt to read the number of CPUs from /proc/cpuinfo.
+	the PRLL_NR_CPUS environment variable or the -c option. If
+	it is not set, prll will attempt to read the number of CPUs
+	from /proc/cpuinfo.
 
 	See the README for more information.
 	EOF
-	[ -z "$1" ] && return 1 || return 0
-    fi
-    command -v prll_qer > /dev/null
-    if [ "$?" -ne 0 ] ; then
-	echo "PRLL: Missing prll_qer." 1>&2
-	return 1
-    fi
-
-(
-    prll_die () {
+	exit 1
+    }
+    prll_die() {
 	for prll_i ; do
 	    printf "PRLL: %s\n" "$prll_i" 1>&2
 	done
 	exit 1
     }
-    prll_msg () {
+    prll_msg() {
 	case $1 in
 	    '')	printf '\n' 1>&2 ;;
 	    -n)	shift; printf 'PRLL: %s' "$*" 1>&2 ;;
@@ -63,50 +61,57 @@ prll() {
 	esac
     }
 
-    # Do we do buffering?
-    if [ "$1" = "-b" -o "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] ; then
-	prll_unbuffer=yes
+    command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
+
+    prll_unbuffer="no"
+    [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer="yes"
+
+    OPTIND=1
+    prll_funname=''
+    prll_read="no"
+    while getopts "s:p0bBc:qhH?" prll_i
+    do	case $prll_i in
+	    s)	eval "prll_str2func() {	$OPTARG
+}"
+		prll_funname=prll_str2func ;;
+	    p)	prll_read="stdin" ;;
+	    0)  prll_read="null" ;;
+	    b)  prll_unbuffer="yes" ;;
+	    B)  prll_unbuffer="" ;;
+	    c)  PRLL_NR_CPUS="$OPTARG" ;;
+	    q)	prll_msg() { : ; } ;;
+	    *)	prll_usage ;;
+	esac
+    done
+    shift $((OPTIND - 1))
+    if [ -z "$prll_funname" ] ; then
+	[ -z "$1" ] && prll_die "Nothing to do..."
+	prll_funname="$1"
 	shift
-    else
+    fi
+
+    if [ -z "$PRLL_NR_CPUS" ] ; then
+	command -v grep > /dev/null
+	if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
+	    prll_die \
+		"The number of CPUs is not set and either the grep" \
+		"utility is missing or there is no /proc/cpuinfo file." \
+		"Please set the number of CPUs."
+	fi
+	PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
+    elif [ "$PRLL_NR_CPUS" -lt 1 ] ; then
+	prll_die "The number of CPUs is zero."
+    fi
+
+    if [ "$prll_unbuffer" != "yes" ] ; then
 	command -v prll_bfr > /dev/null
 	if [ "$?" -ne 0 ] ; then
 	    prll_die "Missing prll_bfr."
 	fi
     fi
-    if [ -z "$PRLL_NR_CPUS" ] ; then
-	command -v grep > /dev/null
-	if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
-	    prll_die \
-		"Environment variable PRLL_NR_CPUS is not set" \
-		"and either the grep utility is missing or" \
-		"there is no /proc/cpuinfo file." \
-		"Please set the PRLL_NR_CPUS variable."
-	fi
-	PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
-    fi
-    
-    prll_funname=$1
-    shift
-    # Do we have a function handle or a string?
-    if [ "$prll_funname" = "-s" ] ; then
-	prll_fun_str="$1"
-	shift
-	prll_str2func() {
-	    eval "$prll_fun_str"
-	}
-	prll_funname=prll_str2func
-    fi
 
-    # Do we read parameters or stdin?
-    if [ "$1" = "-p" ] ; then
-	prll_read=stdin
-	shift
-    elif [ "$1" = "-0" -o "$1" = "-p0" ] ; then
-	prll_read=null
-	shift
-    else
     # Put all arguments into an array
-	prll_read=no
+    if [ "$prll_read" = "no" ] ; then
 	local -a prll_params
 	prll_params=("$@")
 	prll_nr_args=${#prll_params[@]}
