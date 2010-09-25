@@ -1,7 +1,8 @@
 TEST_DESCRIPTION="A sleep test using pipes."
-source test_header.sh
+SUPPORTED_SHELLS="bash zsh"
+. test_header.sh
 
-function slptst() { echo Sleeping $1 seconds.; sleep $1; }
+slptst() { echo Sleeping $1 seconds.; sleep $1; }
 echo 5 1 3 2 4 | tr ' ' '\n' | \
      PRLL_NR_CPUS=1 prll -p slptst | sort | diff -q - sleeps.dat || exit 1
 echo 5 1 3 2 4 | tr ' ' '\n' | \

@@ -1,8 +1,8 @@
 TEST_DESCRIPTION="Testing interruption from within a function."
-source test_header.sh
+. test_header.sh
 
-function slptst() {
-    if [[ $1 == "k" ]] ; then
+slptst() {
+    if [ $1 = "k" ] ; then
 	echo Interrupting.
 	prll_interrupt
     else
@@ -13,14 +13,14 @@ function slptst() {
 }
 
 attempts=0
-while [[ $attempts -lt 5 ]] ; do
+while [ $attempts -lt 5 ] ; do
     PRLL_NR_CPUS=3 prll -b slptst 5 1 2 k 4 3 | \
 	diff -q interrupt.dat - && break
     echo "Test failed, but that means nothing unless it"
     echo "fails consistently. Retrying."
-    let attempts+=1
+    attempts=$((attempts + 1))
 done
-if [[ $attempts -ge 5 ]] ; then
+if [ $attempts -ge 5 ] ; then
     echo "Test seems to fail consistently."
     exit 1
 fi

@@ -1,19 +1,30 @@
 TEST_DESCRIPTION="Trying to cause a race."
-source test_header.sh
+SUPPORTED_SHELLS="bash zsh"
+. test_header.sh
 
 # non-linux sistems have queue sizes too small for this test
 uname -s | grep Linux > /dev/null
-if [[ $? -ne 0 ]] ; then
+if [ $? -ne 0 ] ; then
    echo "Non-Linux system detected."
    echo "This test has no relevance. Skipping."
    exit 0
 fi
 
+prll_seq() {
+    seq_i=1
+    echo -n $seq_i
+    while [ $seq_i -lt $1 ] ; do
+	echo -n " "
+	seq_i=$((seq_i + 1))
+	echo -n $seq_i
+    done
+}
+
 rm -f manysleep.err
-echo {1..5000} | tr ' ' '\n' | \
+{ prll_seq 5000 ; echo ; } | tr ' ' '\n' | \
     PRLL_NR_CPUS=500 prll -p -s 'sleep 3; echo Instance $1.' 2> manysleep.err \
-    | sort  | diff -q - manysleep.dat
-if [[ $? -ne 0 ]] ; then
+    | sort | diff -q - manysleep.dat
+if [ $? -ne 0 ] ; then
    echo "Check manysleep.err for errors."
    exit 1
 fi

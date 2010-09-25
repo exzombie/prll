@@ -1,28 +1,44 @@
 TEST_DESCRIPTION="Buffering test."
-source test_header.sh
+. test_header.sh
 
-function lots_of_noise() {
-    nkk=$(for i in {1..3000}; do
-	echo -n "$RANDOM " # Make a long line
+ntrndm=42
+notrandom() {
+    ntrndm=$(( (1664525*ntrndm + 1013904223) % 4294967296 ))
+}
+prll_seq() {
+    seq_i=1
+    echo -n $seq_i
+    while [ $seq_i -lt $1 ] ; do
+	echo -n " "
+	seq_i=$((seq_i + 1))
+	echo -n $seq_i
+    done
+}
+lots_of_noise() {
+    nkk=$(for i in $(prll_seq 3000) ; do
+	notrandom
+	echo -n "$ntrndm "  # Make a long line
 	done | tr '\n' ' ')
-    nkk2=$(for i in {1..50} ; do echo -n $nkk; done) # Make a longer line
+    # Make a longer line
+    nkk2=$(for i in $(prll_seq 50) ; do echo -n $nkk; done)
     count=0
-    for i in {1..100}; do
+    for i in $(prll_seq 100) ; do
 	# Make lines slightly unique
-    	echo $RANDOM $nkk2 > buffering.data$(printf "%02d" $count)
-	let count+=1
+	notrandom
+    	echo $ntrndm $nkk2 > buffering.data$(printf "%02d" $count)
+	count=$((count + 1))
     done
 }
 
-function fltr() { cat $1 | tr 5 6 ; }
+fltr() { cat $1 | tr 5 6 ; }
 
-if [[ ! -f buffering.ref ]] ; then
+if [ ! -f buffering.ref ] ; then
     echo "Making reference data."
     lots_of_noise
     cat buffering.data* | fltr - | sort > buffering.ref
 fi
 
-rm -f buffering.dat{1,1b,10,10b}
+rm -f buffering.dat1 buffering.dat1b buffering.dat10 buffering.dat10b
 
 PRLL_NR_CPUS=1 prll -b fltr buffering.data* \
     > buffering.dat1 || exit 1
@@ -38,28 +54,28 @@ PRLL_NR_CPUS=10 prll fltr buffering.data* \
 
 stats=0
 sort buffering.dat1 | diff -q buffering.ref -
-if [[ $? -ne 0 ]] ; then
+if [ $? -ne 0 ] ; then
     stats=1
     echo "Unbuffered serial execution produced wrong results."
 else
     echo "Unbuffered serial execution produced correct results."
 fi
 sort buffering.dat1b | diff -q buffering.ref -
-if [[ $? -ne 0 ]] ; then
+if [ $? -ne 0 ] ; then
     stats=1
     echo "Buffered serial execution produced wrong results."
 else
     echo "Buffered serial execution produced correct results."
 fi
 sort buffering.dat10 | diff -q buffering.ref -
-if [[ $? -ne 0 ]] ; then
+if [ $? -ne 0 ] ; then
     echo "Unbuffered parallel execution produced wrong results, as expected."
 else
     echo "Unbuffered parallel execution produced correct results,"
     echo "which is rather unexpected."
 fi
 sort buffering.dat10b | diff -q buffering.ref -
-if [[ $? -ne 0 ]] ; then
+if [ $? -ne 0 ] ; then
     stats=1
     echo "Buffered parallel execution produced wrong results."
 else
