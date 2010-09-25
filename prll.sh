@@ -12,7 +12,6 @@
 #  A copy of the GNU General Public License is provided in COPYING.
 #  If not, see <http://www.gnu.org/licenses/>.
 
-test -z "$BASH" -a -z "$ZSH_VERSION" && return
 prll() {
 (
     prll_usage() {
