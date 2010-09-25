@@ -137,8 +137,10 @@ prll() {
 
     prll_msg "Starting work."
     # Get the first jobs started
-    for i in $(eval echo {1..$PRLL_NR_CPUS}) ; do
+    prll_i=1
+    while [ "$prll_i" -le "$PRLL_NR_CPUS" ] ; do
 	prll_qer c $prll_Qkey 0;
+	prll_i=$((prll_i + 1))
     done
     # Prepare to clean up on interrupt and when finished
     prll_cleanup() {
