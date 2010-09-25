@@ -143,7 +143,7 @@ prll() {
     done
     # Prepare to clean up on interrupt and when finished
     prll_cleanup() {
-	trap - SIGINT
+	trap - INT
 	prll_qer t $prll_Qkey || return 130
 	if [ "$1" != "nosig" ] ; then
 	    prll_msg "Interrupted, waiting for unfinished jobs."
@@ -158,7 +158,7 @@ prll() {
 	    prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
 	fi
     }
-    trap prll_cleanup SIGINT
+    trap prll_cleanup INT
 
     # This code will be evaluated to initiate the finishing run
     prll_finish_code='
