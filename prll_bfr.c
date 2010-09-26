@@ -170,7 +170,7 @@ int main(int argc, char ** argv) {
 	fprintf(stderr,
 		"%s: Error dumping data, exiting.\n   Error: %s\n",
 		argv[0], strerror(last_errno));
-	exit(1);
+	return 1;
       }
     }
     written = fwrite(lst->data, 1, last_page_len, stdout);
@@ -180,7 +180,7 @@ int main(int argc, char ** argv) {
       fprintf(stderr,
 	      "%s: Error dumping data, exiting.\n   Error: %s\n",
 	      argv[0], strerror(last_errno));
-      exit(1);
+      return 1;
     }
 
     // Unlocking is automatic because of SEM_UNDO.
