@@ -115,14 +115,18 @@ int main(int argc, char ** argv) {
       return 0;
   }
 
-  // Ops: 0: wait for zero; 1: take lock with undo on abort; 2: release lock.
+  // SEMAPHORE OPS
   struct sembuf sop[2];
-  sop[0].sem_num = 0;
-  sop[1].sem_num = 0;
-  sop[0].sem_flg = 0;
-  sop[1].sem_flg = SEM_UNDO;
-  sop[0].sem_op = 0;
-  sop[1].sem_op = 1;
+  // Buffering mode:
+#define bfr_w4z 	0	// Wait for zero
+#define bfr_take	1	// Take lock with undo
+
+  sop[bfr_w4z].sem_num = 0;
+  sop[bfr_take].sem_num = 0;
+  sop[bfr_w4z].sem_flg = 0;
+  sop[bfr_take].sem_flg = SEM_UNDO;
+  sop[bfr_w4z].sem_op = 0;
+  sop[bfr_take].sem_op = 1;
 
   // BUFFERING MODE
   if (mode == PRLL_BUFFER_MODE) {
