@@ -77,7 +77,7 @@ prll() {
 	    p)	prll_read="stdin" ;;
 	    0)  prll_read="null" ;;
 	    b)  prll_unbuffer="yes" ;;
-	    B)  prll_unbuffer="" ;;
+	    B)  prll_unbuffer="no" ;;
 	    c)  PRLL_NR_CPUS="$OPTARG" ;;
 	    q)	prll_msg() { : ; } ;;
 	    *)	prll_usage ;;
@@ -103,7 +103,7 @@ prll() {
 	prll_die "The number of CPUs is zero."
     fi
 
-    if [ "$prll_unbuffer" != "yes" ] ; then
+    if [ "$prll_unbuffer" != "yes" -o "$prll_read" != "no" ] ; then
 	command -v prll_bfr > /dev/null
 	if [ "$?" -ne 0 ] ; then
 	    prll_die "Missing prll_bfr."
@@ -135,7 +135,29 @@ prll() {
 	fi
     fi
 
+    if [ "$prll_read" != "no" ] ; then
+	prll_Skey2="$(prll_bfr n)"
+	if [ "$?" -ne 0 ] ; then
+	    prll_die "Failed to create semaphore."
+	else
+	    prll_msg "Created semaphore with key $prll_Skey2"
+	fi
+    fi
+
     prll_msg "Starting work."
+    # Start reading stdin
+    (
+	if [ "$prll_read" != "no" ] ; then
+	    if [ "$prll_read" = "stdin" ] ; then
+		prll_bfr w $prll_Skey2
+	    elif [ "$prll_read" = "null" ] ; then
+		prll_bfr W $prll_Skey2
+	    fi
+	    prll_bfr r $prll_Skey2
+	else
+	    exec 1>&-
+	fi
+    ) | (
     # Get the first jobs started
     prll_i=1
     while [ "$prll_i" -le "$PRLL_NR_CPUS" ] ; do
@@ -154,10 +176,9 @@ prll() {
 	    prll_jbfinish=$((prll_jbfinish + 1))
 	done
 	prll_msg "Cleaning up."
-	prll_qer r $prll_Qkey
-	if [ "$prll_unbuffer" != "yes" ] ; then
-	    prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
-	fi
+	prll_qer t $prll_Qkey && prll_qer r $prll_Qkey
+	prll_bfr t $prll_Skey && prll_bfr r $prll_Skey
+	prll_bfr t $prll_Skey2 && prll_bfr r $prll_Skey2
     }
     trap prll_cleanup INT
 
@@ -204,18 +225,11 @@ prll() {
 		prll_jarg="$1"
 		shift
 	    fi
-	elif [ "$prll_read" = "stdin" ] ; then
-	    IFS='' read -r -d $'\n' prll_jarg
-	    if [ "$?" -ne 0 ] ; then
-		eval "$prll_finish_code"
-	    fi
-	elif [ "$prll_read" = "null" ] ; then
-	    IFS='' read -r -d $'\0' prll_jarg
-	    if [ "$?" -ne 0 ] ; then
-		eval "$prll_finish_code"
-	    fi
 	else
-	    prll_die "Something's wrong..."
+	    prll_jarg="$(prll_bfr t $prll_Skey2 && prll_bfr c $prll_Skey2)"
+	    if [ "$?" -ne 0 ] ; then
+		eval "$prll_finish_code"
+	    fi
 	fi
 	
 	# Spawn subshells that start the job and buffer
@@ -244,6 +258,7 @@ prll() {
 	    prll_jbfinish=$((prll_jbfinish + 1))
     done
     prll_cleanup nosig
+    )
 )
 return $?
 }

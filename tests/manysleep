@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Trying to cause a race."
-SUPPORTED_SHELLS="bash zsh"
+SUPPORTED_SHELLS="bash zsh dash"
 . test_header.sh
 
 # non-linux sistems have queue sizes too small for this test
