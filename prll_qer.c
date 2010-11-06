@@ -66,7 +66,7 @@ int main(int argc, char ** argv) {
     }
     qkey = strtol(argv[2], 0, 0);
     qid = msgget(qkey, 0);
-    if (qid == -1) {
+    if (qid == -1 || qkey == 0) {
       if (mode != PRLL_TEST_MODE) {
 	fprintf(stderr, "%s: Couldn't open the message queue.\n", argv[0]);
 	perror(argv[0]);
