@@ -19,7 +19,7 @@ test: prll_qer prll_bfr
 check-syntax:
 	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
 
-prll_bfr prll_qer: mkrandom.o mkrandom.h | config.h
+prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
 config.h: config_keytype.c config_mallopt.c
 	@echo "--==CONFIGURING==--"

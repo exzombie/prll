@@ -29,6 +29,7 @@
 #endif
 #include <sys/sem.h>
 #include "mkrandom.h"
+#include "abrterr.h"
 
 size_t page_size;
 
@@ -211,19 +212,10 @@ int main(int argc, char ** argv) {
       }
     }
 
-    if (ferror(stdin)) {
-      fprintf(stderr,
-	      "%s: Error reading data, dumping what I have.\n   Error: %s\n",
-	      argv[0], strerror(last_errno));
-    }
+    if (ferror(stdin)) abrterr();
 
     // Lock
-    if (semop(sid, sop, 2)) {
-      fprintf(stderr, "%s: Couldn't take semaphore, not writing data.\n",
-	      argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (semop(sid, sop, 2)) abrterr();
 
     // Write
     size_t written;
@@ -232,56 +224,31 @@ int main(int argc, char ** argv) {
       written = fwrite(lst->data, 1, page_size, stdout);
       last_errno = errno;
       lst = llst_free(lst);
-      if (ferror(stdout) || written != page_size) {
-	fprintf(stderr,
-		"%s: Error dumping data, exiting.\n   Error: %s\n",
-		argv[0], strerror(last_errno));
-	return 1;
-      }
+      if (ferror(stdout) || written != page_size) abrterr();
     }
     written = fwrite(lst->data, 1, last_page_len, stdout);
     last_errno = errno;
     llst_free(lst);
-    if (ferror(stdout) || written != last_page_len) {
-      fprintf(stderr,
-	      "%s: Error dumping data, exiting.\n   Error: %s\n",
-	      argv[0], strerror(last_errno));
-      return 1;
-    }
+    if (ferror(stdout) || written != last_page_len) abrterr();
 
     // Unlocking is automatic because of SEM_UNDO.
 
   // CREATE A NEW SEMAPHORE MODE
   } else if (mode == PRLL_CREATE_MODE) {
     do {
-      if (mkrandom(&skey)) {
-	fprintf(stderr, "%s: Error accessing /dev/(u)random.\n", argv[0]);
-	return 1;
-      }
+      if (mkrandom(&skey)) abrterr2("Error accessing /dev/(u)random.");
     } while (-1 == (sid = semget(skey, 3, 0600 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
-    if (sid == -1) {
-      fprintf(stderr, "%s: Couldn't create semaphore.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (sid == -1) abrterr();
     union semun arg;
     unsigned short vals[] = {0, 1, 1};
     arg.array = vals;
-    if (-1 == semctl(sid, 0, SETALL, arg)) {
-      fprintf(stderr, "%s: Couldn't initialize semaphore.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (-1 == semctl(sid, 0, SETALL, arg)) abrterr();
     printf("%#X\n", skey);
 
   // REMOVE MODE
   } else if (mode == PRLL_REMOVE_MODE) {
-    if (semctl(sid, 0, IPC_RMID)) {
-      fprintf(stderr, "%s: Couldn't remove semaphore.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (semctl(sid, 0, IPC_RMID)) abrterr();
 
   // WRITESERVER MODE
   } else if (mode == PRLL_WRITESERVER_MODE) {
@@ -290,28 +257,9 @@ int main(int argc, char ** argv) {
     ssize_t writ, red;
     const ssize_t sze = (ssize_t)page_size;
     do {
-      fprintf(stderr, "wrt, rst\n"); // debug
-      if (semop(sid, sop+wrtr_rst, 3)) {
-	fprintf(stderr,
-		"%s wrt: Couldn't get confirmation on semaphore, exiting.\n",
-		argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
-      fprintf(stderr, "wrt, wait\n"); // debug
-      if (semop(sid, sop+wrtr_w4z, 2)) {
-	fprintf(stderr, "%s wrt: Couldn't wait on semaphore, exiting.\n",
-		argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
-      fprintf(stderr, "wrt, txmt\n"); // debug
-      if (semop(sid, sop+wrtr_txmt, 1)) {
-	fprintf(stderr, "%s wrt: Couldn't accept on semaphore, exiting.\n",
-		argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
+      if (semop(sid, sop+wrtr_rst, 3)) abrterr();
+      if (semop(sid, sop+wrtr_w4z, 2)) abrterr();
+      if (semop(sid, sop+wrtr_txmt, 1)) abrterr();
 
       red = 0;
       while (EOF != (chr = getc(stdin))) {
@@ -319,34 +267,15 @@ int main(int argc, char ** argv) {
 	bfr[red++] = (char)chr;
 	if (red == (ssize_t)page_size) {
 	  writ = red = 0;
-	  while (sze > (writ += write(1, bfr+writ, sze-writ))) {
-	    if (errno != EWOULDBLOCK) {
-	      fprintf(stderr,
-		      "%s wrt: Error passing data, exiting.\n   Error: %s\n",
-		      argv[0], strerror(errno));
-	      exit(1);
-	    }
-	  }
-	} 
-      }
-      writ = 0;
-      while (red > (writ += write(1, bfr+writ, red-writ))) {
-	if (errno != EWOULDBLOCK) {
-	  fprintf(stderr,
-		  "%s wrt: Error passing data, exiting.\n   Error: %s\n",
-		  argv[0], strerror(errno));
-	  exit(1);
+	  while (sze > (writ += write(1, bfr+writ, sze-writ)))
+	    if (errno != EWOULDBLOCK) abrterr();
 	}
       }
+      writ = 0;
+      while (red > (writ += write(1, bfr+writ, red-writ)))
+	if (errno != EWOULDBLOCK) abrterr();
 
-      fprintf(stderr, "wrt, txfin\n"); // debug
-      if (semop(sid, sop+wrtr_txfin, 2)) {
-	fprintf(stderr,
-		"%s wrt: Couldn't announce end on semaphore, exiting.\n",
-		argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
+      if (semop(sid, sop+wrtr_txfin, 2)) abrterr();
 
       int tmp = getc(stdin);
       if (tmp == EOF) break;
@@ -360,67 +289,25 @@ int main(int argc, char ** argv) {
     const ssize_t sze = (ssize_t)page_size;
     int semval;
     int oldflags = fcntl (0, F_GETFL, 0);
-    if (oldflags == -1) {
-      fprintf(stderr, "%s rdr: Couldn't use fnctl, exiting.\n",
-	      argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (oldflags == -1) abrterr();
     oldflags |= O_NONBLOCK;
     oldflags = fcntl (0, F_SETFL, oldflags);
-    if (oldflags == -1) {
-      fprintf(stderr, "%s rdr: Couldn't use fnctl, exiting.\n",
-	      argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (oldflags == -1) abrterr();
 
-    fprintf(stderr, "rdr, take\n"); // debug
-    if (semop(sid, sop+rdr_take, 2)) {
-      fprintf(stderr, "%s rdr: Couldn't take semaphore, exiting.\n",
-	      argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
-    fprintf(stderr, "rdr, recv\n"); // debug
-    if (semop(sid, sop+rdr_recv, 1)) {
-      fprintf(stderr,
-	      "%s rdr: Couldn't receive start on semaphore, exiting.\n",
-	      argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
-    fprintf(stderr, "rdr, readloop\n"); // debug
+    if (semop(sid, sop+rdr_take, 2)) abrterr();
+    if (semop(sid, sop+rdr_recv, 1)) abrterr();
 
     do {
       while (0 < (red = read(0, bfr, sze))) {
 	writ = 0;
-	while (red > (writ += write(1, bfr+writ, red-writ))) {
-	  if (errno != EWOULDBLOCK) {
-	    fprintf(stderr,
-		    "%s rdr: Error passing data, exiting.\n   Error: %s\n",
-		    argv[0], strerror(errno));
-	    exit(1);
-	  }
-	}
+	while (red > (writ += write(1, bfr+writ, red-writ)))
+	  if (errno != EWOULDBLOCK) abrterr();
       }
-      if (errno != EWOULDBLOCK) {
-	fprintf(stderr,
-		"%s rdr: Error passing data, exiting.\n   Error: %s\n",
-		argv[0], strerror(errno));
-	exit(1);
-      }
+      if (errno != EWOULDBLOCK) abrterr();
       
-    fprintf(stderr, "rdr, read\n"); // debug
       semval = semctl(sid, 2, GETVAL);
-      if (semval == -1) {
-	fprintf(stderr, "%s rdr: Couldn't read semaphore, exiting.\n",
-		argv[0]);
-	perror(argv[0]);
-	return 1;
-      }
+      if (semval == -1) abrterr();
     } while (semval == 0);
-
   }
 
   return 0;

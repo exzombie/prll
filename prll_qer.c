@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "mkrandom.h"
+#include "abrterr.h"
 
 int main(int argc, char ** argv) {
   if (argc < 2) {
@@ -87,16 +88,8 @@ int main(int argc, char ** argv) {
     }
     msg.msgtype = msgtype;
     msg.jarg = strtol(argv[3], 0, 0);
-    if (errno) {
-      fprintf(stderr, "%s: Couldn't read the message argument.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
-    if (msgsnd(qid, &msg, sizeof(long), 0)) {
-      fprintf(stderr, "%s: Couldn't send the message.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (errno) abrterr();
+    if (msgsnd(qid, &msg, sizeof(long), 0)) abrterr();
   // GET A SINGLE MESSAGE MODE
   } else if (mode == PRLL_GETONE_MODE) {
     if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
@@ -106,32 +99,18 @@ int main(int argc, char ** argv) {
       return 0;
     } else if (msg.jarg == 1) {
       return 1;
-    } else {
-      fprintf(stderr, "%s: Unknown command.\n", argv[0]);
-      return 1;
-    }
+    } else abrterr2("Unknown command.");
   // CREATE A NEW QUEUE MODE
   } else if (mode == PRLL_CREATE_MODE) {
     do {
-      if (mkrandom(&qkey)) {
-	fprintf(stderr, "%s: Error accessing /dev/(u)random.\n", argv[0]);
-	return 1;
-      }
+      if (mkrandom(&qkey)) abrterr2("Error accessing /dev/(u)random.");
     } while (-1 == (qid = msgget(qkey, 0600 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
-    if (qid == -1) {
-      fprintf(stderr, "%s: Couldn't create message queue.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (qid == -1) abrterr();
     printf("%#X\n", qkey);
   // REMOVE MODE
   } else if (mode == PRLL_REMOVE_MODE) {
-    if (msgctl(qid, IPC_RMID, NULL)) {
-      fprintf(stderr, "%s: Couldn't remove message queue.\n", argv[0]);
-      perror(argv[0]);
-      return 1;
-    }
+    if (msgctl(qid, IPC_RMID, NULL)) abrterr();
   }    
   return 0;
 }
