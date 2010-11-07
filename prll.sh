@@ -227,7 +227,7 @@ prll() {
 		shift
 	    fi
 	else
-	    prll_jarg="$(prll_bfr t '$prll_Skey2' && prll_bfr c $prll_Skey2)"
+	    prll_jarg="$(prll_bfr t $prll_Skey2 && prll_bfr c $prll_Skey2)"
 	    if [ "$?" -ne 0 ] ; then
 		eval "$prll_finish_code"
 	    fi
