@@ -180,6 +180,7 @@ prll() {
 	prll_qer t "$prll_Qkey" && prll_qer r $prll_Qkey
 	prll_bfr t "$prll_Skey" && prll_bfr r $prll_Skey
 	prll_bfr t "$prll_Skey2" && prll_bfr r $prll_Skey2
+	true
     }
     trap prll_cleanup INT
 
