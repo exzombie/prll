@@ -298,15 +298,15 @@ int main(int argc, char ** argv) {
     if (semop(sid, sop+rdr_recv, 1)) abrterr();
 
     do {
+      semval = semctl(sid, 2, GETVAL);
+      if (semval == -1) abrterr();
+
       while (0 < (red = read(0, bfr, sze))) {
 	writ = 0;
 	while (red > (writ += write(1, bfr+writ, red-writ)))
 	  if (errno != EWOULDBLOCK) abrterr();
       }
-      if (errno != EWOULDBLOCK) abrterr();
-      
-      semval = semctl(sid, 2, GETVAL);
-      if (semval == -1) abrterr();
+      if (errno != EWOULDBLOCK) abrterr();   
     } while (semval == 0);
   }
 
