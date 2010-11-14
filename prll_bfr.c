@@ -306,7 +306,7 @@ int main(int argc, char ** argv) {
 	while (red > (writ += write(1, bfr+writ, red-writ)))
 	  if (errno != EWOULDBLOCK) abrterr();
       }
-      if (errno != EWOULDBLOCK) abrterr();   
+      if (errno && errno != EWOULDBLOCK) abrterr();   
     } while (semval == 0);
   }
 
