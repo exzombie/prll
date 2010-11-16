@@ -243,7 +243,7 @@ prll() {
 	    if [ "$prll_unbuffer" = "yes" ] ; then
 		cat
 	    else
-		prll_bfr b $prll_Skey || prll_qer c $prll_Qkey 1
+		prll_bfr b $prll_Skey
 	    fi
 	    prll_qer c $prll_Qkey 0
 	) &
