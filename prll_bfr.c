@@ -251,15 +251,21 @@ int main(int argc, char ** argv) {
     if (semctl(sid, 0, IPC_RMID)) abrterr();
 
   // WRITESERVER MODE
+#define handlesem(semcmd) do {			\
+      if (semcmd) {				\
+	if (errno == EIDRM) exit(1);		\
+	else abrterr();				\
+      } } while (0)
+
   } else if (mode == PRLL_WRITESERVER_MODE) {
     char bfr[page_size];
     int chr;
     ssize_t writ, red;
     const ssize_t sze = (ssize_t)page_size;
     do {
-      if (semop(sid, sop+wrtr_rst, 3)) abrterr();
-      if (semop(sid, sop+wrtr_w4z, 2)) abrterr();
-      if (semop(sid, sop+wrtr_txmt, 1)) abrterr();
+      handlesem(semop(sid, sop+wrtr_rst, 3));
+      handlesem(semop(sid, sop+wrtr_w4z, 2));
+      handlesem(semop(sid, sop+wrtr_txmt, 1));
 
       red = 0;
       while (EOF != (chr = getc(stdin))) {
@@ -275,7 +281,7 @@ int main(int argc, char ** argv) {
       while (red > (writ += write(1, bfr+writ, red-writ)))
 	if (errno != EWOULDBLOCK) abrterr();
 
-      if (semop(sid, sop+wrtr_txfin, 2)) abrterr();
+      handlesem(semop(sid, sop+wrtr_txfin, 2));
 
       int tmp = getc(stdin);
       if (tmp == EOF) break;
@@ -294,12 +300,16 @@ int main(int argc, char ** argv) {
     oldflags = fcntl (0, F_SETFL, oldflags);
     if (oldflags == -1) abrterr();
 
-    if (semop(sid, sop+rdr_take, 2)) abrterr();
-    if (semop(sid, sop+rdr_recv, 1)) abrterr();
+    handlesem(semop(sid, sop+rdr_take, 2));
+    handlesem(semop(sid, sop+rdr_recv, 1));
 
     do {
       semval = semctl(sid, 2, GETVAL);
-      if (semval == -1) abrterr();
+      if (semval == -1) {
+	// semctl does not necessarily return EIDRM on semaphore removal.
+	if (errno == EINVAL) errno = EIDRM;
+	handlesem(semval);
+      }
 
       while (0 < (red = read(0, bfr, sze))) {
 	writ = 0;
