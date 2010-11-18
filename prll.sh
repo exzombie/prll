@@ -167,12 +167,15 @@ prll() {
     done
     # Prepare to clean up on interrupt and when finished
     prll_cleanup() {
-	trap - INT
+	trap '' INT
 	prll_qer t $prll_Qkey || return 130
 	if [ "$1" != "nosig" ] ; then
 	    prll_msg "Interrupted, waiting for unfinished jobs."
 	fi
-	while [ "$prll_progress" -ge "$prll_jbfinish" ] ; do
+	if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
+	    prll_progress=$((PRLL_NR_CPUS-1))
+	fi
+	while [ "$prll_progress" -gt "$prll_jbfinish" ] ; do
 	    prll_qer o $prll_Qkey || break
 	    prll_jbfinish=$((prll_jbfinish + 1))
 	done
@@ -183,19 +186,6 @@ prll() {
 	true
     }
     trap prll_cleanup INT
-
-    # This code will be evaluated to initiate the finishing run
-    prll_finish_code='
-                      prll_finishing=yes
-	              prll_jbfinish=$((prll_jbfinish + 1))
-	              if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
-		      prll_qer c $prll_Qkey 1
-                          continue
-                      fi
-	              if [ "$prll_progress" -lt "$PRLL_NR_CPUS" ] ; then
-		          prll_progress=$((PRLL_NR_CPUS-1))
-		      fi
-		      continue'
 
     # A function for users. It gracefully aborts.
     prll_interrupt() {
@@ -208,21 +198,14 @@ prll() {
 
     prll_progress=0
     prll_jbfinish=0
-    prll_finishing=no
     # Main loop
     while prll_qer o $prll_Qkey ; do
-	if [ "$prll_finishing" = "yes" ] ; then
+	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
-	    if [ "$prll_jbfinish" -gt "$prll_progress" ] ; then
-		prll_qer c $prll_Qkey 1
-	    else
-		continue
-	    fi
-	fi
 	prll_jarg=''
 	if [ "$prll_read" = "no" ] ; then
 	    if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
-		eval "$prll_finish_code"
+		break
 	    else
 		prll_jarg="$1"
 		shift
@@ -230,7 +213,7 @@ prll() {
 	else
 	    prll_jarg="$(prll_bfr t $prll_Skey2 && prll_bfr c $prll_Skey2)"
 	    if [ "$?" -ne 0 ] ; then
-		eval "$prll_finish_code"
+		break
 	    fi
 	fi
 	
@@ -256,8 +239,6 @@ prll() {
 	fi
 	prll_msg
 	prll_progress=$((prll_progress + 1))
-	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
-	    prll_jbfinish=$((prll_jbfinish + 1))
     done
     prll_cleanup nosig
     )
