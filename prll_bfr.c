@@ -175,6 +175,7 @@ int main(int argc, char ** argv) {
 #define wrtr_txmt	7	// Announce TX
 #define wrtr_txfin	8 // 2	// Announce end of TX
 #define wrtr_rst	10 // 3	// Allow connection
+#define wrtr_quit	13	// Wait before quitting
 
 #define wrtr_w4z2	6	// Wait for x0
 
@@ -188,7 +189,8 @@ int main(int argc, char ** argv) {
     {1, 0, 0}, {2, 0, 0},
     {2, 1, 0},
     {2, 0, 0}, {2, 1, 0},
-    {1, -1, 0}, {2, -1, 0}, {1, 1, 0}
+    {1, -1, 0}, {2, -1, 0}, {1, 1, 0},
+    {1, -1, SEM_UNDO}, {2, -1, SEM_UNDO}
   };
 
   // BUFFERING MODE
@@ -284,8 +286,10 @@ int main(int argc, char ** argv) {
       handlesem(semop(sid, sop+wrtr_txfin, 2));
 
       int tmp = getc(stdin);
-      if (tmp == EOF) break;
-      else ungetc(tmp, stdin);
+      if (tmp == EOF) {
+	handlesem(semop(sid, sop+wrtr_quit, 2));
+	break;
+      } else ungetc(tmp, stdin);
     } while ((char)chr == delim);
 
   // READER MODE
