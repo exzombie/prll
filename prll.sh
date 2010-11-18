@@ -167,7 +167,7 @@ prll() {
     done
     # Prepare to clean up on interrupt and when finished
     prll_cleanup() {
-	trap '' INT
+	trap true INT
 	prll_qer t $prll_Qkey || return 130
 	if [ "$1" != "nosig" ] ; then
 	    prll_msg "Interrupted, waiting for unfinished jobs."
@@ -185,7 +185,6 @@ prll() {
 	prll_bfr t "$prll_Skey2" && prll_bfr r $prll_Skey2
 	true
     }
-    trap prll_cleanup INT
 
     # A function for users. It gracefully aborts.
     prll_interrupt() {
@@ -200,6 +199,7 @@ prll() {
     prll_jbfinish=0
     # Main loop
     while prll_qer o $prll_Qkey ; do
+	trap '' INT
 	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
 	prll_jarg=''
@@ -239,6 +239,8 @@ prll() {
 	fi
 	prll_msg
 	prll_progress=$((prll_progress + 1))
+
+	trap prll_cleanup INT
     done
     prll_cleanup nosig
     )
