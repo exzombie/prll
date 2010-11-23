@@ -147,6 +147,7 @@ prll() {
     prll_msg "Starting work."
     # Start reading stdin
     (
+	trap "prll_bfr r $prll_Skey2" INT
 	if [ "$prll_read" != "no" ] ; then
 	    if [ "$prll_read" = "stdin" ] ; then
 		prll_bfr w $prll_Skey2
@@ -154,7 +155,7 @@ prll() {
 		prll_bfr W $prll_Skey2
 	    fi
 	    # Removal of the semafore signals completion
-	    prll_bfr r $prll_Skey2
+	    prll_bfr t $prll_Skey2 && prll_bfr r $prll_Skey2
 	else
 	    exec 1>&-
 	fi
@@ -167,9 +168,8 @@ prll() {
     done
     # Prepare to clean up on interrupt and when finished
     prll_cleanup() {
-	trap true INT
-	prll_qer t $prll_Qkey || return 130
-	if [ "$1" != "nosig" ] ; then
+	trap "prll_msg 'Waiting interrupted, jobs left running.'" INT
+	if [ -n "$prll_interrupted" ] ; then
 	    prll_msg "Interrupted, waiting for unfinished jobs."
 	fi
 	if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
@@ -199,7 +199,6 @@ prll() {
     prll_jbfinish=0
     # Main loop
     while prll_qer o $prll_Qkey ; do
-	trap '' INT
 	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
 	prll_jarg=''
@@ -217,6 +216,7 @@ prll() {
 	    fi
 	fi
 	
+	trap '' INT
 	# Spawn subshells that start the job and buffer
 	(
 	    $prll_funname "$prll_jarg"
@@ -240,7 +240,7 @@ prll() {
 	prll_msg
 	prll_progress=$((prll_progress + 1))
 
-	trap prll_cleanup INT
+	trap 'prll_interrupted=1' INT
     done
     prll_cleanup nosig
     )
