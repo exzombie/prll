@@ -166,25 +166,6 @@ prll() {
 	prll_qer c $prll_Qkey 0;
 	prll_i=$((prll_i + 1))
     done
-    # Prepare to clean up on interrupt and when finished
-    prll_cleanup() {
-	trap "prll_msg 'Waiting interrupted, jobs left running.'" INT
-	if [ -n "$prll_interrupted" ] ; then
-	    prll_msg "Interrupted, waiting for unfinished jobs."
-	fi
-	if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
-	    prll_progress=$((PRLL_NR_CPUS-1))
-	fi
-	while [ "$prll_progress" -gt "$prll_jbfinish" ] ; do
-	    prll_qer o $prll_Qkey || break
-	    prll_jbfinish=$((prll_jbfinish + 1))
-	done
-	prll_msg "Cleaning up."
-	prll_qer t "$prll_Qkey" && prll_qer r $prll_Qkey
-	prll_bfr t "$prll_Skey" && prll_bfr r $prll_Skey
-	prll_bfr t "$prll_Skey2" && prll_bfr r $prll_Skey2
-	true
-    }
 
     # A function for users. It gracefully aborts.
     prll_interrupt() {
@@ -242,7 +223,25 @@ prll() {
 
 	trap 'prll_interrupted=1' INT
     done
-    prll_cleanup nosig
+
+    # Cleanup
+    trap "prll_msg 'Waiting interrupted, jobs left running.'" INT
+    if [ -n "$prll_interrupted" ] ; then
+	prll_msg "INTERRUPTED!"
+    fi
+    prll_msg "Waiting for unfinished jobs."
+    if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
+	prll_progress=$((PRLL_NR_CPUS-1))
+    fi
+    while [ "$prll_progress" -gt "$prll_jbfinish" ] ; do
+	prll_qer o $prll_Qkey || break
+	prll_jbfinish=$((prll_jbfinish + 1))
+    done
+    prll_msg "Cleaning up."
+    prll_qer t "$prll_Qkey" && prll_qer r $prll_Qkey
+    prll_bfr t "$prll_Skey" && prll_bfr r $prll_Skey
+    prll_bfr t "$prll_Skey2" && prll_bfr r $prll_Skey2
+    true # No use returning the status of IPC removal
     )
 )
 return $?
