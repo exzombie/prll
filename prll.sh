@@ -63,21 +63,21 @@ prll() {
     command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
 
     # Read parameters and environment variables
-    prll_unbuffer="no"
-    [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer="yes"
+    prll_unbuffer=no
+    [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer=yes
 
     OPTIND=1
     prll_funname=''
-    prll_read="no"
+    prll_read=no
     while getopts "s:p0bBc:qhH?" prll_i
     do	case $prll_i in
 	    s)	eval "prll_str2func() {	$OPTARG
 }"
 		prll_funname=prll_str2func ;;
-	    p)	prll_read="stdin" ;;
-	    0)  prll_read="null" ;;
-	    b)  prll_unbuffer="yes" ;;
-	    B)  prll_unbuffer="no" ;;
+	    p)	prll_read=stdin ;;
+	    0)  prll_read=null ;;
+	    b)  prll_unbuffer=yes ;;
+	    B)  prll_unbuffer=no ;;
 	    c)  PRLL_NR_CPUS="$OPTARG" ;;
 	    q)	prll_msg() { : ; } ;;
 	    *)	prll_usage ;;
@@ -92,52 +92,54 @@ prll() {
 
     if [ -z "$PRLL_NR_CPUS" ] ; then
 	command -v grep > /dev/null
-	if [ "$?" -ne 0 -o ! -e /proc/cpuinfo ] ; then
+	if [ $? -ne 0 -o ! -e /proc/cpuinfo ] ; then
 	    prll_die \
 		"The number of CPUs is not set and either the grep" \
 		"utility is missing or there is no /proc/cpuinfo file." \
 		"Please set the number of CPUs."
 	fi
 	PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
-    elif [ "$PRLL_NR_CPUS" -lt 1 ] ; then
+    elif [ $PRLL_NR_CPUS -lt 1 ] ; then
 	prll_die "The number of CPUs is zero."
+    elif ! [ $PRLL_NR_CPUS -ge 1 ] ; then
+	prll_die "Invalid number of CPUs."
     fi
 
-    if [ "$prll_unbuffer" != "yes" -o "$prll_read" != "no" ] ; then
+    if [ $prll_unbuffer != yes -o $prll_read != no ] ; then
 	command -v prll_bfr > /dev/null
-	if [ "$?" -ne 0 ] ; then
+	if [ $? -ne 0 ] ; then
 	    prll_die "Missing prll_bfr."
 	fi
     fi
 
     # If not reading from stdin, setup positional arguments
-    if [ "$prll_read" = "no" ] ; then
+    if [ $prll_read = no ] ; then
 	prll_nr_args=$#
-	if [ "$prll_nr_args" -lt "$PRLL_NR_CPUS" ] ; then
+	if [ $prll_nr_args -lt $PRLL_NR_CPUS ] ; then
 	    PRLL_NR_CPUS=$prll_nr_args
 	fi
     fi
 
     prll_msg "Using $PRLL_NR_CPUS CPUs"
     prll_Qkey="$(prll_qer n)"
-    if [ "$?" -ne 0 ] ; then
+    if [ $? -ne 0 ] ; then
 	prll_die "Failed to create message queue."
     else
 	prll_msg "Created message queue with key $prll_Qkey"
     fi
 
-    if [ "$prll_unbuffer" != "yes" ] ; then
+    if [ $prll_unbuffer != yes ] ; then
 	prll_Skey="$(prll_bfr n)"
-	if [ "$?" -ne 0 ] ; then
+	if [ $? -ne 0 ] ; then
 	    prll_die "Failed to create semaphore."
 	else
 	    prll_msg "Created semaphore with key $prll_Skey"
 	fi
     fi
 
-    if [ "$prll_read" != "no" ] ; then
+    if [ $prll_read != no ] ; then
 	prll_Skey2="$(prll_bfr n)"
-	if [ "$?" -ne 0 ] ; then
+	if [ $? -ne 0 ] ; then
 	    prll_die "Failed to create semaphore."
 	else
 	    prll_msg "Created semaphore with key $prll_Skey2"
@@ -147,11 +149,11 @@ prll() {
     prll_msg "Starting work."
     # Start reading stdin
     (
-	if [ "$prll_read" != "no" ] ; then
+	if [ $prll_read != no ] ; then
 	    trap "prll_bfr r $prll_Skey2" INT
-	    if [ "$prll_read" = "stdin" ] ; then
+	    if [ $prll_read = stdin ] ; then
 		prll_bfr w $prll_Skey2
-	    elif [ "$prll_read" = "null" ] ; then
+	    elif [ $prll_read = null ] ; then
 		prll_bfr W $prll_Skey2
 	    fi
 	    # Removal of the semafore signals completion
@@ -162,7 +164,7 @@ prll() {
     ) | (
     # Get the first jobs started
     prll_i=1
-    while [ "$prll_i" -le "$PRLL_NR_CPUS" ] ; do
+    while [ $prll_i -le $PRLL_NR_CPUS ] ; do
 	prll_qer c $prll_Qkey 0;
 	prll_i=$((prll_i + 1))
     done
@@ -180,11 +182,11 @@ prll() {
     prll_jbfinish=0
     # Main loop
     while prll_qer o $prll_Qkey ; do
-	[ "$prll_progress" -ge "$PRLL_NR_CPUS" ] && \
+	[ $prll_progress -ge $PRLL_NR_CPUS ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
 	prll_jarg=''
-	if [ "$prll_read" = "no" ] ; then
-	    if [ "$prll_progress" -ge "$prll_nr_args" ] ; then
+	if [ $prll_read = no ] ; then
+	    if [ $prll_progress -ge $prll_nr_args ] ; then
 		break
 	    else
 		prll_jarg="$1"
@@ -192,7 +194,7 @@ prll() {
 	    fi
 	else
 	    prll_jarg="$(prll_bfr c $prll_Skey2)"
-	    if [ "$?" -ne 0 ] ; then
+	    if [ $? -ne 0 ] ; then
 		break
 	    fi
 	fi
@@ -204,7 +206,7 @@ prll() {
 	    prll_msg "Job number $prll_progress finished. Exit code: $?"
 	) | \
 	(
-	    if [ "$prll_unbuffer" = "yes" ] ; then
+	    if [ $prll_unbuffer = yes ] ; then
 		cat
 	    else
 		prll_bfr b $prll_Skey
@@ -214,7 +216,7 @@ prll() {
 
 	# Print progress
 	prll_status="Starting job ${prll_progress}, PID $!"
-	if [ "$prll_read" = "no" ] ; then
+	if [ $prll_read = no ] ; then
 	    prll_status="$prll_status Progress:"
 	    prll_status="$prll_status $((prll_progress*100/prll_nr_args))%"
 	    prll_status="$prll_status Arg: $prll_jarg"
@@ -234,14 +236,14 @@ prll() {
     if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
 	prll_progress=$((PRLL_NR_CPUS-1))
     fi
-    while [ "$prll_progress" -gt "$prll_jbfinish" ] ; do
+    while [ $prll_progress -gt $prll_jbfinish ] ; do
 	prll_qer o $prll_Qkey || break
 	prll_jbfinish=$((prll_jbfinish + 1))
     done
     prll_msg "Cleaning up."
     prll_qer r $prll_Qkey
-    [ "$prll_unbuffer" != "yes" ] && prll_bfr r $prll_Skey
-    [ "$prll_read" != "no" ] && prll_bfr r $prll_Skey2
+    [ $prll_unbuffer != yes ] && prll_bfr r $prll_Skey
+    [ $prll_read != no ] && prll_bfr r $prll_Skey2
     true # No use returning the status of IPC removal
     )
 )
