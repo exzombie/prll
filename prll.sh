@@ -41,6 +41,9 @@ prll() {
 	it is not set, prll will attempt to read the number of CPUs
 	from /proc/cpuinfo.
 
+	Buffering can be disabled by setting PRLL_BUFFER environment
+	variable to "no" or "0".
+
 	See the README for more information.
 	EOF
 	exit 1
@@ -85,7 +88,10 @@ prll() {
     done
     shift $((OPTIND - 1))
     if [ -z "$prll_funname" ] ; then
-	[ -z "$1" ] && prll_die "Nothing to do..."
+	if [ -z "$1" ] ; then
+	    prll_msg -e "Nothing to do...\n\n"
+	    prll_usage
+	fi
 	prll_funname="$1"
 	shift
     fi
