@@ -35,6 +35,7 @@ prll() {
 	 	-b	Disable output buffering.
 	 	-c num	Set number of CPUs to 'num'.
 	 	-q	Disable progress messages.
+	        -Q	Disable all messages except errors.
 
 	The number of processes to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable or the -c option. If
@@ -72,7 +73,7 @@ prll() {
     OPTIND=1
     prll_funname=''
     prll_read=no
-    while getopts "s:p0bBc:qhH?" prll_i
+    while getopts "s:p0bBc:qQhH?" prll_i
     do	case $prll_i in
 	    s)	eval "prll_str2func() {	$OPTARG
 }"
@@ -82,7 +83,8 @@ prll() {
 	    b)  prll_unbuffer=yes ;;
 	    B)  prll_unbuffer=no ;;
 	    c)  PRLL_NR_CPUS="$OPTARG" ;;
-	    q)	prll_msg() { : ; } ;;
+	    q)  prll_quiet=yes ;;
+	    Q)	prll_msg() { : ; } ;;
 	    *)	prll_usage ;;
 	esac
     done
@@ -209,6 +211,7 @@ prll() {
 	# Spawn subshells that start the job and buffer
 	(
 	    $prll_funname "$prll_jarg"
+	    [ -z "$prll_quiet" ] &&
 	    prll_msg "Job number $prll_progress finished. Exit code: $?"
 	) | \
 	(
@@ -227,7 +230,7 @@ prll() {
 	    prll_status="$prll_status $((prll_progress*100/prll_nr_args))%"
 	    prll_status="$prll_status Arg: $prll_jarg"
 	fi
-	prll_msg "$prll_status"
+	[ -z "$prll_quiet" ] && prll_msg "$prll_status"
 	prll_progress=$((prll_progress + 1))
 
 	trap 'prll_interrupted=1' INT
