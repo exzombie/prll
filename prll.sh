@@ -147,8 +147,8 @@ prll() {
     prll_msg "Starting work."
     # Start reading stdin
     (
-	trap "prll_bfr r $prll_Skey2" INT
 	if [ "$prll_read" != "no" ] ; then
+	    trap "prll_bfr r $prll_Skey2" INT
 	    if [ "$prll_read" = "stdin" ] ; then
 		prll_bfr w $prll_Skey2
 	    elif [ "$prll_read" = "null" ] ; then
