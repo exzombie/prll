@@ -212,13 +212,14 @@ prll() {
 	    prll_qer c $prll_Qkey 0
 	) &
 
-	# Print status
-	prll_msg -n "Starting job ${prll_progress}, PID $! "
+	# Print progress
+	prll_status="Starting job ${prll_progress}, PID $!"
 	if [ "$prll_read" = "no" ] ; then
-	    prll_msg -e "Progress: $((prll_progress*100/prll_nr_args))%% "
-	    prll_msg -e "Arg: $prll_jarg "
+	    prll_status="$prll_status Progress:"
+	    prll_status="$prll_status $((prll_progress*100/prll_nr_args))%"
+	    prll_status="$prll_status Arg: $prll_jarg"
 	fi
-	prll_msg
+	prll_msg "$prll_status"
 	prll_progress=$((prll_progress + 1))
 
 	trap 'prll_interrupted=1' INT
