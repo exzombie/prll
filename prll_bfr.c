@@ -124,7 +124,11 @@ int main(int argc, char ** argv) {
     skey = strtol(argv[2], 0, 0);
     sid = semget(skey, 0, 0);
     if (sid == -1 || skey == 0) {
-      if (mode != PRLL_TEST_MODE) {
+      if (
+	  mode != PRLL_TEST_MODE &&
+	  mode != PRLL_REMOVE_MODE &&
+	  mode != PRLL_READER_MODE
+	  ) {
 	fprintf(stderr, "%s: Couldn't open semaphore.\n", argv[0]);
 	perror(argv[0]);
       }

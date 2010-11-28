@@ -155,7 +155,7 @@ prll() {
 		prll_bfr W $prll_Skey2
 	    fi
 	    # Removal of the semafore signals completion
-	    prll_bfr t $prll_Skey2 && prll_bfr r $prll_Skey2
+	    prll_bfr r $prll_Skey2
 	else
 	    exec 1>&-
 	fi
@@ -191,7 +191,7 @@ prll() {
 		shift
 	    fi
 	else
-	    prll_jarg="$(prll_bfr t $prll_Skey2 && prll_bfr c $prll_Skey2)"
+	    prll_jarg="$(prll_bfr c $prll_Skey2)"
 	    if [ "$?" -ne 0 ] ; then
 		break
 	    fi
@@ -239,9 +239,9 @@ prll() {
 	prll_jbfinish=$((prll_jbfinish + 1))
     done
     prll_msg "Cleaning up."
-    prll_qer t "$prll_Qkey" && prll_qer r $prll_Qkey
-    prll_bfr t "$prll_Skey" && prll_bfr r $prll_Skey
-    prll_bfr t "$prll_Skey2" && prll_bfr r $prll_Skey2
+    prll_qer r $prll_Qkey
+    [ "$prll_unbuffer" != "yes" ] && prll_bfr r $prll_Skey
+    [ "$prll_read" != "no" ] && prll_bfr r $prll_Skey2
     true # No use returning the status of IPC removal
     )
 )
