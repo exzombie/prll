@@ -92,6 +92,7 @@ prll() {
 	esac
     done
     shift $((OPTIND - 1))
+
     # Function is not given as a string, so the next argument must be
     # the name of an external function.
     if [ -z "$prll_funname" ] ; then
@@ -101,6 +102,19 @@ prll() {
 	fi
 	prll_funname="$1"
 	shift
+	# Add an exception for -p and -0 for backwards compatibility
+	if [ "$1" = '-p' ] ; then
+	    prll_read=stdin
+	    shift
+	elif [ "$1" = '-0' ] ; then
+	    prll_read=null
+	    shift
+	else
+	    if [ $prll_read = no -a -z "$1" ] ; then
+		prll_msg -e "Nothing to do...\n\n"
+		prll_usage
+	    fi
+	fi
     fi
 
     # Number of CPUs is not given, so find it. Also, check for sanity.
