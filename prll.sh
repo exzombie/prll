@@ -58,21 +58,24 @@ prll() {
     prll_msg() {
 	case $1 in
 	    '')	printf '\n' 1>&2 ;;
+	     # Suppress the newline
 	    -n)	shift; printf 'PRLL: %s' "$*" 1>&2 ;;
+	     # Interpret arguments as a printf string
 	    -e)	shift; printf "$@" 1>&2 ;;
 	    *)	printf 'PRLL: %s\n' "$*" 1>&2 ;;
 	esac
     }
 
+    # This executable is always needed.
     command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
 
-    # Read parameters and environment variables
+    # Read parameters and environment variables.
     prll_unbuffer=no
     [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer=yes
 
     OPTIND=1
-    prll_funname=''
-    prll_read=no
+    prll_funname='' # Function to execute
+    prll_read=no # Whether to read standard input
     while getopts "s:p0bBc:qQhH?" prll_i
     do	case $prll_i in
 	    s)	eval "prll_str2func() {	$OPTARG
@@ -89,6 +92,8 @@ prll() {
 	esac
     done
     shift $((OPTIND - 1))
+    # Function is not given as a string, so the next argument must be
+    # the name of an external function.
     if [ -z "$prll_funname" ] ; then
 	if [ -z "$1" ] ; then
 	    prll_msg -e "Nothing to do...\n\n"
@@ -98,6 +103,7 @@ prll() {
 	shift
     fi
 
+    # Number of CPUs is not given, so find it. Also, check for sanity.
     if [ -z "$PRLL_NR_CPUS" ] ; then
 	command -v grep > /dev/null
 	if [ $? -ne 0 -o ! -e /proc/cpuinfo ] ; then
@@ -113,6 +119,8 @@ prll() {
 	prll_die "Invalid number of CPUs."
     fi
 
+    # Only check for prll_bfr if needed. Although I can't imagine
+    # why anyone would want to be without it...
     if [ $prll_unbuffer != yes -o $prll_read != no ] ; then
 	command -v prll_bfr > /dev/null
 	if [ $? -ne 0 ] ; then
@@ -120,7 +128,7 @@ prll() {
 	fi
     fi
 
-    # If not reading from stdin, setup positional arguments
+    # If not reading from stdin, setup positional arguments.
     if [ $prll_read = no ] ; then
 	prll_nr_args=$#
 	if [ $prll_nr_args -lt $PRLL_NR_CPUS ] ; then
@@ -128,6 +136,7 @@ prll() {
 	fi
     fi
 
+    # Create IPCs.
     prll_msg "Using $PRLL_NR_CPUS CPUs"
     prll_Qkey="$(prll_qer n)"
     if [ $? -ne 0 ] ; then
@@ -155,29 +164,34 @@ prll() {
     fi
 
     prll_msg "Starting work."
-    # Start reading stdin
+    # Start reading stdin.
     (
 	if [ $prll_read != no ] ; then
+	    # This subshell has its own trap.
 	    trap "prll_bfr r $prll_Skey2" INT
 	    if [ $prll_read = stdin ] ; then
 		prll_bfr w $prll_Skey2
 	    elif [ $prll_read = null ] ; then
 		prll_bfr W $prll_Skey2
 	    fi
-	    # Removal of the semafore signals completion
+	    # Signal completion by removing the semaphore.
 	    prll_bfr r $prll_Skey2
 	else
+	    # Nothing on stdin, so just close stdout and exit the
+	    # subshell.
 	    exec 1>&-
 	fi
     ) | (
-    # Get the first jobs started
+    # Load some tokens into the queue. This will make the main loop
+    # start a few jobs to run in parallel.
     prll_i=1
     while [ $prll_i -le $PRLL_NR_CPUS ] ; do
 	prll_qer c $prll_Qkey 0;
 	prll_i=$((prll_i + 1))
     done
 
-    # A function for users. It gracefully aborts.
+    # A function for users. It gracefully aborts by inserting a 'quit'
+    # message into the queue.
     prll_interrupt() {
 	prll_msg \
 	    "Job $prll_progress interrupting execution." \
@@ -186,14 +200,24 @@ prll() {
 	return 130
     }	
 
-    prll_progress=0
-    prll_jbfinish=0
-    # Main loop
+    prll_progress=0 # Counts started jobs
+    prll_jbfinish=0 # Counts finished jobs
+
+    # The main loop. Its iterations are controlled by prll_qer, which
+    # waits for a message to arrive before starting a new job, unless
+    # the message tells it to quit.
     while prll_qer o $prll_Qkey ; do
+
+	# Only start counting finished jobs after the initial batch of
+	# tokens is exhausted.
 	[ $prll_progress -ge $PRLL_NR_CPUS ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
+
+	# The function argument. It gets its value either from
+	# positional arguments or stdin.
 	prll_jarg=''
 	if [ $prll_read = no ] ; then
+	    # If there are no more arguments, break the main loop.
 	    if [ $prll_progress -ge $prll_nr_args ] ; then
 		break
 	    else
@@ -202,13 +226,16 @@ prll() {
 	    fi
 	else
 	    prll_jarg="$(prll_bfr c $prll_Skey2)"
+	    # If there is nothing more to read, break the main loop.
 	    if [ $? -ne 0 ] ; then
 		break
 	    fi
 	fi
-	
+
+	# Disable the interrupt trap for the rest of the loop iteraton
+	# to make sure jobs are counted correctly.
 	trap '' INT
-	# Spawn subshells that start the job and buffer
+	# Spawn subshells that start the job and buffer.
 	(
 	    $prll_funname "$prll_jarg"
 	    [ -z "$prll_quiet" ] &&
@@ -233,10 +260,12 @@ prll() {
 	[ -z "$prll_quiet" ] && prll_msg "$prll_status"
 	prll_progress=$((prll_progress + 1))
 
+	# Setup the interrupt trap.
 	trap 'prll_interrupted=1' INT
     done
 
-    # Cleanup
+    # Cleanup. It sets up its own interrupt trap to notify the user he
+    # has to do his own cleanup.
     trap "prll_msg 'Waiting interrupted, jobs left running.'" INT
     if [ -n "$prll_interrupted" ] ; then
 	prll_msg "INTERRUPTED!"
