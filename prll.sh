@@ -12,8 +12,7 @@
 #  A copy of the GNU General Public License is provided in COPYING.
 #  If not, see <http://www.gnu.org/licenses/>.
 
-prll() {
-(
+prll_real() {
     prll_usage() {
 	cat <<-EOF
 	prll version 0.5.9999
@@ -296,6 +295,10 @@ prll() {
     [ $prll_read != no ] && prll_bfr r $prll_Skey2
     true # No use returning the status of IPC removal
     )
-)
 return $?
+}
+
+prll() {
+    ( prll_real "$@" )
+    return $?
 }
