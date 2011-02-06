@@ -93,31 +93,29 @@ prll() {
     done
     shift $((OPTIND - 1))
 
-    # Function is not given as a string, so the next argument must be
+    # Function was not given as a string, so the next argument must be
     # the name of an external function.
     if [ -z "$prll_funname" ] ; then
-	if [ -z "$1" ] ; then
-	    prll_msg -e "Nothing to do...\n\n"
-	    prll_usage
-	fi
 	prll_funname="$1"
 	shift
-	# Add an exception for -p and -0 for backwards compatibility
-	if [ "$1" = '-p' ] ; then
-	    prll_read=stdin
-	    shift
-	elif [ "$1" = '-0' ] ; then
-	    prll_read=null
-	    shift
-	else
-	    if [ $prll_read = no -a -z "$1" ] ; then
-		prll_msg -e "Nothing to do...\n\n"
-		prll_usage
-	    fi
-	fi
     fi
 
-    # Number of CPUs is not given, so find it. Also, check for sanity.
+    # Add an exception for -p and -0 for backwards compatibility
+    if [ "$1" = '-p' ] ; then
+	prll_read=stdin
+	shift
+    elif [ "$1" = '-0' ] ; then
+	prll_read=null
+	shift
+    fi
+
+    # Check whether arguments were supplied
+    if [ $prll_read = no -a -z "$1" ] ; then
+	prll_msg -e "Nothing to do...\n\n"
+	prll_usage
+    fi
+
+    # Number of CPUs was not given, so find it. Also, check for sanity.
     if [ -z "$PRLL_NR_CPUS" ] ; then
 	command -v grep > /dev/null
 	if [ $? -ne 0 -o ! -e /proc/cpuinfo ] ; then
