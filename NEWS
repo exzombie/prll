@@ -1,6 +1,22 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+Version 0.5.9999
+
+- POSIX compatibility, tested with dash.
+- Quiet mode to suppress progress messages.
+- bash no longer barfs the whole prll source code when suspending
+  and resuming operation.
+- Proper option parsing is used, so order of options is no longer
+  important. Exceptions were added for the '-p' and '-0' options
+  to maintain backwards  compatibility.
+- Improved performance when reading from pipe, although it is
+  still recommended to put large amounts of data in files.
+- Better error reporting from helper programs.
+- Better handling of the INT signal.
+- More reliable, but interruptible cleanup.
+
+
 Version 0.5
 
 - Makefiles require GNU make.
