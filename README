@@ -1,12 +1,13 @@
 prll
-version 0.5
+version 0.5.9999
 ===========
 
-prll (pronounced "parallel") is a utility for use with bash or zsh. It
-provides a convenient interface for parallelizing the execution of a
-single task over multiple data files, or actually any kind of data
-that you can pass as a function argument. It is meant to make it
-simple to fully utilize a multicore/multiprocessor machine.
+prll (pronounced "parallel") is a utility for use with POSIX and
+(mostly) compatible shells, such as bash, zsh and dash. It provides a
+convenient interface for parallelizing the execution of a single task
+over multiple data files, or actually any kind of data that you can
+pass as a shell function argument. It is meant to make it simple to
+fully utilize a multicore/multiprocessor machine.
 
 Homepage: http://prll.sourceforge.net/
 
@@ -18,10 +19,11 @@ Contents of this file:
   3 - Installation
   4 - Usage
     4.1 - Summary of options
-    4.2 - Operation
-    4.3 - Aborting execution and cleanup
-    4.4 - Buffering
-    4.5 - Examples
+    4.2 - Environment variables
+    4.3 - Operation
+    4.4 - Aborting execution and cleanup
+    4.5 - Buffering
+    4.6 - Examples
   5 - Known Issues
   6 - Licensing Information
 
@@ -31,12 +33,13 @@ Contents of this file:
 
 prll is designed to be used not just in shell scripts, but especially
 in interactive shells. To make the latter convenient, it is
-implemented as a shell function. Shells are not much good at automatic
-job management; see [1] for further discussion. Therefore, prll uses
-helper programs, written in C. To prevent race conditions, System V
-Message Queues and Semaphores are used to signal job completion. It
-also features full output buffering to prevent mangling of data
-because of concurrent output.
+implemented as a shell function. This means that it inherits the whole
+environment of your current shell. Shells are not much good at
+automatic job management; see [1] for further discussion. Therefore,
+prll uses helper programs, written in C. To prevent race conditions,
+System V Message Queues and Semaphores are used to signal job
+completion. It also features full output buffering to prevent mangling
+of data because of concurrent output.
 
 [1] http://prll.sourceforge.net/shell_parallel.html
 
@@ -44,7 +47,7 @@ because of concurrent output.
 2 REQUIREMENTS
 ==============
 
-  - bash or zsh
+  - sh-like shell, such as bash, zsh or dash
   - C compiler, such as gcc
   - GNU make
   - OS support for System V Message Queues and Semaphores
@@ -57,13 +60,15 @@ Systems tested: GNU/Linux, FreeBSD, OpenBSD, MacOS X
 These requirements should be satisfied by your system by default,
 excepting perhaps the compiler and its toolchain, which are not
 installed by default on systems such as Ubuntu Linux. Refer to your
-system's documentation on how to install missing programs.
+system's documentation on how to install missing programs. If you can
+find prebuilt packages for your system (some are listed on prll
+homepage) you don't need neither make nor the compiler.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
-may lack this file or have a different syntax. Setting the
-PRLL_NR_CPUS environment variable renders the cpuinfo file unnecessary
-(see usage instructions below).
+may lack this file or have a different syntax. Setting the number of
+parallel processes manually renders the cpuinfo file unnecessary (see
+usage instructions below).
 
 Linux systems that were tested had much larger Message Queue size than
 non-Linux systems. Queue size dictates the maximum number of jobs that
@@ -76,7 +81,7 @@ saturated.
 3 INSTALLATION
 ==============
 
-Compile prll_qer.c. You can use the included Makefile. If you
+Compile the helper programs. You can use the included Makefile. If you
 have gcc, you can simply run
 
   make
@@ -113,13 +118,14 @@ installation, run as root
 
 File prll.sh contains the shell function. The shell that will use it
 needs to source it. That means that:
-  - If you wish to use prll in a shell script, simply copy it in there.
-  - If you wish to use prll in an interactive shell, source it.
+  - if you wish to use prll in a shell script, simply copy it in there;
+  - if you wish to use prll in an interactive shell, source it.
+
 The latter means that you need to put the function somewhere where
-your shell will find it. If you are installing it for yourself, put
-it in your .bashrc or .zshrc. If you are installing it system-wide, put
-it in /etc/profile. However, if your system has the /etc/profile.d
-directory, use that. For example
+your shell will find it. If you are installing it for yourself, put it
+in your shell startup file, such as .bashrc or .zshrc. If you are
+installing it system-wide, put it in /etc/profile. However, if your
+system has the /etc/profile.d directory, use that. For example
 
   chown root:root prll.sh
   cp prll.sh /etc/profile.d/
@@ -135,10 +141,8 @@ into your .bashrc or .zshrc.
 4 USAGE
 =======
 
-Synopsis: prll [-b] function_name arguments ...
-	  prll [-b] -s 'code' arguments ...
-
-Order of options is important.
+Synopsis: prll [options] function_name arguments ...
+	  prll [options] -s 'code' arguments ...
 
 4.1 Summary of options:
 -----------------------
@@ -147,15 +151,28 @@ Order of options is important.
   arguments:	   List of arguments that function_name should be
   		   executed over.
 
-  -b	Disable output buffering.
-  -s	Take a string of shell code instead of a shell function name.
-  -p	Read arguments as lines from standard input instead of command
-  	line. This option must be used at the end of command line
-  	(i.e. instead of the argument list).
-  -0	Same as -p, but use the null character as delimiter instead of
-  	newline.
+  -s str	 Use string 'str' as shell code to run.
+  -b		 Disable output buffering.
+  -B		 Enable output buffering, which is the default.
+  		 Use to override the PRLL_BUFFER variable.
+  -p		 Read arguments as lines from standard input instead
+  		 of command line.
+  -0		 Same as -p, but use the null character as delimiter
+  		 instead of newline.
+  -c num	 Set number of parallel jobs to 'num'. This overrides
+     		 the PRLL_NR_CPUS variable and disables checking
+		 of /proc/cpuinfo.
+  -q 		 Disable progress messages.
+  -Q		 Disable all messages except errors.
 
-4.2 Operation:
+4.2 Environment variables
+-------------------------
+
+  PRLL_BUFFER	Set to 'no' or '0' to disable output buffering.
+  PRLL_NR_CPUS	Set to the number of parallel jobs to run. If set,
+  		it disables checking of /proc/cpuinfo.
+
+4.3 Operation:
 --------------
 
 To execute a task, create a shell function that does something to its
@@ -164,29 +181,34 @@ you wish to execute it on.
 
 As an alternative, you may pass the '-s' flag, followed by a
 string. The string will be executed as if it were the body of a shell
-function. Therefore, you may use $1 to reference its first argument.
-Be sure to quote the string properly to prevent shell expansion.
+function. Therefore, you may use $1 to reference its first (and only)
+argument.  Be sure to quote the string properly to prevent shell
+expansion.
 
-Instead of arguments, you can use flags '-p' or '-0'. prll will then
+Instead of arguments, you can use options '-p' or '-0'. prll will then
 take its arguments from stdin. The '-p' flag will make it read lines
 and the '-0' flag will make it read null-delimited input. This mode
 emulates the 'xargs' utility a bit, but is easier for interactive use
 because xargs makes it hard to pass complex commands. Reading large
-arguments (such as lines several kilobytes long) in this fashion is
+arguments (such as lines several megabytes long) in this fashion is
 slow, however. If your data comes in such large chunks, it is much
 faster to split it into several files and pass a list of those to prll
 instead.
 
 The '-b' option disables output buffering. See below for explanation.
 Alternatively, buffering may be disabled by setting the PRLL_BUFFER
-environment variable to "no".
+environment variable to "no". Use the '-B' option to override this.
 
-The number of tasks to be run in parallel is provided via the
-PRLL_NR_CPUS environment variable. If it is not provided, prll will
-look into the /proc/cpuinfo file and extract the number of CPUs in
-your computer.
+The '-q' and '-Q' options provide two levels of quietness. Both
+suppress progress reports. The '-Q' option also disables the startup
+and end messages. They both let errors emited by your jobs through.
 
-4.3 Aborting execution and cleanup:
+The number of tasks to be run in parallel is provided with the '-c'
+option or via the PRLL_NR_CPUS environment variable. If it is not
+provided, prll will look into the /proc/cpuinfo file and extract the
+number of CPUs in your computer.
+
+4.4 Aborting execution and cleanup:
 -----------------------------------
 
 If you need to abort execution, you can do it with the usual Ctrl+C
@@ -216,7 +238,7 @@ command. Refer to your system's documentation for details. Be aware
 that other programs might (and often do) make use of IPC facilities,
 so make sure you remove the correct queue or semaphore.
 
-4.4 Buffering:
+4.5 Buffering:
 --------------
 
 Transport of data between programs is normally buffered by the
@@ -282,23 +304,22 @@ that however you want, but there should be a helpful utility available
 on your sysyem: 'mktemp'. It is dedicated to creating files with
 unique names.
 
-As noted at the beginning of this section, prll's additional buffering
-can be disabled. It is not necessary to do this when each job writes
-to its own file. It is meant to be used as a safety measure. prll was
-written with interactive use in mind, and when writing functions on
-the fly, it can easily happen that an error creeps in. If an error
-causes spurious output (e.g. if the function gets stuck in an infinite
-loop) it can easily waste a lot of memory. The option to disable
-buffering is meant to be used when you believe that your jobs should
-only produce a small amount of data, but aren't sure that they
-actually will.
+As noted in the usage instructions, prll's additional buffering can be
+disabled. It is not necessary to do this when each job writes to its
+own file. It is meant to be used as a safety measure. prll was written
+with interactive use in mind, and when writing functions on the fly,
+it can easily happen that an error creeps in. If an error causes
+spurious output (e.g. if the function gets stuck in an infinite loop)
+it can easily waste a lot of memory. The option to disable buffering
+is meant to be used when you believe that your jobs should only
+produce a small amount of data, but aren't sure that they actually
+will.
 
-It should be noted that buffering only applies to standard
-output. OS buffers standard error differently (i.e. by lines) and prll
-does nothing to change that.
+It should be noted that buffering only applies to standard output. OS
+buffers standard error differently (i.e. by lines) and prll does
+nothing to change that.
 
-
-4.5 Examples:
+4.6 Examples:
 -------------
 
 Suppose you have a set of photos that you wish to process using the
@@ -311,7 +332,7 @@ This will run mogrify on each jpg file in the current directory. If
 your computer has 4 processors, but you wish to run only 3 tasks at
 once, you should use
 
-  PRLL_NR_CPUS=3 prll myfn *.jpg
+  prll -c 3 myfn *.jpg
 
 Or, to make it permanent in the current shell, do
 
@@ -328,7 +349,8 @@ defining a function. To redefine the same example:
 
 However, you now need to be careful not to forget the parentheses. When
 using the 'function' keyword, they are optional. If you leave it out,
-they are not.
+they are not. Moreover, the 'function' keyword is not specified by
+POSIX, so shells like dash can only use this form.
 
 All examples here are very short. In practice, it is quicker to pass
 such a short function on the command line directly:
@@ -346,9 +368,9 @@ when passing them to prll, then split them again inside your
 function. Here is a stub for a function that takes three arguments:
 
   # for zsh only
-  function myfn() { echo $1 | read a b c; process $a; compute $b; kill $c; }
+  myfn() { echo $1 | read a b c; process $a; compute $b; kill $c; }
   # for both bash and zsh
-  function myfn() { read a b c <<<$1 ; process $a; compute $b; kill $c; }
+  myfn() { read a b c <<<$1 ; process $a; compute $b; kill $c; }
   prll myfn 'a1 b1 c1' 'a2 b2 c3' 'a3 b3 c3' ...
 
 If you have even more complex requirements, you can use the '-0'
@@ -358,14 +380,14 @@ option and pipe null-delimited data into prll.
 You may wish to abort execution if one of the results is wrong. In
 that case, use something like this:
 
-     function myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
+  myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
 
 
 If you have many arguments to process, it might be easier to pipe them
 to standard input. Suppose each line of a file is an argument of its
 own. Simply pipe the file into prll:
 
-  function myfn() { some; processing | goes && on; here; }
+  myfn() { some; processing | goes && on; here; }
   cat file_with_arguments | prll myfn -p > results
 
 
@@ -387,20 +409,11 @@ contact the author. Suggestions are welcome, patches even more so.
 
 Known issues:
 
-- Forced termination (Ctrl+C pressed twice) should clean up.
+- Forced termination prevents output buffering from working
+  correctly.
 
-- prll is not compatible with POSIX shells.
-  Martin Väth has provided a port of a previous version. Changes will
-  be merged in the future.
-
-- Reading standard input is slow.
-  This is mostly fine because it only gets annoying when reading
-  rather large chunks, and in such a case, it is reasonable to split
-  them into separate files. It is only really inconvenient when you
-  have a huge file which you cannot afford to split. Implementing a
-  faster internal splitting on stdin is quite possible, but difficult
-  to do elegantly. It will only be considered if there is a genuine
-  need for it.
+- Forced termination is unavailable on zsh because the Ctrl+C
+  combination causes the function into the background.
 
 - User should be able to limit buffer memory usage, but still use
   buffering without loss of data. Is this possible to solve elegantly?
@@ -424,4 +437,4 @@ Known issues:
 The prll package is provided under the GNU General Public
 License, version 3 or later. See COPYING for more information.
 
-Copyright 2009-2010 Jure Varlec
+Copyright 2009-2011 Jure Varlec
