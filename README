@@ -62,7 +62,7 @@ excepting perhaps the compiler and its toolchain, which are not
 installed by default on systems such as Ubuntu Linux. Refer to your
 system's documentation on how to install missing programs. If you can
 find prebuilt packages for your system (some are listed on prll
-homepage) you don't need neither make nor the compiler.
+homepage) you need neither make nor the compiler.
 
 prll also looks for the /proc/cpuinfo file. It uses it to
 automatically determine the number of processors. Non-Linux systems
