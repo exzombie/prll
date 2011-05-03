@@ -243,7 +243,7 @@ prll_real() {
 	    fi
 	fi
 
-	# Disable the interrupt trap for the rest of the loop iteraton
+	# Disable the interrupt trap for the rest of the loop iteration
 	# to make sure jobs are counted correctly.
 	trap '' INT
 	# Spawn subshells that start the job and buffer.
