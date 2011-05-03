@@ -1,6 +1,10 @@
 prll is written and maintained by:
      Jure Varlec <jure.varlec@gmail.com>
 
+Special thanks to Martin Väth who provided a port of
+version 0.4 to POSIX syntax and thus eased developement
+of version 0.6 considerably.
+
 Thanks to:
  - Piotr Karbowski for suggestions and testing.
  - Gentoo forums users cal22cal and krinn for suggestions.
