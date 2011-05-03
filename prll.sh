@@ -247,19 +247,35 @@ prll_real() {
 	# to make sure jobs are counted correctly.
 	trap '' INT
 	# Spawn subshells that start the job and buffer.
-	(
-	    $prll_funname "$prll_jarg"
-	    [ -z "$prll_quiet" ] &&
-	    prll_msg "Job number $prll_progress finished. Exit code: $?"
-	) | \
-	(
-	    if [ $prll_unbuffer = yes ] ; then
-		cat
-	    else
-		prll_bfr b $prll_Skey
-	    fi
-	    prll_qer c $prll_Qkey 0
-	) &
+	if [ -n $ZSH_VERSION ] ; then	# a workaround
+	    (
+		$prll_funname "$prll_jarg"
+		[ -z "$prll_quiet" ] &&
+		prll_msg "Job number $prll_progress finished. Exit code: $?"
+	    ) | \
+		(
+		if [ $prll_unbuffer = yes ] ; then
+		    cat
+		else
+		    prll_bfr b $prll_Skey
+		fi
+		prll_qer c $prll_Qkey 0
+	    ) &!				# a workaround
+	else
+	    (
+		$prll_funname "$prll_jarg"
+		[ -z "$prll_quiet" ] &&
+		prll_msg "Job number $prll_progress finished. Exit code: $?"
+	    ) | \
+		(
+		if [ $prll_unbuffer = yes ] ; then
+		    cat
+		else
+		    prll_bfr b $prll_Skey
+		fi
+		prll_qer c $prll_Qkey 0
+	    ) &
+	fi
 
 	# Print progress
 	prll_status="Starting job ${prll_progress}, PID $!"
