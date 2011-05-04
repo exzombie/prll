@@ -39,10 +39,10 @@ any_found: zsh_found bash_found dash_found sh_found
 
 $(ALL_TESTS): any_found
 	@echo; echo;
-	@test -f bash_found && bash $@
-	@test -f zsh_found && zsh $@
-	@test -f dash_found && dash $@
-	@test -f sh_found && sh $@
+	@if test -f bash_found ; then bash $@ ; else true ; fi
+	@if test -f zsh_found ; then zsh $@ ; else true ; fi
+	@if test -f dash_found ; then dash $@ ; else true ; fi
+	@if test -f sh_found ; then sh $@ ; else true ; fi
 	@echo; echo;
 
 # For emacs' flymake-mode
