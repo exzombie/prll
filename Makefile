@@ -7,7 +7,7 @@ compile: prll_qer prll_bfr
 
 clean:
 	rm -f prll_qer prll_bfr mkrandom.o
-	rm -f $(foreach cfger, .h _keytype _mallopt, config$(cfger) \
+	rm -f $(foreach cfger, .h _keytype _mallopt _semun, config$(cfger) \
 		config$(cfger).log)
 	$(MAKE) -C tests clean
 
@@ -21,7 +21,7 @@ check-syntax:
 
 prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
-config.h: config_keytype.c config_mallopt.c
+config.h: config_keytype.c config_mallopt.c config_semun.c
 	@echo "--==CONFIGURING==--"
 	@echo "// Automatically generated configuration for prll." > $@
 	@$(foreach cfger,$^,\

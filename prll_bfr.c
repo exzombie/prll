@@ -27,17 +27,21 @@
 #ifdef HAVE_MALLOPT_H
 #include <malloc.h>
 #endif
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/sem.h>
 #include "mkrandom.h"
 #include "abrterr.h"
 
 size_t page_size;
 
+#ifndef HAVE_SEMUN
 union semun {
   int val;
   struct semid_ds *buf;
   unsigned short  *array;
 };
+#endif
 
 struct llst {
   char * data;
