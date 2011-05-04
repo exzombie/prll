@@ -16,7 +16,10 @@ clean:
 $(ALL_TESTS): utilities_found
 
 utilities_found:
-	command -v tr grep sort diff && touch utilities_found
+	for util in tr grep sort diff ; do \
+		command -v $$util || exit 1 ; \
+	done
+	touch utilities_found
 
 bash_found:
 	-command -v bash && touch bash_found
