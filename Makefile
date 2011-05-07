@@ -16,11 +16,6 @@ clean:
 test: prll_qer prll_bfr
 	$(MAKE) -C tests
 
-# For emacs' flymake-mode
-.PHONY: check-syntax
-check-syntax:
-	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
-
 prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
 prll.1: prll.txt
@@ -40,3 +35,8 @@ config.h: config_keytype.c config_mallopt.c config_semun.c
 	|| true; )
 	@echo "--==DONE CONFIGURING==--"
 	@echo
+
+# For emacs' flymake-mode
+.PHONY: check-syntax
+check-syntax:
+	gcc --std=c99 -Wall -Wextra -Wundef -Wshadow -Wunsafe-loop-optimizations -Wsign-compare -fsyntax-only ${CHK_SOURCES}
