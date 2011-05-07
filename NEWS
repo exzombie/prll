@@ -15,6 +15,7 @@ Version 0.5.9999
 - Better error reporting from helper programs.
 - Better handling of the INT signal.
 - More reliable, but interruptible cleanup.
+- Documentation is now in the form of a manpage.
 
 
 Version 0.5
