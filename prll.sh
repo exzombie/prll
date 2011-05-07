@@ -44,7 +44,7 @@ prll_real() {
 	Buffering can be disabled by setting PRLL_BUFFER environment
 	variable to "no" or "0".
 
-	See the README for more information.
+	See the prll manpage for more information.
 	EOF
 	exit 1
     }
