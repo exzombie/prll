@@ -49,7 +49,6 @@ such a user, prll will come in very handy.
   - sh-like shell, such as bash, zsh or dash
   - C compiler, such as gcc
   - GNU make
-  - sed
   - OS support for System V Message Queues and Semaphores
   - device files /dev/urandom or /dev/random
   - the cat utility
