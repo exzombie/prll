@@ -27,9 +27,11 @@ prll.1: prll.txt
 	< prll.txt > prll.1
 
 config.h: config_keytype.c config_mallopt.c config_semun.c
+	@echo
 	@echo "--==CONFIGURING==--"
 	@echo "// Automatically generated configuration for prll." > $@
 	@$(foreach cfger,$^,\
 	$(MAKE) $(cfger:.c=) 2>$(cfger:.c=.log) && ./$(cfger:.c=) >> $@ \
 	|| true; )
 	@echo "--==DONE CONFIGURING==--"
+	@echo
