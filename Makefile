@@ -22,7 +22,7 @@ check-syntax:
 prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
 prll.1: prll.txt
-	LC_TIME=C txt2man -P prll -t prll -r prll-0.6 -s 1 \
+	LC_TIME=C txt2man -P prll -t prll -r prll-0.5.9999 -s 1 \
 	 -B prll_interrupt \
 	< prll.txt > prll.1
 
