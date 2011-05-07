@@ -55,7 +55,7 @@ OPERATION
   full output buffering to prevent mangling of data because of
   concurrent output.
 
- GENERAL USAGE
+ USAGE
 
   To execute a task, create a shell function that does something to
   its first argument. Pass that function to prll along with the
@@ -183,7 +183,7 @@ OPERATION
   data than you have memory, you need to redirect it to files. Have
   each job create a file and redirect all its output to that file. You
   can do that however you want, but there should be a helpful utility
-  available on your sysyem: mktemp(1). It is dedicated to creating
+  available on your system: mktemp(1). It is dedicated to creating
   files with unique names.
 
   As noted in the usage instructions, prll's additional buffering can
@@ -298,6 +298,8 @@ BUGS
 
 SEE ALSO
   sh(1), xargs(1), mktemp(1), ipcs(1), ipcrm(1), svipc(7)
+
+  Homepage: http://prll.sourceforge.net/
 
 AUTHOR
   Jure Varlec <jure.varlec@gmail.com>
