@@ -1,7 +1,9 @@
 CFLAGS ?= -g -O2 -fomit-frame-pointer -Wformat -pedantic
 CFLAGS += --std=c99
 
-.PHONY: clean compile test
+PRLL_VERSION ?= 0.9999
+
+.PHONY: clean compile test version
 
 compile: prll_qer prll_bfr
 
@@ -22,9 +24,12 @@ check-syntax:
 prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
 prll.1: prll.txt
-	LC_TIME=C txt2man -P prll -t prll -r prll-0.5.9999 -s 1 \
+	LC_TIME=C txt2man -P prll -t prll -r prll-$(PRLL_VERSION) -s 1 \
 	 -B prll_interrupt \
 	< prll.txt > prll.1
+
+version:
+	sed -i -e s/__PRLL_VERSION__/$(PRLL_VERSION)/ README prll.sh
 
 config.h: config_keytype.c config_mallopt.c config_semun.c
 	@echo
