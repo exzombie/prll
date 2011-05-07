@@ -46,7 +46,7 @@ prll_real() {
 
 	See the prll manpage for more information.
 	EOF
-	exit 1
+	exit ${1:-1}
     }
     prll_die() {
 	for prll_i ; do
@@ -87,6 +87,7 @@ prll_real() {
 	    c)  PRLL_NR_CPUS="$OPTARG" ;;
 	    q)  prll_quiet=yes ;;
 	    Q)	prll_msg() { : ; } ;;
+	    h)	prll_usage 0 ;;
 	    *)	prll_usage ;;
 	esac
     done
