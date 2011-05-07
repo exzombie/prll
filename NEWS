@@ -14,7 +14,7 @@ Version 0.5.9999
   still recommended to put large amounts of data in files.
 - Better error reporting from helper programs.
 - Better handling of the INT signal.
-- More reliable, but interruptible cleanup.
+- More reliable cleanup.
 - Documentation is now in the form of a manpage.
 
 

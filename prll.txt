@@ -91,34 +91,32 @@ OPERATION
   provided, prll will look into the /proc/cpuinfo file and extract the
   number of CPUs in your computer.
 
- ABORTING AND CLEANUP
+ SUSPENDING AND ABORTING
+
+  Execution can be suspended normally using Ctrl+Z. prll should be
+  subject to normal job control, depending on the shell.
 
   If you need to abort execution, you can do it with the usual Ctrl+C
   key combination. prll will wait for remaining jobs to complete
-  before exiting. You can force termination by typing Ctrl+C once
-  more. The jobs' PIDs are printed during execution so you can easily
-  track them down and terminate them if necessary. prll will not do it
-  automatically because only you can decide whether they are still
-  doing useful work or not. Also, jobs print completion notifications
-  on their own so you will know when they are done even if prll itself
-  is terminated. Should that be the case, they will also print a
-  harmless "file not found" message because the message queue will be
-  removed. But be aware that if you force prll to terminate by using
-  Ctrl+C twice, the semaphore used to synchronise buffers will be
-  removed along with the message queue and your jobs will be unable to
-  print anything. This is not a problem when jobs don't write to
-  standard output or when buffering is disabled.
+  before exiting. If the jobs are hung and you wish to abort
+  immediately, use Ctrl+Z to suspend prll and then kill it using your
+  shell's job control.
 
   The command prll_interrupt is available from within your
   functions. It causes prll to abort execution in the same way as
-  described above.
+  Ctrl+C.
+
+ CLEANUP
 
   prll cleans after itself, except when you force termination. If you
-  are worried about stale message queues or semaphores, you can list
-  them with the ipcs(1) command and remove them with the ipcrm(1)
-  command. Refer to your system's documentation for details. Be aware
-  that other programs might (and often do) make use of IPC facilities,
-  so make sure you remove the correct queue or semaphore.
+  kill prll, jobs and stale message queues and semaphores will be left
+  lying around. The jobs' PIDs are printed during execution so you can
+  track them down and terminate them. You can list the queues and
+  semaphores using the ipcs(1) command and remove them with the
+  ipcrm(1) command. Refer to your system's documentation for
+  details. Be aware that other programs might (and often do) make use
+  of IPC facilities, so make sure you remove the correct queue or
+  semaphore. Their keys are printed when prll starts.
 
  BUFFERING
 
@@ -265,11 +263,7 @@ BUGS
 
   Known issues:
 
-  - Forced termination prevents output buffering from working
-    correctly.
-
-  - Forced termination is unavailable on zsh because the Ctrl+C
-    combination causes the function into the background.
+  - In zsh, the Ctrl+C combination forces prll into the background.
 
   - User should be able to limit buffer memory usage, but still use
     buffering without loss of data. Is this possible to solve

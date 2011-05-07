@@ -283,7 +283,7 @@ prll_real() {
 
     # Cleanup. It sets up its own interrupt trap to notify the user he
     # has to do his own cleanup.
-    trap "prll_msg 'Waiting interrupted, jobs left running.'" INT
+    trap '' INT
     if [ -n "$prll_interrupted" ] ; then
 	prll_msg "INTERRUPTED!"
     fi
