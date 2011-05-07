@@ -261,17 +261,7 @@ OPERATION
 BUGS
 
   This section describes issues and bugs that were known at the time
-  of release. For more current information, check the newer version of
-  this file. You can find it in the project's git repository, also
-  accessible directly using a web browser:
-
-    http://prll.git.sourceforge.net/git/gitweb.cgi?p=prll/prll;a=tree
-
-  There, you will find out which new issues were found and which of
-  the old issues were fixed. If you have an issue that is not
-  described, check the git log if it was ever found and fixed. If not,
-  please contact the author. Suggestions are welcome, patches even
-  more so.
+  of release. Check the homepage for more current information.
 
   Known issues:
 
