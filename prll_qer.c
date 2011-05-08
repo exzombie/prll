@@ -76,7 +76,7 @@ int main(int argc, char ** argv) {
     } else if (mode == PRLL_TEST_MODE)
       return 0;
   }
-  struct { long msgtype; long jarg; } msg;
+  struct { long msgtype; char jarg; } msg;
   const long msgtype = 'm'+'a'+'p'+'p'; // arbitrary
 
   // Do the work
@@ -89,10 +89,10 @@ int main(int argc, char ** argv) {
     msg.msgtype = msgtype;
     msg.jarg = strtol(argv[3], 0, 0);
     if (errno) abrterr();
-    if (msgsnd(qid, &msg, sizeof(long), 0)) abrterr();
+    if (msgsnd(qid, &msg, sizeof(msg.jarg), 0)) abrterr();
   // GET A SINGLE MESSAGE MODE
   } else if (mode == PRLL_GETONE_MODE) {
-    if (msgrcv(qid, &msg, sizeof(long), msgtype, 0) != sizeof(long)) {
+    if (msgrcv(qid, &msg, sizeof(msg.jarg), msgtype, 0) != sizeof(msg.jarg)) {
       perror(argv[0]);
     }
     if (msg.jarg == 0) {
