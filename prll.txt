@@ -269,11 +269,11 @@ BUGS
     buffering without loss of data. Is this possible to solve
     elegantly?
 
-  - Expand the test suite. Specifically, termination behaviour on
-    external interrupt signal currently has to be checked
-    manually. Also, checking of stderr output is not done.
+  - The test suite should be expanded. Specifically, termination
+    behaviour on external interrupt signal currently currently has to
+    be checked manually. Also, checking of stderr output is not done.
 
-  - Document cross-compilation and make it easier to cross-compile.
+  - Cross-compilation should be documented and made easier.
 
   - Shell's job table becomes saturated with a large number of jobs.
     This is not really an issue, since it happens when the number of
