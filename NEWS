@@ -1,7 +1,7 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
-Version 0.5.9999
+Version 0.6
 
 - POSIX compatibility, tested with dash and FreeBSD sh.
 - Quiet mode to suppress progress messages.
