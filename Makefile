@@ -3,7 +3,7 @@ CFLAGS += --std=c99
 
 PRLL_VERSION ?= 0.9999
 
-.PHONY: clean compile test version
+.PHONY: clean compile test version prll.1
 
 compile: prll_qer prll_bfr
 
@@ -23,7 +23,7 @@ prll.1: prll.txt
 	 -B prll_interrupt \
 	< prll.txt > prll.1
 
-version:
+version: prll.1
 	sed -i -e s/__PRLL_VERSION__/$(PRLL_VERSION)/ README prll.sh
 
 config.h: config_keytype.c config_mallopt.c config_semun.c
