@@ -15,7 +15,7 @@
 prll_real() {
     prll_usage() {
 	cat <<-EOF
-	prll version __PRLL_VERSION__
+	prll version 0.6
 	Copyright 2009-2011 Jure Varlec
 
 	USAGE: prll [ options ] { fun_name | -s 'fun_string' } fun_args ...
