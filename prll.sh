@@ -230,6 +230,23 @@ prll_real() {
 	prll_lockery $1 U
     }
 
+    # Argument splitting. Generates prll_arg_X variables, where X
+    # numbers them from 1 upwards.
+    prll_splitarg() {
+	prll_spl_i=1
+	prll_spl_rest="$prll_jarg"
+	while [ -n "$prll_spl_rest" ] ; do
+	    prll_spl_varname="prll_arg_$prll_spl_i"
+	    eval "
+read $prll_spl_varname prll_spl_rest <<EOF
+$prll_spl_rest
+EOF
+"
+	    prll_spl_i=$((prll_spl_i+1))
+	done
+	prll_arg_num=$((prll_spl_i-1))
+    }
+
     #######################
     # END OF USER FUNCTIONS
 

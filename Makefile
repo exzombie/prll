@@ -20,7 +20,6 @@ prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
 prll.1: prll.txt
 	LC_TIME=C txt2man -P prll -t prll -r prll-$(PRLL_VERSION) -s 1 \
-	 -B prll_interrupt \
 	< prll.txt > prll.1
 
 version: prll.1
