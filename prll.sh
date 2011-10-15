@@ -210,7 +210,21 @@ prll_real() {
 	    "Waiting for unfinished jobs."
 	prll_qer c $prll_Qkey 1
 	return 130
-    }	
+    }
+
+    # A function for users. It is a simple substitute for GNU seq.
+    prll_seq() {
+	prll_seq_i=1
+	if [ -n "$2" ] ; then
+	    prll_seq_i=$1
+	    shift
+	fi
+	echo $prll_seq_i
+	while [ $prll_seq_i -lt $1 ] ; do
+	    prll_seq_i=$((prll_seq_i + 1))
+	    echo $prll_seq_i
+	done
+    }
 
     prll_progress=0 # Counts started jobs
     prll_jbfinish=0 # Counts finished jobs

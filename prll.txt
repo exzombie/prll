@@ -43,6 +43,10 @@ RESERVED SHELL SYMBOLS
 
   prll_interrupt   Cause prll to stop running new jobs. It will wait
   		   for running jobs to complete and then exit.
+  prll_seq	   A simple substitute for seq. With one argument
+  		   prints numbers from 1 up to the argument. With two
+  		   arguments prints numbers from the first up to the
+  		   second argument.
 
 OPERATION
 
