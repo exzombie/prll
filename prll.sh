@@ -32,11 +32,11 @@ prll_real() {
 	 	-B	Enable output buffering, which is the default.
 	 		Use to override the PRLL_BUFFER env. variable.
 	 	-b	Disable output buffering.
-	 	-c num	Set number of CPUs to 'num'.
+	 	-c num	Set number of parallel tasks to 'num'.
 	 	-q	Disable progress messages.
 	        -Q	Disable all messages except errors.
 
-	The number of processes to be run in parallel can be set with
+	The number of tasks to be run in parallel can be set with
 	the PRLL_NR_CPUS environment variable or the -c option. If
 	it is not set, prll will attempt to read the number of CPUs
 	from /proc/cpuinfo.

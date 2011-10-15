@@ -10,9 +10,9 @@ DESCRIPTION
   convenient interface for parallelizing the execution of a single
   task over multiple data files, or actually any kind of data that you
   can pass as a shell function argument. It is meant to make it simple
-  to fully utilize a multicore/multiprocessor machine. Its
-  distinguishing feature is the ability to run shell functions in the
-  context of the current shell.
+  to fully utilize a multicore/multiprocessor machine, or to just run
+  long running tasks in parallel. Its distinguishing feature is the
+  ability to run shell functions in the context of the current shell.
 
 OPTIONS
   -s str   Use string str as shell code to run.
@@ -249,12 +249,21 @@ OPERATION
 
     myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
 
+  This is useful also when doing anything similar to a parallel
+  search: abort execution when the result is found.
+
   If you have many arguments to process, it might be easier to pipe
   them to standard input. Suppose each line of a file is an argument
   of its own. Simply pipe the file into prll:
 
     myfn() { some; processing | goes && on; here; }
     cat file_with_arguments | prll myfn -p > results
+
+  Remember that it's not just CPU-intensive tasks that benefit from
+  parallel excution. You may have many files to download from several
+  slow servers, in which case, the following might be useful:
+
+    prll -c 10 -s 'wget -nv "$1"' -p < links.txt
 
 BUGS
 
