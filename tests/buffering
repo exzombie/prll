@@ -1,18 +1,10 @@
 TEST_DESCRIPTION="Buffering test."
 . test_header.sh
+. prll_seq.sh
 
 ntrndm=42
 notrandom() {
     ntrndm=$(( (1664525*ntrndm + 1013904223) % 4294967296 ))
-}
-prll_seq() {
-    seq_i=1
-    echo -n $seq_i
-    while [ $seq_i -lt $1 ] ; do
-	echo -n " "
-	seq_i=$((seq_i + 1))
-	echo -n $seq_i
-    done
 }
 lots_of_noise() {
     nkk=$(for i in $(prll_seq 3000) ; do

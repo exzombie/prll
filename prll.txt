@@ -47,6 +47,10 @@ RESERVED SHELL SYMBOLS
   		   prints numbers from 1 up to the argument. With two
   		   arguments prints numbers from the first up to the
   		   second argument.
+  prll_lock	   Acquires a lock. There are 5 locks available,
+  		   numbered from 0 to 4. If the lock is already taken,
+  		   wait until it is available.
+  prll_unlock	   Release a lock taken with prll_lock.
 
 OPERATION
 

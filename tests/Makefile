@@ -1,7 +1,8 @@
 CFLAGS ?= -g -O2 -fomit-frame-pointer -Wformat -pedantic
 CFLAGS += --std=c99
 
-ALL_TESTS := sleeps string funcsetting pipesleeps manysleep interrupt buffering
+ALL_TESTS := sleeps string funcsetting pipesleeps manysleep interrupt \
+	buffering userlock
 
 .PHONY: clean all $(ALL_TESTS)
 
@@ -11,7 +12,7 @@ all: $(ALL_TESTS)
 
 clean:
 	-rm -f bash_found zsh_found dash_found sh_found any_found
-	-rm -f utilities_found manysleep.err buffering.*
+	-rm -f utilities_found manysleep.err buffering.* userlock.*
 
 $(ALL_TESTS): utilities_found
 

@@ -67,6 +67,7 @@ prll_real() {
 
     # This executable is always needed.
     command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
+    command -v prll_bfr > /dev/null || prll_die "Missing prll_bfr."
 
     # Read parameters and environment variables.
     prll_unbuffer=no
@@ -131,15 +132,6 @@ prll_real() {
 	prll_die "Invalid number of CPUs."
     fi
 
-    # Only check for prll_bfr if needed. Although I can't imagine
-    # why anyone would want to be without it...
-    if [ $prll_unbuffer != yes -o $prll_read != no ] ; then
-	command -v prll_bfr > /dev/null
-	if [ $? -ne 0 ] ; then
-	    prll_die "Missing prll_bfr."
-	fi
-    fi
-
     # If not reading from stdin, setup positional arguments.
     if [ $prll_read = no ] ; then
 	prll_nr_args=$#
@@ -157,13 +149,11 @@ prll_real() {
 	prll_msg "Created message queue with key $prll_Qkey"
     fi
 
-    if [ $prll_unbuffer != yes ] ; then
-	prll_Skey="$(prll_bfr n)"
-	if [ $? -ne 0 ] ; then
-	    prll_die "Failed to create semaphore."
-	else
-	    prll_msg "Created semaphore with key $prll_Skey"
-	fi
+    prll_Skey="$(prll_bfr n)"
+    if [ $? -ne 0 ] ; then
+	prll_die "Failed to create semaphore."
+    else
+	prll_msg "Created semaphore with key $prll_Skey"
     fi
 
     if [ $prll_read != no ] ; then
@@ -202,8 +192,10 @@ prll_real() {
 	prll_i=$((prll_i + 1))
     done
 
-    # A function for users. It gracefully aborts by inserting a 'quit'
-    # message into the queue.
+    #####################
+    # FUNCTIONS FOR USERS
+
+    # Gracefully abort by inserting a 'quit' message into the queue.
     prll_interrupt() {
 	prll_msg \
 	    "Job $prll_progress interrupting execution." \
@@ -212,7 +204,7 @@ prll_real() {
 	return 130
     }
 
-    # A function for users. It is a simple substitute for GNU seq.
+    # A simple substitute for GNU seq.
     prll_seq() {
 	prll_seq_i=1
 	if [ -n "$2" ] ; then
@@ -225,6 +217,21 @@ prll_real() {
 	    echo $prll_seq_i
 	done
     }
+
+    # Locking. prll_lockery() shouldn't be called by users.
+    prll_lockery() {
+	[ "$1" -ge 5 -o "$1" -lt 0 ] && prll_die "Illegal lock number!"
+	prll_bfr $2 $prll_Skey $1
+    }
+    prll_lock() {
+	prll_lockery $1 u
+    }
+    prll_unlock() {
+	prll_lockery $1 U
+    }
+
+    #######################
+    # END OF USER FUNCTIONS
 
     prll_progress=0 # Counts started jobs
     prll_jbfinish=0 # Counts finished jobs

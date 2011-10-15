@@ -33,6 +33,9 @@
 #include "mkrandom.h"
 #include "abrterr.h"
 
+#define num_sems 3	// No. of buffering semaphores
+#define num_locks 5	// No. of locks for users
+
 size_t page_size;
 
 #ifndef HAVE_SEMUN
@@ -83,7 +86,8 @@ int main(int argc, char ** argv) {
   enum {
     PRLL_BUFFER_MODE, PRLL_REMOVE_MODE,
     PRLL_CREATE_MODE, PRLL_TEST_MODE,
-    PRLL_WRITESERVER_MODE, PRLL_READER_MODE
+    PRLL_WRITESERVER_MODE, PRLL_READER_MODE,
+    PRLL_TAKELOCK_MODE, PRLL_GIVELOCK_MODE
   } mode;
   char delim;
   if (argv[1][0] == '\0')
@@ -96,6 +100,10 @@ int main(int argc, char ** argv) {
     mode = PRLL_CREATE_MODE;
   else if (argv[1][0] == 't' && argv[1][1] == '\0')
     mode = PRLL_TEST_MODE;
+  else if (argv[1][0] == 'u' && argv[1][1] == '\0')
+    mode = PRLL_TAKELOCK_MODE;
+  else if (argv[1][0] == 'U' && argv[1][1] == '\0')
+    mode = PRLL_GIVELOCK_MODE;
   else if (argv[1][0] == 'w' && argv[1][1] == '\0') {
     mode = PRLL_WRITESERVER_MODE;
     delim = '\n';
@@ -247,11 +255,13 @@ int main(int argc, char ** argv) {
   } else if (mode == PRLL_CREATE_MODE) {
     do {
       if (mkrandom(&skey)) abrterr2("Error accessing /dev/(u)random.");
-    } while (-1 == (sid = semget(skey, 3, 0600 | IPC_CREAT | IPC_EXCL))
+    } while (-1 == (sid = semget(skey, num_sems+num_locks,
+				 0600 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
     if (sid == -1) abrterr();
     union semun arg;
-    unsigned short vals[] = {0, 1, 1};
+    unsigned short vals[num_sems+num_locks] = {0, 1, 1};
+    for (int i=0; i<num_locks; i++) vals[num_sems+i] = 1;
     arg.array = vals;
     if (-1 == semctl(sid, 0, SETALL, arg)) abrterr();
     printf("%#X\n", skey);
@@ -330,6 +340,14 @@ int main(int argc, char ** argv) {
       }
       if (errno && errno != EWOULDBLOCK) abrterr();   
     } while (semval == 0);
+
+  // LOCKS MODE
+  } else if (mode == PRLL_TAKELOCK_MODE || mode == PRLL_GIVELOCK_MODE) {
+    int semnum = strtol(argv[3], 0, 0);
+    if (semnum >= num_locks || semnum < 0) abrterr();
+    struct sembuf op = {num_sems+semnum, -1, 0};
+    if (mode == PRLL_GIVELOCK_MODE) op.sem_op = 1;
+    if (semop(sid, &op, 1)) abrterr();
   }
 
   return 0;

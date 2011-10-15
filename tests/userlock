@@ -1,0 +1,33 @@
+TEST_DESCRIPTION="User locking test."
+. test_header.sh
+. prll_seq.sh # note that this one behaves differently from the one in prll()
+
+unlocked() {
+    prll_seq 10000
+}
+
+locked() {
+    prll_lock 0
+    prll_seq 10000
+    prll_unlock 0
+}
+
+prll -b -c  1 unlocked prll_seq 50 > userlock.ref
+prll -b -c 10 unlocked prll_seq 50 > userlock.dat1
+prll -b -c 10 locked   prll_seq 50 > userlock.dat2
+
+diff -q userlock.ref userlock.dat1
+if [ $? -ne 0 ] ; then
+    echo "Unlocked execution produced wrong results, as expected."
+else
+    echo "Unlocked execution produced correct results,"
+    echo "which is rather unexpected."
+fi
+
+diff -q userlock.ref userlock.dat2
+if [ $? -ne 0 ] ; then
+    echo "Locked parallel execution produced wrong results."
+    exit 1
+else
+    echo "Locked parallel execution produced correct results."
+fi
