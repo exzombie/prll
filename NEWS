@@ -1,6 +1,13 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+Version 0.6.1
+
+- prll_seq user-accessible function, a simple substitute for seq.
+- Simple locking: five locks are available to user functions.
+- A helper function to assist splitting multiple arguments.
+
+
 Version 0.6
 
 - POSIX compatibility, tested with dash and FreeBSD sh.
