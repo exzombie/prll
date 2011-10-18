@@ -335,7 +335,7 @@ EOF
     done
     prll_msg "Cleaning up."
     prll_qer r $prll_Qkey
-    [ $prll_unbuffer != yes ] && prll_bfr r $prll_Skey
+    prll_bfr r $prll_Skey
     [ $prll_read != no ] && prll_bfr r $prll_Skey2
     true # No use returning the status of IPC removal
     )
