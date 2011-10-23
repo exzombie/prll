@@ -286,6 +286,27 @@ OPERATION
 
     prll -c 10 -s 'wget -nv "$1"' -p < links.txt
 
+  You may wish to observe prll's progress in your terminal, but
+  collect your jobs' non-data output in a single file. Since opening a
+  file from multiple parallel jobs is unsafe, you should protect it
+  with a lock, i.e.
+
+    myfn() {
+      compute_stuff $1
+      prll_lock 0
+      echo "Job $prll_jobnr report:" >> jobreports.txt
+      write_report >> jobreports.txt
+      echo "-----------------------" >> jobreports.txt
+      prll_unlock 0
+      return $jobstatus
+    }
+
+  This function uses lock number 0 to protect the jobreports.txt file
+  so that it is written by only one job at a time. There are several
+  locks available. Be sure to release them, otherwise the jobs will
+  hang waiting for one another. The prll_jobnr variable is used to
+  denote each report.
+
 BUGS
 
   This section describes issues and bugs that were known at the time
