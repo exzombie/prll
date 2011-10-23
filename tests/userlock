@@ -9,7 +9,7 @@ unlocked() {
 locked() {
     prll_lock 0
     prll_seq 10000
-    prll_unlock 0
+    prll_unlock
 }
 
 prll -b -c  1 unlocked prll_seq 50 > userlock.ref

@@ -2,8 +2,9 @@ prll NEWS -- history of user-visible changes.
 =============================================
 
 - prll_jobnr user-accessible variable to get the current job's number.
-- The PRLL_NR_CPUS variable is deprecated in favor of PRLL_NRJOBS, but
-  is kept for backwards compatibility.
+- The PRLL_NR_CPUS variable is deprecated in favor of PRLL_NRJOBS,
+  but is kept for backwards compatibility.
+- Lock functions have a default argument, specifying a lock is optional.
 
 
 Version 0.6.1

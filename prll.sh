@@ -222,14 +222,17 @@ prll_real() {
 
     # Locking. prll_lockery() shouldn't be called by users.
     prll_lockery() {
-	[ "$1" -ge 5 -o "$1" -lt 0 ] && prll_die "Illegal lock number!"
-	prll_bfr $2 $prll_Skey $1
+	prll_locknum="$1"
+	[ -z "$prll_locknum" ] && prll_locknum=0
+	[ "$prll_locknum" -ge 5 -o "$prll_locknum" -lt 0 ] && \
+	    prll_die "Illegal lock number!"
+	prll_bfr $2 $prll_Skey $prll_locknum
     }
     prll_lock() {
-	prll_lockery $1 u
+	prll_lockery "$1" u
     }
     prll_unlock() {
-	prll_lockery $1 U
+	prll_lockery "$1" U
     }
 
     # Argument splitting. Generates prll_arg_X variables, where X

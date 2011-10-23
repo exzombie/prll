@@ -50,8 +50,10 @@ RESERVED SHELL SYMBOLS
   		   second argument.
   prll_lock	   Acquires a lock. There are 5 locks available,
   		   numbered from 0 to 4. If the lock is already taken,
-  		   wait until it is available.
-  prll_unlock	   Release a lock taken with prll_lock.
+  		   waits until it is available. Defaults to lock 0
+  		   when no argument is given
+  prll_unlock	   Release a lock taken with prll_lock. Defaults to
+  		   lock 0 when no argument is given.
   prll_splitarg	   Splits a quoted argument according to shell
   		   rules. The words are assigned to variables named
   		   prll_arg_X, where X numbers them from 1 upwards.
