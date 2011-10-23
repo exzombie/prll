@@ -32,16 +32,16 @@ fi
 
 rm -f buffering.dat1 buffering.dat1b buffering.dat10 buffering.dat10b
 
-PRLL_NR_CPUS=1 prll -b fltr buffering.data* \
+PRLL_NRJOBS=1 prll -b fltr buffering.data* \
     > buffering.dat1 || exit 1
 
-PRLL_NR_CPUS=1 prll fltr buffering.data* \
+PRLL_NRJOBS=1 prll fltr buffering.data* \
     > buffering.dat1b || exit 1
 
-PRLL_NR_CPUS=10 prll -b fltr buffering.data* \
+PRLL_NRJOBS=10 prll -b fltr buffering.data* \
     > buffering.dat10 || exit 1
 
-PRLL_NR_CPUS=10 prll fltr buffering.data* \
+PRLL_NRJOBS=10 prll fltr buffering.data* \
     > buffering.dat10b || exit 1
 
 stats=0

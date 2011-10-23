@@ -1,7 +1,7 @@
 TEST_DESCRIPTION="Testing whether internal functions are properly unset."
 . test_header.sh
 
-PRLL_NR_CPUS=1 prll -s 'true' junk
+PRLL_NRJOBS=1 prll -s 'true' junk
 
 prll_str2func && exit 1
 prll_cleanup && exit 1

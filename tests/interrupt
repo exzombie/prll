@@ -14,7 +14,7 @@ slptst() {
 
 attempts=0
 while [ $attempts -lt 5 ] ; do
-    PRLL_NR_CPUS=3 prll -b slptst 5 1 2 k 4 3 | \
+    PRLL_NRJOBS=3 prll -b slptst 5 1 2 k 4 3 | \
 	diff -q interrupt.dat - && break
     echo "Test failed, but that means nothing unless it"
     echo "fails consistently. Retrying."

@@ -37,7 +37,7 @@ prll_real() {
 	        -Q	Disable all messages except errors.
 
 	The number of tasks to be run in parallel can be set with
-	the PRLL_NR_CPUS environment variable or the -c option. If
+	the PRLL_NRJOBS environment variable or the -c option. If
 	it is not set, prll will attempt to read the number of CPUs
 	from /proc/cpuinfo.
 
@@ -72,6 +72,8 @@ prll_real() {
     # Read parameters and environment variables.
     prll_unbuffer=no
     [ "$PRLL_BUFFER" = "no" -o "$PRLL_BUFFER" = "0" ] && prll_unbuffer=yes
+    [ -n "$PRLL_NR_CPUS" ] && prll_nr_cpus=$PRLL_NR_CPUS # Backward compat.
+    [ -n "$PRLL_NRJOBS" ] && prll_nr_cpus=$PRLL_NRJOBS
 
     OPTIND=1
     prll_funname='' # Function to execute
@@ -85,7 +87,7 @@ prll_real() {
 	    0)  prll_read=null ;;
 	    b)  prll_unbuffer=yes ;;
 	    B)  prll_unbuffer=no ;;
-	    c)  PRLL_NR_CPUS="$OPTARG" ;;
+	    c)  prll_nr_cpus="$OPTARG" ;;
 	    q)  prll_quiet=yes ;;
 	    Q)	prll_msg() { : ; } ;;
 	    h)	prll_usage 0 ;;
@@ -117,7 +119,7 @@ prll_real() {
     fi
 
     # Number of CPUs was not given, so find it. Also, check for sanity.
-    if [ -z "$PRLL_NR_CPUS" ] ; then
+    if [ -z "$prll_nr_cpus" ] ; then
 	command -v grep > /dev/null
 	if [ $? -ne 0 -o ! -e /proc/cpuinfo ] ; then
 	    prll_die \
@@ -125,23 +127,23 @@ prll_real() {
 		"utility is missing or there is no /proc/cpuinfo file." \
 		"Please set the number of CPUs."
 	fi
-	PRLL_NR_CPUS=$(grep "processor	:" < /proc/cpuinfo | wc -l)
-    elif [ $PRLL_NR_CPUS -lt 1 ] ; then
+	prll_nr_cpus=$(grep "processor	:" < /proc/cpuinfo | wc -l)
+    elif [ $prll_nr_cpus -lt 1 ] ; then
 	prll_die "The number of CPUs is zero."
-    elif ! [ $PRLL_NR_CPUS -ge 1 ] ; then
+    elif ! [ $prll_nr_cpus -ge 1 ] ; then
 	prll_die "Invalid number of CPUs."
     fi
 
     # If not reading from stdin, setup positional arguments.
     if [ $prll_read = no ] ; then
 	prll_nr_args=$#
-	if [ $prll_nr_args -lt $PRLL_NR_CPUS ] ; then
-	    PRLL_NR_CPUS=$prll_nr_args
+	if [ $prll_nr_args -lt $prll_nr_cpus ] ; then
+	    prll_nr_cpus=$prll_nr_args
 	fi
     fi
 
     # Create IPCs.
-    prll_msg "Using $PRLL_NR_CPUS CPUs"
+    prll_msg "Using $prll_nr_cpus CPUs"
     prll_Qkey="$(prll_qer n)"
     if [ $? -ne 0 ] ; then
 	prll_die "Failed to create message queue."
@@ -187,7 +189,7 @@ prll_real() {
     # Load some tokens into the queue. This will make the main loop
     # start a few jobs to run in parallel.
     prll_i=1
-    while [ $prll_i -le $PRLL_NR_CPUS ] ; do
+    while [ $prll_i -le $prll_nr_cpus ] ; do
 	prll_qer c $prll_Qkey 0;
 	prll_i=$((prll_i + 1))
     done
@@ -260,7 +262,7 @@ EOF
 
 	# Only start counting finished jobs after the initial batch of
 	# tokens is exhausted.
-	[ $prll_progress -ge $PRLL_NR_CPUS ] && \
+	[ $prll_progress -ge $prll_nr_cpus ] && \
 	    prll_jbfinish=$((prll_jbfinish + 1))
 
 	# The function argument. It gets its value either from
@@ -327,8 +329,8 @@ EOF
 	prll_msg "INTERRUPTED!"
     fi
     prll_msg "Waiting for unfinished jobs."
-    if [ $prll_progress -lt $PRLL_NR_CPUS ] ; then
-	prll_progress=$((PRLL_NR_CPUS-1))
+    if [ $prll_progress -lt $prll_nr_cpus ] ; then
+	prll_progress=$((prll_nr_cpus-1))
     fi
     while [ $prll_progress -gt $prll_jbfinish ] ; do
 	prll_qer o $prll_Qkey || break

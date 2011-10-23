@@ -32,8 +32,9 @@ OPTIONS
 ENVIRONMENT
 
   PRLL_BUFFER	Set to 'no' or '0' to disable output buffering.
-  PRLL_NR_CPUS	Set to the number of parallel jobs to run. If set,
+  PRLL_NRJOBS	Set to the number of parallel jobs to run. If set,
   		it disables checking of /proc/cpuinfo.
+  PRLL_NR_CPUS	Deprecated in favor of PRLL_NRJOBS.
 
 RESERVED SHELL SYMBOLS
 
@@ -104,7 +105,7 @@ OPERATION
   messages. They both let errors emited by your jobs through.
 
   The number of tasks to be run in parallel is provided with the -c
-  option or via the PRLL_NR_CPUS environment variable. If it is not
+  option or via the PRLL_NRJOBS environment variable. If it is not
   provided, prll will look into the /proc/cpuinfo file and extract the
   number of CPUs in your computer.
 
@@ -232,7 +233,7 @@ OPERATION
 
   Or, to make it permanent in the current shell, do
 
-    PRLL_NR_CPUS=3
+    PRLL_NRJOBS=3
 
   on a line of its own. You don't need to export the variable because
   prll automatically has access to everything your shell can see.
