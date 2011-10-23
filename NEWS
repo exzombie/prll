@@ -1,6 +1,9 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+- prll_jobnr user-accessible variable to get the current job's number.
+
+
 Version 0.6.1
 
 - prll_seq user-accessible function, a simple substitute for seq.

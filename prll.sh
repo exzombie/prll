@@ -290,6 +290,7 @@ EOF
 	# condition with zsh.
 	prll_launch_code='
 	    (
+                prll_jobnr=$prll_progress
 		$prll_funname "$prll_jarg"
 		[ -z "$prll_quiet" ] &&
 		prll_msg "Job number $prll_progress finished. Exit code: $?"
