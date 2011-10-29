@@ -1,5 +1,5 @@
 prll
-version __PRLL_VERSION__
+version 0.6.2
 ===========
 
 prll (pronounced "parallel") is a utility for use with POSIX and
