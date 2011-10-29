@@ -24,7 +24,7 @@ OPTIONS
   -0	   Same as -p, but use the null character as delimiter
   	   instead of newline.
   -c num   Set number of parallel jobs to num. This overrides
-     	   the PRLL_NR_CPUS variable and disables checking
+     	   the PRLL_NRJOBS variable and disables checking
 	   of /proc/cpuinfo.
   -q	   Disable progress messages.
   -Q	   Disable all messages except errors.
