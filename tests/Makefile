@@ -18,7 +18,7 @@ clean:
 $(ALL_TESTS): utilities_found
 
 utilities_found:
-	for util in tr grep sort diff ; do \
+	for util in tr grep sort diff cat uname sleep ; do \
 		command -v $$util || exit 1 ; \
 	done
 	touch utilities_found
