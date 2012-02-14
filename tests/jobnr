@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Test job counting."
-. test_header.sh
+. ./test_header.sh
 
 prll -c 1 -s 'echo $1 > jobnr.$prll_jobnr' 5 2 1 4 3
 rm -f jobnr.all

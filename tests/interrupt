@@ -1,5 +1,5 @@
 TEST_DESCRIPTION="Testing interruption from within a function."
-. test_header.sh
+. ./test_header.sh
 
 slptst() {
     if [ $1 = "k" ] ; then

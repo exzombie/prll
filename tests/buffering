@@ -1,6 +1,6 @@
 TEST_DESCRIPTION="Buffering test."
-. test_header.sh
-. prll_seq.sh
+. ./test_header.sh
+. ./prll_seq.sh
 
 ntrndm=42
 notrandom() {

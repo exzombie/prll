@@ -1,6 +1,6 @@
 TEST_DESCRIPTION="User locking test."
-. test_header.sh
-. prll_seq.sh # note that this one behaves differently from the one in prll()
+. ./test_header.sh
+. ./prll_seq.sh # note that this one behaves differently from the one in prll()
 
 unlocked() {
     prll_seq 10000

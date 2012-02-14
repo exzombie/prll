@@ -1,6 +1,6 @@
 TEST_DESCRIPTION="A sleep test using pipes."
 SUPPORTED_SHELLS="bash zsh dash"
-. test_header.sh
+. ./test_header.sh
 
 slptst() { echo Sleeping $1 seconds.; sleep $1; }
 
