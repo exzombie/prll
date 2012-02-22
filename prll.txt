@@ -271,7 +271,7 @@ OPERATION
   You may wish to abort execution if one of the results is wrong. In
   that case, use something like this:
 
-    myfn() { compute $1; [[ $result == "wrong" ]] && prll_interrupt; }
+    myfn() { compute $1; [ $result = "wrong" ] && prll_interrupt; }
 
   This is useful also when doing anything similar to a parallel
   search: abort execution when the result is found.
