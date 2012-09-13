@@ -3,18 +3,21 @@ CFLAGS += --std=c99
 
 PRLL_VERSION ?= 0.9999
 
+CONFIGS = $(addprefix config_, keytype mallopt semun random)
+
 .PHONY: clean compile test version prll.1
 
 compile: prll_qer prll_bfr
 
 clean:
 	rm -f prll_qer prll_bfr mkrandom.o
-	rm -f $(foreach cfger, .h _keytype _mallopt _semun, config$(cfger) \
-		config$(cfger).log)
+	rm -f config.h $(CONFIGS) $(addsuffix .log, $(CONFIGS))
 	$(MAKE) -C tests clean
 
 test: prll_qer prll_bfr
 	$(MAKE) -C tests
+
+mkrandom.o: | config.h
 
 prll_bfr prll_qer: mkrandom.o mkrandom.h abrterr.h | config.h
 
@@ -25,7 +28,7 @@ prll.1: prll.txt
 version: prll.1
 	sed -i -e s/__PRLL_VERSION__/$(PRLL_VERSION)/ README prll.sh
 
-config.h: config_keytype.c config_mallopt.c config_semun.c
+config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
 	@echo "--==CONFIGURING==--"
 	@echo "// Automatically generated configuration for prll." > $@

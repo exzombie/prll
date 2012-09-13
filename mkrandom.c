@@ -1,4 +1,10 @@
+#include "config.h"
 #include "mkrandom.h"
+
+#ifndef HAVE_RANDOM
+#define random rand
+#define srandom srand
+#endif
 
 int mkrandom(key_t * qkey) {
   FILE * urnd = fopen("/dev/urandom", "r");

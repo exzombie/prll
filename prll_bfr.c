@@ -30,6 +30,8 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include "mkrandom.h"
 #include "abrterr.h"
 
@@ -133,7 +135,7 @@ int main(int argc, char ** argv) {
       fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
       return 1;
     }
-    skey = strtol(argv[2], 0, 0);
+    skey = strtoumax(argv[2], 0, 0);
     sid = semget(skey, 0, 0);
     if (sid == -1 || skey == 0) {
       if (
@@ -264,7 +266,7 @@ int main(int argc, char ** argv) {
     for (int i=0; i<num_locks; i++) vals[num_sems+i] = 1;
     arg.array = vals;
     if (-1 == semctl(sid, 0, SETALL, arg)) abrterr();
-    printf("%#X\n", skey);
+    printf("%#" PRIXMAX "\n", (uintmax_t)skey);
 
   // REMOVE MODE
   } else if (mode == PRLL_REMOVE_MODE) {

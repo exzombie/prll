@@ -20,6 +20,8 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 #include <errno.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include "mkrandom.h"
 #include "abrterr.h"
 
@@ -65,7 +67,7 @@ int main(int argc, char ** argv) {
       fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
       return 1;
     }
-    qkey = strtol(argv[2], 0, 0);
+    qkey = strtoumax(argv[2], 0, 0);
     qid = msgget(qkey, 0);
     if (qid == -1 || qkey == 0) {
       if (mode != PRLL_TEST_MODE && mode != PRLL_REMOVE_MODE) {
@@ -107,7 +109,7 @@ int main(int argc, char ** argv) {
     } while (-1 == (qid = msgget(qkey, 0600 | IPC_CREAT | IPC_EXCL))
 	     && errno == EEXIST);
     if (qid == -1) abrterr();
-    printf("%#X\n", qkey);
+    printf("%#" PRIXMAX "\n", (uintmax_t)qkey);
   // REMOVE MODE
   } else if (mode == PRLL_REMOVE_MODE) {
     if (msgctl(qid, IPC_RMID, NULL)) abrterr();

@@ -16,13 +16,10 @@
 
 #define _SVID_SOURCE
 #include <stdio.h>
-#include <inttypes.h>
-#include <sys/ipc.h>
+#include <stdlib.h>
 
 int main() {
-  if (sizeof(uintmax_t) < sizeof(key_t)) {
-    printf("#error uintmax smaller than key_t. "
-	   "Sizes: %u and %u\n", sizeof(uintmax_t), sizeof(key_t));
-  }
+  volatile int tmp = random();
+  printf("#define HAVE_RANDOM\n");
   return 0;
 }
