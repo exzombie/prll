@@ -22,6 +22,8 @@
 #include <errno.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include "mkrandom.h"
 #include "abrterr.h"
 
@@ -53,7 +55,20 @@ int main(int argc, char ** argv) {
     mode = PRLL_CREATE_MODE;
   else if (argv[1][0] == 't' && argv[1][1] == '\0')
     mode = PRLL_TEST_MODE;
-  else {
+  else if (argv[1][0] == 'P' && argv[1][1] == '\0') {
+    if (argc < 3) {
+      fprintf(stderr, "%s: Not enough parameters.\n", argv[0]);
+      return 1;
+    }
+    FILE* out = fopen(argv[2], "w");
+    if (!out) {
+      fprintf(stderr, "%s: Could not open tasks file.\n", argv[0]);
+      return 1;
+    }
+    fprintf(out, "%lld\n", (long long)getppid());
+    fclose(out);
+    return 0;
+  } else {
   arg_err:
     fprintf(stderr, "%s: Incorrect mode specification: %s\n", argv[0], argv[1]);
     return 1;

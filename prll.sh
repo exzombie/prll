@@ -96,6 +96,20 @@ prll_real() {
     done
     shift $((OPTIND - 1))
 
+    # Setup cgroups if enabled.
+    if [ -n "$PRLL_CGROUP_PATH" ] ; then
+	prll_cgroup="$(mktemp -d $PRLL_CGROUP_PATH/prll_XXXXXX)"
+	if [ -z "$prll_cgroup" ] ; then
+	    prll_msg "Unable to create a directory in $PRLL_CGROUP_PATH"
+	elif [ ! -f "$prll_cgroup/tasks" ] ; then
+	    prll_msg "Directory $prll_cgroup is not a cgroup, removing it"
+	    rmdir "$prll_cgroup"
+	    prll_cgroup=
+	else
+	    prll_msg "cgroups enabled, using $prll_cgroup"
+	fi
+    fi
+
     # Function was not given as a string, so the next argument must be
     # the name of an external function.
     if [ -z "$prll_funname" ] ; then
@@ -295,8 +309,11 @@ EOF
 	# condition with zsh.
 	prll_launch_code='
 	    (
-                prll_jobnr=$prll_progress
-		$prll_funname "$prll_jarg"
+		prll_jobnr=$prll_progress
+		(
+		  [ -n "$prll_cgroup" ] && prll_qer P "$prll_cgroup"/tasks
+		  $prll_funname "$prll_jarg"
+		)
 		[ -z "$prll_quiet" ] &&
 		prll_msg "Job number $prll_progress finished. Exit code: $?"
 	    ) | \
@@ -332,6 +349,9 @@ EOF
 	prll_msg "INTERRUPTED!"
     fi
     prll_msg "Waiting for unfinished jobs."
+    if [ -n "$prll_cgroup" ] ; then
+	prll_msg "You can kill them using prll_killcg on $(basename $prll_cgroup)"
+    fi
     if [ $prll_progress -lt $prll_nr_cpus ] ; then
 	prll_progress=$((prll_nr_cpus-1))
     fi
@@ -343,6 +363,7 @@ EOF
     prll_qer r $prll_Qkey
     prll_bfr r $prll_Skey
     [ $prll_read != no ] && prll_bfr r $prll_Skey2
+    [ -n "$prll_cgroup" ] && rmdir "$prll_cgroup"
     true # No use returning the status of IPC removal
     )
 return $?
@@ -351,4 +372,50 @@ return $?
 prll() {
     ( prll_real "$@" )
     return $?
+}
+
+prll_killcg() {
+    if [ -z "$PRLL_CGROUP_PATH" ] ; then
+	echo "cgroups not enabled, see manual." 1>&2
+	return 1
+    fi
+    prll_cgs=$(cd "$PRLL_CGROUP_PATH" && echo prll_*)
+    if [ -z "$prll_cgs" ] ; then
+	echo "No prll cgroups found." 1>&2
+	return 0
+    fi
+    prll_cgcount=1
+    echo "Found the following prll cgroups:" 1>&2
+    for prll_cg in $prll_cgs ; do
+	echo $prll_cgcount $prll_cg 1>&2
+	prll_cgcount=$((prll_cgcount + 1))
+    done
+    echo -n "Enter the chosen cgroup's number: " 1>&2
+    read
+    prll_cgcount=1
+    for prll_cg in $prll_cgs ; do
+	if [ $prll_cgcount -eq $REPLY ] ; then
+	    if [ -z "$1" ] ; then
+		echo "Using INT signal." 1>&2
+		prll_sig="-INT"
+	    else
+		echo "Using KILL signal." 1>&2
+		prll_sig="-KILL"
+	    fi
+	    prll_tasks="$PRLL_CGROUP_PATH"/$prll_cg/tasks
+	    while [ $(wc -l < "$prll_tasks") -gt 0 ] ; do
+		cat "$prll_tasks" | (
+		    while read ; do
+			kill $prll_sig $REPLY
+		    done
+		)
+	    done
+	    echo "Tasks killed." 1>&2
+	    rmdir "$PRLL_CGROUP_PATH"/$prll_cg 
+	    return
+	fi
+	prll_cgcount=$((prll_cgcount + 1))
+    done
+    echo "Chosen cgroup does not exist!" 1>&2
+    return 1
 }
