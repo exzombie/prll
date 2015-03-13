@@ -13,10 +13,10 @@ Homepage: https://github.com/exzombie/prll
 
 Contents of this file:
 
-  1 - Description
-  2 - Requirements
-  3 - Installation
-  4 - Licensing information
+  1. Description
+  2. Requirements
+  3. Installation
+  4. Licensing information
 
 
 # 1 DESCRIPTION
