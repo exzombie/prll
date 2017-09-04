@@ -1,0 +1,9 @@
+*.log
+*.o
+
+config.h
+config_keytype
+config_mallopt
+config_random
+prll_bfr
+prll_qer
