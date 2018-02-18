@@ -330,6 +330,9 @@ BUGS
 
   - In zsh, the Ctrl+C combination forces prll into the background.
 
+  - The return value of prll itself is not useful, and cannot easily
+    be made useful because it depends on the shell's behaviour.
+
   - User should be able to limit buffer memory usage, but still use
     buffering without loss of data. Is this possible to solve
     elegantly?
