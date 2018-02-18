@@ -1,6 +1,13 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+Version 0.6.3
+
+- Support building with cygwin and clang.
+- Bugfixes in tests.
+- Updated docs: hosting platform was changed twice since last release.
+
+
 Version 0.6.2
 
 - prll_jobnr user-accessible variable to get the current job's number.
