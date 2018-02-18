@@ -1,7 +1,8 @@
 CFLAGS ?= -g -O2 -fomit-frame-pointer -Wformat -pedantic
 CFLAGS += --std=c99
 
-PRLL_VERSION ?= 0.9999
+PRLL_DEFAULT_VERSION = 0.9999
+PRLL_VERSION ?= $(PRLL_DEFAULT_VERSION)
 
 CONFIGS = $(addprefix config_, keytype mallopt semun random)
 PROGS = prll_qer prll_bfr
@@ -29,7 +30,8 @@ prll.1: prll.txt
 	< prll.txt > prll.1
 
 version: prll.1
-	sed -i -e s/__PRLL_VERSION__/$(PRLL_VERSION)/ README prll.sh
+	sed -i -e 's/version $(PRLL_DEFAULT_VERSION)/version $(PRLL_VERSION)/' \
+	    README.md prll.sh
 
 config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
