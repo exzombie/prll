@@ -152,4 +152,4 @@ uses.
 The `prll` package is provided under the GNU General Public
 License, version 3 or later. See COPYING for more information.
 
-Copyright 2009-2013 Jure Varlec
+Copyright 2009-2018 Jure Varlec

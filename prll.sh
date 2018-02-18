@@ -1,4 +1,4 @@
-#  Copyright 2009-2013 Jure Varlec
+#  Copyright 2009-2018 Jure Varlec
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@ prll_real() {
     prll_usage() {
 	cat <<-EOF
 	prll version __PRLL_VERSION__
-	Copyright 2009-2011 Jure Varlec
+	Copyright 2009-2018 Jure Varlec
 
 	USAGE: prll [ options ] { fun_name | -s 'fun_string' } fun_args ...
 

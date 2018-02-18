@@ -1,5 +1,9 @@
 prll is written and maintained by:
-     Jure Varlec <jure.varlec@gmail.com>
+     Jure Varlec <jure@varlec.si>
+
+Git log with detailed authorship information is available
+if this package was cloned from git, or in the git repository
+on the prll homepage.
 
 Special thanks to Martin Väth who provided a port of
 version 0.4 to POSIX syntax and thus eased developement
