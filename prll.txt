@@ -198,7 +198,7 @@ OPERATION
     +-----+    +-----------+    +-------------+ /
     | job |--->| OS buffer |--->| prll buffer |/
     +-----+    +-----------+    +-------------+
-  
+
   Note the vertical connections between prll buffers: they synchronise
   so that they only write data to the destination one at a time. They
   make sure that all of the output of a single job is in one piece. To
@@ -351,7 +351,7 @@ BUGS
 SEE ALSO
   sh(1), xargs(1), mktemp(1), ipcs(1), ipcrm(1), svipc(7)
 
-  Homepage: http://prll.sourceforge.net/
+  Homepage: https://github.com/exzombie/prll
 
 AUTHOR
-  Jure Varlec <jure.varlec@gmail.com>
+  Jure Varlec <jure@varlec.si>
