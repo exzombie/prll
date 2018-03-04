@@ -38,6 +38,28 @@ able to read variables and run shell functions. Many shell users like
 having customized environments with lots of utility functions. For
 such a user, `prll` will come in very handy.
 
+A simple example is running a program on many files in parallel, like flipping
+a bunch of images using all CPU cores:
+```
+prll -s 'mogrify -flip $1' *.jpg
+```
+Such functionality is offered by many other utilities; even standard commands
+`find` and `xargs` can do this. `prll`, however, is not limited to running
+commands given in strings and external programs. The above example could be
+written as
+```
+OPERATION='-flip'
+myfn() { mogrify $OPERATION $1 ; }
+prll myfn *.jpg
+```
+`prll` is part of the shell and picks up both variables and functions. Think
+about this: if you are writing a script, either a batch program or a set of
+utility functions for interactive use, there is no need to put code into
+external programs or build long strings of commands fraught with quoting
+issues. `prll` also provides tools for argument splitting and basic resource
+locking. See examples in `prll.txt` or, if `prll` is installed already, in the
+man page.
+
 
 # 2 REQUIREMENTS
 
@@ -86,7 +108,7 @@ If you have `gcc` and want different compiler options, do
 ```
 CFLAGS=whatever make
 ```
-  
+
 If you have a different compiler, you may want to completely override
 compiler options, like so
 ```
