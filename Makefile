@@ -7,6 +7,15 @@ PRLL_VERSION ?= $(PRLL_DEFAULT_VERSION)
 CONFIGS = $(addprefix config_, keytype mallopt semun random)
 PROGS = prll_qer prll_bfr
 
+# Installation-related variables; note PREFIX, DESTDIR support
+NAME=prll
+INSTALL?=install -c
+PREFIX?=/usr/local
+BIN_DIR?=$(DESTDIR)$(PREFIX)/bin
+SHARE_DIR?=$(DESTDIR)$(PREFIX)/share/$(NAME)
+DOC_DIR?=$(DESTDIR)$(PREFIX)/share/doc/$(NAME)
+MAN_DIR?=$(DESTDIR)$(PREFIX)/share/man/man1
+
 .PHONY: clean compile test version prll.1
 
 compile: $(PROGS)
@@ -42,6 +51,26 @@ config.h: $(addsuffix .c, $(CONFIGS))
 	|| true; )
 	@echo "--==DONE CONFIGURING==--"
 	@echo
+
+install: $(PROGS) prll.1
+	$(INSTALL) -d $(BIN_DIR)
+	$(INSTALL) -d $(SHARE_DIR)
+	$(INSTALL) -d $(DOC_DIR)
+	$(INSTALL) -d $(MAN_DIR)
+	cp $(PROGS) $(BIN_DIR)
+	cp prll.sh $(SHARE_DIR)
+	cp README.md AUTHORS COPYING NEWS $(DOC_DIR)
+	cp prll.1 $(MAN_DIR)
+	@echo
+	@echo "Shell-glue script \`prll.sh' has been copied to $(SHARE_DIR)/, source it at shell startup to configure prll"
+
+uninstall:
+	rm -f $(BIN_DIR)/prll_qer $(BIN_DIR)/prll_bfr
+	rm -f $(DOC_DIR)/README.md $(DOC_DIR)/AUTHORS $(DOC_DIR)/COPYING $(DOC_DIR)/NEWS
+	rm -f $(MAN_DIR)/prll.1
+	[ -d $(DOC_DIR) ] && rmdir $(DOC_DIR) || true
+	rm -f $(SHARE_DIR)/*
+	[ -d $(SHARE_DIR) ] && rmdir $(SHARE_DIR) || true
 
 # For emacs' flymake-mode
 .PHONY: check-syntax
