@@ -5,17 +5,16 @@ PRLL_DEFAULT_VERSION = 0.9999
 PRLL_VERSION ?= $(PRLL_DEFAULT_VERSION)
 
 CONFIGS = $(addprefix config_, keytype mallopt semun random)
-PROGS = prll_qer prll_bfr
-DOCS = README.md AUTHORS COPYING NEWS
+PROGS   = prll_qer prll_bfr
+DOCS    = README.md AUTHORS COPYING NEWS
 
 # Installation-related variables; note PREFIX, DESTDIR support
-NAME=prll
-INSTALL?=install
-PREFIX?=/usr/local
-BIN_DIR?=$(DESTDIR)$(PREFIX)/bin
-SHARE_DIR?=$(DESTDIR)$(PREFIX)/share/$(NAME)
-DOC_DIR?=$(DESTDIR)$(PREFIX)/share/doc/$(NAME)
-MAN_DIR?=$(DESTDIR)$(PREFIX)/share/man/man1
+NAME       = prll
+PREFIX    ?= /usr/local
+BIN_DIR   ?= $(DESTDIR)$(PREFIX)/bin
+SHARE_DIR ?= $(DESTDIR)$(PREFIX)/share/$(NAME)
+DOC_DIR   ?= $(DESTDIR)$(PREFIX)/share/doc/$(NAME)
+MAN_DIR   ?= $(DESTDIR)$(PREFIX)/share/man/man1
 
 .PHONY: clean compile test version prll.1
 
