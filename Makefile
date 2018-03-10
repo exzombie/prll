@@ -16,7 +16,7 @@ DOC_DIR   ?= $(DESTDIR)$(PREFIX)/share/doc/$(NAME)
 MAN_DIR   ?= $(DESTDIR)$(PREFIX)/share/man/man1
 ENV_DIR   ?= $(DESTDIR)/etc/profile.d
 
-.PHONY: clean compile test version prll.1
+.PHONY: clean compile test version
 
 compile: $(PROGS)
 
@@ -53,10 +53,14 @@ config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
 
 install: $(PROGS) prll.1
-	install -D -t $(BIN_DIR) $(PROGS)
-	install -D -t $(ENV_DIR) prll.sh
-	install -D -t $(DOC_DIR) $(DOCS)
-	install -D -t $(MAN_DIR) prll.1
+	install -d $(BIN_DIR)
+	install -d $(ENV_DIR)
+	install -d $(DOC_DIR)
+	install -d $(MAN_DIR)
+	install $(PROGS) $(BIN_DIR)
+	install prll.sh $(ENV_DIR)
+	install $(DOCS) $(DOC_DIR)
+	install prll.1 $(MAN_DIR)
 	@echo
 	@echo "Shell-glue script \`prll.sh' has been copied to $(ENV_DIR)/, source it at shell startup to configure prll (may happen automatically)"
 
