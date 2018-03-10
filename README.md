@@ -128,45 +128,32 @@ operation as long as you don't run too many parallel jobs. Also, be
 aware that full testing requires several hundred megabytes of disk
 space.
 
-When `prll` is built, copy the `prll_qer` and `prll_bfr` executables to a
-directory you have in your `PATH`. For example, to do a system-wide
-installation, run as root
+When `prll` is built, it is time to install it. Running
 ```
-chown root:root prll_qer prll_bfr
-cp prll_qer prll_bfr /usr/local/bin/
+make install
 ```
+will install in the default prefix, which is `/usr/local`. If you wish
+to install it somewhere else, e.g. your home directory, you can do
+```
+make PREFIX=/home/username/software/prll ENV_PATH=/home/username/software/prll install
+```
+While `PREFIX` specifies the path to `prll`'s support files and
+documentation, `ENV_PATH` specifies the path to the `prll.sh` file
+itself and defaults to `/etc/profile.d`. This default is a common
+convention on linux systems and means that `prll` is available by
+default in login shells. There is no such convention on other systems,
+so `prll.sh` should be put in an accessible location and users should
+source it from their profile scripts themselves. In short:
 
-To have access to the documentation, copy the manpage to the
-appropriate location for the man utility to find it. For example:
-```
-chown root:root prll.1
-cp prll.1 /usr/local/share/man/man1/
-```
+  - on most linux systems, with the default ENV_PATH, prll will be
+    available in login shells automatically;
+  - for use in shell scripts, the script should source `prll.sh`
+    explicitly;
+  - on non-linux systems, interactive shells need to source
+    `prll.sh` as well, e.g. in `~/.bashrc` or similar.
 
-File `prll.sh` contains the shell function. The shell that will use it
-needs to source it. That means that:
-
-- if you wish to use `prll` in a shell script, simply copy it in there;
-- if you wish to use `prll` in an interactive shell, source it.
-
-The latter means that you need to put the function somewhere where
-your shell will find it. If you are installing it for yourself, put it
-in your shell startup file, such as `.bashrc` or `.zshrc`. If you are
-installing it system-wide, put it in `/etc/profile`. However, if your
-system has the `/etc/profile.d` directory, use that. For example
-```
-chown root:root prll.sh
-cp prll.sh /etc/profile.d/
-```
-
-The function should now be automatically sourced by login shells. To
-have every shell source it instead of only login shells, insert
-```
-. /etc/profile
-```
-
-into your `.bashrc` or `.zshrc` or whichever startup file your shell
-uses.
+If you are making a distribution package, using `DESTDIR` installs
+into a staging directory, as usual.
 
 
 # 4 LICENSING INFORMATION
