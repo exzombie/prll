@@ -11,11 +11,10 @@ DOCS    = README.md AUTHORS COPYING NEWS
 # Installation-related variables; note PREFIX, DESTDIR support
 NAME       = prll
 PREFIX    ?= /usr/local
-HELPER_DIR = $(PREFIX)/lib/prll
-LIB_DIR   ?= $(DESTDIR)$(HELPER_DIR)
-DOC_DIR   ?= $(DESTDIR)$(PREFIX)/share/doc/$(NAME)
-MAN_DIR   ?= $(DESTDIR)$(PREFIX)/share/man/man1
-ENV_DIR   ?= $(DESTDIR)/etc/profile.d
+ENV_DIR   ?= /etc/profile.d
+LIB_DIR   ?= $(PREFIX)/lib/$(NAME)
+DOC_DIR   ?= $(PREFIX)/share/doc/$(NAME)
+MAN_DIR   ?= $(PREFIX)/share/man/man1
 
 .PHONY: clean compile test version
 
@@ -24,6 +23,7 @@ compile: $(PROGS)
 clean:
 	rm -f $(PROGS) $(addsuffix .o, $(PROGS) mkrandom)
 	rm -f config.h $(CONFIGS) $(addsuffix .log, $(CONFIGS))
+	rm -f prll.preinst
 	$(MAKE) -C tests clean
 
 test: prll_qer prll_bfr
@@ -54,25 +54,27 @@ config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
 
 install: $(PROGS) prll.1
-	install -d $(LIB_DIR)
-	install -d $(ENV_DIR)
-	install -d $(DOC_DIR)
-	install -d $(MAN_DIR)
-	install $(PROGS) $(LIB_DIR)
-	install $(DOCS) $(DOC_DIR)
-	install prll.1 $(MAN_DIR)
-	sed -e 's#PRLL_HELPER_PATH=.*#PRLL_HELPER_PATH=$(HELPER_DIR)#' \
-	    prll.sh > $(ENV_DIR)/prll.sh
+	install -d $(DESTDIR)$(LIB_DIR)
+	install -d $(DESTDIR)$(ENV_DIR)
+	install -d $(DESTDIR)$(DOC_DIR)
+	install -d $(DESTDIR)$(MAN_DIR)
+	install $(PROGS) $(DESTDIR)$(LIB_DIR)
+	install -m 0644 $(DOCS) $(DESTDIR)$(DOC_DIR)
+	install -m 0644 prll.1 $(DESTDIR)$(MAN_DIR)
+	sed -e 's#PRLL_HELPER_PATH=.*#PRLL_HELPER_PATH=$(LIB_DIR)#' \
+	    prll.sh > prll.preinst
+	install -m 0644 prll.preinst $(DESTDIR)$(ENV_DIR)/prll.sh
+	rm prll.preinst
 	@echo
 	@echo "Shell-glue script \`prll.sh' has been copied to $(ENV_DIR)/, source it at shell startup to configure prll (may happen automatically)"
 
 uninstall:
-	rm -f $(foreach bin, $(PROGS), $(LIB_DIR)/$(bin))
-	rm -f $(foreach doc, $(DOCS), $(DOC_DIR)/$(doc))
-	rmdir $(LIB_DIR) || true
-	rmdir $(DOC_DIR) || true
-	rm -f $(MAN_DIR)/prll.1
-	rm -f $(ENV_DIR)/prll.sh
+	rm -f $(foreach bin, $(PROGS), $(DESTDIR)$(LIB_DIR)/$(bin))
+	rm -f $(foreach doc, $(DOCS), $(DESTDIR)$(DOC_DIR)/$(doc))
+	rmdir $(DESTDIR)$(LIB_DIR) || true
+	rmdir $(DESTDIR)$(DOC_DIR) || true
+	rm -f $(DESTDIR)$(MAN_DIR)/prll.1
+	rm -f $(DESTDIR)$(ENV_DIR)/prll.sh
 
 # For emacs' flymake-mode
 .PHONY: check-syntax
