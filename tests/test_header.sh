@@ -1,6 +1,6 @@
 export LC_ALL=C
+PRLL_HELPER_PATH=../
 . ../prll.sh
-PATH="../:$PATH"
 test_shell="$(ps -p $$ -o comm=)"
 
 echo

@@ -11,7 +11,8 @@ DOCS    = README.md AUTHORS COPYING NEWS
 # Installation-related variables; note PREFIX, DESTDIR support
 NAME       = prll
 PREFIX    ?= /usr/local
-BIN_DIR   ?= $(DESTDIR)$(PREFIX)/bin
+HELPER_DIR = $(PREFIX)/lib/prll
+LIB_DIR   ?= $(DESTDIR)$(HELPER_DIR)
 DOC_DIR   ?= $(DESTDIR)$(PREFIX)/share/doc/$(NAME)
 MAN_DIR   ?= $(DESTDIR)$(PREFIX)/share/man/man1
 ENV_DIR   ?= $(DESTDIR)/etc/profile.d
@@ -53,20 +54,22 @@ config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
 
 install: $(PROGS) prll.1
-	install -d $(BIN_DIR)
+	install -d $(LIB_DIR)
 	install -d $(ENV_DIR)
 	install -d $(DOC_DIR)
 	install -d $(MAN_DIR)
-	install $(PROGS) $(BIN_DIR)
-	install prll.sh $(ENV_DIR)
+	install $(PROGS) $(LIB_DIR)
 	install $(DOCS) $(DOC_DIR)
 	install prll.1 $(MAN_DIR)
+	sed -e 's#PRLL_HELPER_PATH=.*#PRLL_HELPER_PATH=$(HELPER_DIR)#' \
+	    prll.sh > $(ENV_DIR)/prll.sh
 	@echo
 	@echo "Shell-glue script \`prll.sh' has been copied to $(ENV_DIR)/, source it at shell startup to configure prll (may happen automatically)"
 
 uninstall:
-	rm -f $(foreach bin, $(PROGS), $(BIN_DIR)/$(bin))
+	rm -f $(foreach bin, $(PROGS), $(LIB_DIR)/$(bin))
 	rm -f $(foreach doc, $(DOCS), $(DOC_DIR)/$(doc))
+	rmdir $(LIB_DIR) || true
 	rmdir $(DOC_DIR) || true
 	rm -f $(MAN_DIR)/prll.1
 	rm -f $(ENV_DIR)/prll.sh

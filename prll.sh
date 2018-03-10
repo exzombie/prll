@@ -65,9 +65,23 @@ prll_real() {
 	esac
     }
 
-    # This executable is always needed.
-    command -v prll_qer > /dev/null || prll_die "Missing prll_qer."
-    command -v prll_bfr > /dev/null || prll_die "Missing prll_bfr."
+    # This path is defined on installation. For developement, it
+    # is overriden by environment.
+    PRLL_HELPER_PATH=${PRLL_HELPER_PATH:?}
+
+    # This executables are always needed.
+    command -v "${PRLL_HELPER_PATH}/"prll_qer > /dev/null \
+        || prll_die "Missing prll_qer."
+    command -v "${PRLL_HELPER_PATH}/"prll_bfr > /dev/null \
+        || prll_die "Missing prll_bfr."
+
+    prll_qer() {
+        "${PRLL_HELPER_PATH}/"prll_qer "$@"
+    }
+
+    prll_bfr() {
+        "${PRLL_HELPER_PATH}/"prll_bfr "$@"
+    }
 
     # Read parameters and environment variables.
     prll_unbuffer=no
