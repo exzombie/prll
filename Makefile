@@ -54,8 +54,8 @@ config.h: $(addsuffix .c, $(CONFIGS))
 	@echo
 
 install: $(PROGS) prll.1
-	install -d $(DESTDIR)$(LIB_DIR)
 	install -d $(DESTDIR)$(ENV_DIR)
+	install -d $(DESTDIR)$(LIB_DIR)
 	install -d $(DESTDIR)$(DOC_DIR)
 	install -d $(DESTDIR)$(MAN_DIR)
 	install $(PROGS) $(DESTDIR)$(LIB_DIR)
