@@ -1,5 +1,5 @@
 # prll
-version 0.9999
+version 0.6.4
 
 `prll` (pronounced "parallel") is a utility for use with POSIX and
 (mostly) compatible shells, such as `bash`, `zsh` and `dash`. It provides a

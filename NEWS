@@ -1,6 +1,12 @@
 prll NEWS -- history of user-visible changes.
 =============================================
 
+Version 0.6.4
+
+- Add make install target for easier installation. Installs into
+  /usr/local and /etc/profile.d by default.
+
+
 Version 0.6.3
 
 - Support building with cygwin and clang.
