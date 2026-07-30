@@ -15,6 +15,7 @@
 */
 
 #define _SVID_SOURCE
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <malloc.h>
 
