@@ -16,6 +16,7 @@
 
 #include "config.h"
 #define _SVID_SOURCE
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <sys/msg.h>
 #include <stdlib.h>
