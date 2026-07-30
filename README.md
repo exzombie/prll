@@ -13,13 +13,13 @@ Homepage: https://github.com/exzombie/prll
 
 Contents of this file:
 
-  1. [Description](#decription)
-  2. [Requirements](#requirements)
-  3. [Installation](#installation)
-  4. [Licensing information](#licensing)
+  1. [Description](#1-description)
+  2. [Requirements](#2-requirements)
+  3. [Installation](#3-installation)
+  4. [Licensing information](#4-licensing-information)
 
 
-# 1 DESCRIPTION <a name="description"></a>
+# 1 DESCRIPTION
 
 `prll` is designed to be used not just in shell scripts, but especially
 in interactive shells. To make the latter convenient, it is
@@ -61,7 +61,7 @@ locking. See examples in `prll.txt` or, if `prll` is installed already, in the
 man page.
 
 
-# 2 REQUIREMENTS <a name="requirements"></a>
+# 2 REQUIREMENTS
 
 - `sh`-like shell, such as `bash`, `zsh` or `dash`
 - C compiler, such as `gcc`
@@ -95,7 +95,7 @@ can run over 500 jobs; at that point, the shell's job table becomes
 saturated.
 
 
-# 3 INSTALLATION <a name="installation"></a>
+# 3 INSTALLATION
 
 Compile the helper programs. You can use the included `Makefile`. If you
 have `gcc`, you can simply run
@@ -156,7 +156,7 @@ If you are making a distribution package, using `DESTDIR` installs
 into a staging directory, as usual.
 
 
-# 4 LICENSING INFORMATION <a name="licensing"></a>
+# 4 LICENSING INFORMATION
 
 The `prll` package is provided under the GNU General Public
 License, version 3 or later. See COPYING for more information.
