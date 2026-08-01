@@ -97,6 +97,51 @@ saturated.
 
 # 3 INSTALLATION
 
+## With Nix and Home Manager <a name="home-manager"></a>
+
+The most convenient way to use `prll` is through the Home Manager module. Add this
+repository as a flake input and import the module:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    prll = {
+      url = "github:exzombie/prll";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+  };
+
+  outputs = { self, home-manager, prll, ... }: {
+    homeConfigurations.example = home-manager.lib.homeManagerConfiguration {
+      # ...
+      modules = [
+        prll.homeManagerModules.default
+        {
+          programs.prll = {
+            enable = true;
+            enableBashIntegration = true;
+            enableZshIntegration = true;
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+This arranges for `.bashrc`/`.zshrc` to source `prll.sh`, as requested. Only
+`enableBashIntegration` and `enableZshIntegration` are offered: `prll` relies on
+POSIX shell function syntax, which `fish`, `ion` and `nushell` don't support, so
+there's no way to integrate it into those shells.
+
+## Installation on other OS
+
 Compile the helper programs. You can use the included `Makefile`. If you
 have `gcc`, you can simply run
 ```
