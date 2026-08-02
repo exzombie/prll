@@ -15,8 +15,12 @@
 */
 
 #include "config.h"
+#ifndef _SVID_SOURCE
 #define _SVID_SOURCE
+#endif
+#ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
+#endif
 #include <stdio.h>
 #include <sys/msg.h>
 #include <stdlib.h>

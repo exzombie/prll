@@ -14,8 +14,12 @@
    If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _SVID_SOURCE
 #define _SVID_SOURCE
+#endif
+#ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
